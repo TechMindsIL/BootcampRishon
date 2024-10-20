@@ -57,6 +57,29 @@ exports.getPlaceByQuery = asyncHandler(async (req, res) => {
 
 // Controller function to create a new Place
 exports.createPlace = asyncHandler(async (req, res) => {
+    if (req.file) {
+        req.body.img = req.file.path;
+    }
+
+
+    // because FormData accepts only strings and files, we need to convert the coordinates to an array
+    // if the coordinates are a string
+    // We also need to check if the coordinates are a string and if they include a comma
+    // and if the split array has a length of 2
+    if (typeof req.body.coordinates == 'string' &&
+        req.body.coordinates.includes(',') &&
+        req.body.coordinates.split(',').length == 2) {
+
+        // if all conditions match, we split the coordinates string into an array
+        let coordinates = req.body.coordinates.split(',');
+
+        // then we convert the coordinates array into an object that has longitude and latitude properties
+        req.body.coordinates = {
+            longitude: parseFloat(coordinates[0]),
+            latitude: parseFloat(coordinates[1])
+        };
+    }
+
     // Create a new Place instance
     const place = new Place(req.body);
 

@@ -46,6 +46,9 @@ db.once('open', () => console.log('DB connection is open'));
 db.set("useCreateIndex", true);
 console.log(process.env.MONGOURL);
 
+// import upload route, define it as a static route that serves files from the 'uploads' directory
+app.use('/uploads', express.static('uploads'));
+
 // Import and use routes
 app.use('/', require('./routes/index'));
 app.use('/templates', require('./routes/templates'));

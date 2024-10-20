@@ -6,6 +6,8 @@ const validateObjectId = require('../../../middleware/validateObjectId'); // Imp
 const SecurityMiddleware = require('../../../middleware/securityMiddleware'); // Import the security middleware
 const router = express.Router();
 
+const uploadService = require("../../../services/upload.service").getInstance({ pathDest: `./uploads/pictures` });
+
 // Route to get all Places
 router.get('/', placeController.getAllPlaces);
 
@@ -16,7 +18,7 @@ router.get('/search', SecurityMiddleware.secure(), placeController.getPlaceByQue
 router.get('/:id', SecurityMiddleware.secure(), validateObjectId('id'), placeController.getPlaceById);
 
 // Route to create a new Place
-router.post('/', SecurityMiddleware.secure(), auth, checkRole('admin'), placeController.createPlace);
+router.post('/', SecurityMiddleware.secure(), auth, checkRole('admin'), uploadService.single('img'), placeController.createPlace);
 
 // Route to update a Place by ID
 router.put('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), placeController.updatePlace);
