@@ -92,6 +92,13 @@
                             placeholder="https://example.com/image.jpg">
                     </div>
 
+                    <!-- Image File Input -->
+                    <div class="input-group mb-3">
+                        <label for="img" class="form-label ms-3">בחירת תמונה חדשה</label>
+                        <input type="file" name="img" id="img" class="form-control" placeholder="Choose"
+                            accept="image/*">
+                    </div>
+
                     <!-- YouTube URL Field -->
                     <div class="mb-3">
                         <label for="activityYT" class="form-label">קישור לסרטון YouTube:</label>
@@ -249,24 +256,60 @@
 
                 // Function to update a route
                 function updateActivity(activityId) {
-                    const updatedActivity = {
-                        name: $('#activityName').val(),
-                        description: $('#activityDescription').val(),
-                        img: $('#activityImg').val(),
-                        youtube: $('#activityYT').val(),
-                        coordinates: {
-                            longitude: $('#activityLongitude').val(),
-                            latitude: $('#activityLatitude').val(),
-                        },
-                        tags: getSelectedTags(),
-                        isRelevant: true
-                    };
+                    let fd = new FormData();
+
+                    // check if we have an image file
+                    // if so, append it to the form data
+                    if ($('#img')[0].files[0]) {
+                        fd.append('img', $('#img')[0].files[0]);
+
+                        // else, preserve the current image url
+                    } else {
+                        fd.append('img', $('#activityImg').val());
+                    }
+
+                    // append place name to form-data
+                    fd.append('name', $('#activityName').val());
+
+                    // append place description to form-data
+                    fd.append('description', $('#activityDescription').val());
+
+                    // append place image url to form-data
+                    fd.append('img', $('#activityImg').val());
+
+                    // append place youtube url to form-data
+                    fd.append('youtube', $('#activityYT').val());
+
+                    // append place coordinates to form-data
+                    fd.append('coordinates', [$('#activityLongitude').val(), $('#activityLatitude').val()].join(','));
+
+                    // append place tags to form-data
+                    fd.append('tags', getSelectedTags());
+
+                    // append place isRelevant to form-data
+                    fd.append('isRelevant', true);
+
+
+
+                    // const updatedActivity = {
+                    //     name: $('#activityName').val(),
+                    //     description: $('#activityDescription').val(),
+                    //     img: $('#activityImg').val(),
+                    //     youtube: $('#activityYT').val(),
+                    //     coordinates: {
+                    //         longitude: $('#activityLongitude').val(),
+                    //         latitude: $('#activityLatitude').val(),
+                    //     },
+                    //     tags: getSelectedTags(),
+                    //     isRelevant: true
+                    // };
 
                     $.ajax({
                         url: `/api/v1/places/${activityId}`,
                         method: 'PUT',
-                        contentType: 'application/json',
-                        data: JSON.stringify(updatedActivity),
+                        contentType: false,
+                        processData: false,
+                        data: fd,
                         success: function () {
                             console.log(updatedActivity)
                             window.location.href = '/manage-activities';

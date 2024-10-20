@@ -21,7 +21,7 @@ router.get('/:id', SecurityMiddleware.secure(), validateObjectId('id'), placeCon
 router.post('/', SecurityMiddleware.secure(), auth, checkRole('admin'), uploadService.single('img'), placeController.createPlace);
 
 // Route to update a Place by ID
-router.put('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), placeController.updatePlace);
+router.put('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), uploadService.single('img'), placeController.updatePlace);
 
 // Route to delete a Place by ID
 router.delete('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), placeController.deletePlace);

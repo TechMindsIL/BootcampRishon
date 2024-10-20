@@ -57,6 +57,12 @@
                         style="display:none; max-height: 200px; overflow-y: auto;"></ul>
                 </div>
 
+                <!-- Image Input -->
+                <div class="input-group mb-3">
+                    <label for="img" class="form-label">תמונה: <span class="text-danger">*</span></label>
+                    <input type="file" name="img" id="img" class="form-control" placeholder="Choose" accept="image/*">
+                </div>
+
                 <!-- Coordinates Input -->
                 <div class="form-group d-flex align-items-center">
                     <label for="coordinatesInput" class="mb-0 ms-2">מיקום: <span class="text-danger">*</span></label>
@@ -223,42 +229,64 @@
                 }
 
                 $('#addNewPlace').on('click', function () {
+                    const fd = new FormData();
                     const coords = $('#coordinatesInput').val().split(',');
-                    if (coords.length === 2) {
-                        const lat = parseFloat(coords[0]);
-                        const lng = parseFloat(coords[1]);
-                        const place = {
-                            name: $("#placeSearchInput").val(),
-                            description: "",
-                            img: "",
-                            youtube: "",
-                            coordinates: {
-                                longitude: lng,
-                                latitude: lat
-                            },
-                            tags: [],
-                            isRelevant: true
-                        }
 
-                        // AJAX
-                        $.ajax({
-                            url: '/api/v1/places',
-                            method: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify(place),
-                            success: function (response) {
-                                console.log('Place added successfully:', response);
-                                window.location.href = `/edit-activity?id=${response._id}`;
-                            },
-                            error: function (xhr, status, error) {
-                                console.error(`Error adding place: ${xhr.responseText || status}`);
-                                alert(`Failed to add place: ${xhr.responseText || error}`);
-                            }
+                    // currently we assign tags to undefined, since it's not support yet
+                    let tags = undefined;
+
+                    if (coords.length !== 2) {
+                        alert("אנא הזן קואורדינטות תקינות");
+                        return;
+                    }
+                    // get place image
+                    const img = $('#img')[0].files[0];
+
+                    // append place name to form data
+                    fd.append('name', $("#placeSearchInput").val());
+
+                    // append place description to form data
+                    fd.append('description', "");
+
+                    // append place youtube link to form data
+                    fd.append('youtube', "");
+
+                    // append place coordinates to form data
+                    fd.append('coordinates', coords.join(','));
+
+                    // append place tags to form data
+                    if (tags && Array.isArray(tags)) {
+                        tags.forEach(tag => {
+                            fd.append('tags', tag);
                         });
                     }
-                    else {
-                        alert("קואורדינטות לא תקינות")
+
+                    // append place image to form data if it exists
+                    if (img) {
+                        fd.append('img', img);
                     }
+
+                    // isRelevant set to true by default
+                    fd.append('isRelevant', true);
+
+                    // AJAX
+                    $.ajax({
+                        url: '/api/v1/places',
+                        method: 'POST',
+                        // form-data
+                        contentType: false,
+                        processData: false,
+                        data: fd,
+                        success: function (response) {
+                            console.log('Place added successfully:', response);
+                            window.location.href = `/edit-activity?id=${response._id}`;
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(`Error adding place: ${xhr.responseText || status}`);
+                            alert(`Failed to add place: ${xhr.responseText || error}`);
+                        }
+                    });
+
                 });
 
             </script>

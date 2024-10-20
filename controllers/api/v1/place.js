@@ -57,8 +57,12 @@ exports.getPlaceByQuery = asyncHandler(async (req, res) => {
 
 // Controller function to create a new Place
 exports.createPlace = asyncHandler(async (req, res) => {
+
+    // check if we receive a file from the request
     if (req.file) {
-        req.body.img = req.file.path;
+        // we set the domain name of our server, where the image is stored
+        let fullPath = process.env.DOMAIN_URL + '/' + req.file.path;
+        req.body.img = fullPath;
     }
 
 
@@ -78,6 +82,17 @@ exports.createPlace = asyncHandler(async (req, res) => {
             longitude: parseFloat(coordinates[0]),
             latitude: parseFloat(coordinates[1])
         };
+    }
+
+    // set body isRelevant to true or false based on the string value
+    // FormData doesn't support boolean values, so we need to convert the string to a boolean
+    req.body.isRelevant = req.body.isRelevant === 'true';
+
+    // check whether we receive tags as a string and if it has a length greater than 0
+    // if yes, we split the string into an array to get individual ID's of each tags, and assign it 
+    // to the tags property of the body
+    if (req.body.tags && req.body.tags.length > 0) {
+        req.body.tags = req.body.tags.split(',');
     }
 
     // Create a new Place instance
@@ -106,6 +121,42 @@ exports.getPlaceById = asyncHandler(async (req, res) => {
 
 // Controller function to update a Place by ID
 exports.updatePlace = asyncHandler(async (req, res) => {
+    // check if we receive a file from the request
+    if (req.file) {
+        // we set the domain name of our server, where the image is stored
+        let fullPath = process.env.DOMAIN_URL + '/' + req.file.path;
+        req.body.img = fullPath;
+    }
+
+    // because FormData accepts only strings and files, we need to convert the coordinates to an array
+    // if the coordinates are a string
+    // We also need to check if the coordinates are a string and if they include a comma
+    // and if the split array has a length of 2
+    if (typeof req.body.coordinates == 'string' &&
+        req.body.coordinates.includes(',') &&
+        req.body.coordinates.split(',').length == 2) {
+
+        // if all conditions match, we split the coordinates string into an array
+        let coordinates = req.body.coordinates.split(',');
+
+        // then we convert the coordinates array into an object that has longitude and latitude properties
+        req.body.coordinates = {
+            longitude: parseFloat(coordinates[0]),
+            latitude: parseFloat(coordinates[1])
+        };
+    }
+
+    // set body isRelevant to true or false based on the string value
+    // FormData doesn't support boolean values, so we need to convert the string to a boolean
+    req.body.isRelevant = req.body.isRelevant === 'true';
+
+    // check whether we receive tags as a string and if it has a length greater than 0
+    // if yes, we split the string into an array to get individual ID's of each tags, and assign it 
+    // to the tags property of the body
+    if (req.body.tags && req.body.tags.length > 0) {
+        req.body.tags = req.body.tags.split(',');
+    }
+
     // Update the Place by ID with the new data from the request body
     const updatedPlace = await Place.findByIdAndUpdate(
         req.params.id,
