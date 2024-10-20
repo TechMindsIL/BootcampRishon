@@ -16,7 +16,11 @@
         
         <form id="loginForm">
             <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <br></br>
             <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            <br></br>
+            <a href="/register">Don't have an account? Register</a>
+            <br></br>
             <button type="submit">Done</button>
         </form>
     </div>
@@ -45,6 +49,7 @@
 
                 const data = await response.json();
                 console.log('Login successful:', data);
+                
                 // Optionally, redirect to another page here
             } catch (error) {
                 console.error('Error:', error.message);
