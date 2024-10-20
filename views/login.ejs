@@ -2,11 +2,50 @@
 <html lang="en">
 
 <%- include('./partials/head') %>
+<head>
+    <link rel="stylesheet" type="text/css" href=".css">
+    <script src="auth.js"></script> 
+</head>
 
 <body>
     <%- include('./partials/navbar', {currentPage: 'login'}) %>
     <div class="container">
-        <h1>Login page</h1>
+        <div >
+            <h1>Login page</h1>
+            <h1>Welcome back!</h1>
+        </div>
+        
+       
+        <form  method="POST" action="login">
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <input type="password" name="password" placeholder="Enter your password" required>
+            <button type="submit" >Done</button>
+        </form>
+
+
+
+
+
+
+        <!-- <div id="userInfo">
+            <input type="text" placeholder="Email/username" id="emailUsername" required><br></br>
+            <input type="password" placeholder="Password" id="password" required><br></br>
+        </div>
+
+        <button onclick="exports.login">Done</button> -->
+
+
+
+
     </div>
+
+
+
+
+
+
+
+
+
 </body>
 </html>

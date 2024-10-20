@@ -40,6 +40,7 @@ exports.register = asyncHandler(async (req, res) => {
 
 // Login a user
 exports.login = asyncHandler(async (req, res) => {
+    console.log("button clicked");
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).send('Email and password are required.');
