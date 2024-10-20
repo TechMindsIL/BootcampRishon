@@ -68,7 +68,7 @@
     </div>
 
     <div id="map"></div>
-    <button id="toggleListView">הצגה ברשימה</button>
+    <button id="toggleListView" onclick="window.location.href='http://localhost:8080/list/'">הצגה ברשימה</button>
 
     <!-- footer -->
 
@@ -79,6 +79,7 @@
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
     <script>
+
         // יצירת אובייקט המפה ומיקוד לראשון לציון
         var map = L.map('map').setView([31.95966273043602, 34.80208048694831], 12); // קואורדינטות של ראשון לציון
 
