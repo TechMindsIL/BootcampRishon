@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="style.css">
+
 
 <%- include('./partials/head') %>
 
 <body>
     <%- include('./partials/navbar', {currentPage: 'register'}) %>
-    <div class="container">
-        <h1>Register page</h1>
+    
+    <div class = "top">
+        <h1>Logo page</h1>
+    </div>
+    <div class = "card">
+    <form>
+        <h1>נעים להכיר!</h1>
+        <label>שם</label><br>
+        <input type = "text" class = "UserName" placeholder="John" required><br>
+        <label>סיסמא</label> <br>
+        <input type ="password" class="password" placeholder="123456789" required><br>
+        <label >דוא"ל</label><br>
+        <input type = "email" class  = "Email" placeholder="@somthing" required><br>
+
+        <button type = "submit" class="SubmitButton"  required>Submit</button>
+        <a href="/views/login.ejs">כבר נרשמתה התחברות</a>
+    </form>
+
     </div>
 </body>
 </html>
