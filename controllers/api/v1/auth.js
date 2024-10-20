@@ -37,45 +37,47 @@ exports.register = asyncHandler(async (req, res) => {
         user: { name: user.name, email: user.email, role: user.role }
     });
 });
-
 // Login a user
 exports.login = asyncHandler(async (req, res) => {
-    console.log("button clicked");
     const { email, password } = req.body;
-    console.log(email, password);
+
+    // Input validation
     if (!email || !password) {
-        return res.status(400).send('Email and password are required.');
+        return res.status(400).json({ error: 'Email and password are required.' });
     }
 
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email)) {
-        return res.status(400).send('Invalid email format.');
+        return res.status(400).json({ error: 'Invalid email format.' });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-        return res.status(400).send('Invalid email or password.');
+        return res.status(400).json({ error: 'Invalid email or password.' });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-        return res.status(400).send('Invalid email or password.');
+        return res.status(400).json({ error: 'Invalid email or password.' });
     }
 
+    // Create JWT token
     const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     const httpOnly = process.env.HTTP_ONLY === 'true';
 
+    // Set token as a cookie
     res.cookie('authToken', token, { 
         httpOnly: httpOnly,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 3600000 // 1 hour
-    }).send({
+    }).json({
         message: 'Logged in successfully.',
         user: { name: user.name, email: user.email, role: user.role }
     });
 });
+
 
 // Logout a user
 exports.logout = (req, res) => {

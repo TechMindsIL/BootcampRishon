@@ -3,49 +3,53 @@
 
 <%- include('./partials/head') %>
 <head>
-    <link rel="stylesheet" type="text/css" href="../public/css/styles.css">
-    <script src="../controllers/api/v1/auth.js"></script> 
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
 </head>
 
 <body>
-    <%- include('./partials/navbar', {currentPage: 'login'}) %>
-    <div class="container">
-        <div >
+    <%- include('./partials/navbar', { currentPage: 'login' }) %>
+    <div class="container" id="main">
+        <div>
             <h1>Login page</h1>
             <h1>Welcome back!</h1>
         </div>
         
-       
-        <form  onsubmit="login()">
-            <input type="email" name="email" placeholder="Enter your email" required>
-            <input type="password" name="password" placeholder="Enter your password" required>
-            <button type="submit" >Done</button>
+        <form id="loginForm">
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            <button type="submit">Done</button>
         </form>
-
-
-
-
-
-
-        <!-- <div id="userInfo">
-            <input type="text" placeholder="Email/username" id="emailUsername" required><br></br>
-            <input type="password" placeholder="Password" id="password" required><br></br>
-        </div>
-
-        <button onclick="exports.login">Done</button> -->
-
-
-
-
     </div>
 
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent form submission
 
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
+            try {
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
 
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Login failed:', errorData.error);
+                    return;
+                }
 
-
-
-
-
+                const data = await response.json();
+                console.log('Login successful:', data);
+                // Optionally, redirect to another page here
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        });
+    </script>
 </body>
 </html>
