@@ -58,7 +58,6 @@
 </head>
 
 <body>
-    <!-- header -->
     <h1>שם האימון </h1>
 
     <div class="icons" style="align-self: flex-end;">
@@ -69,13 +68,7 @@
     <div id="map"></div>
     <button id="toggleListView" onclick="window.location.href='http://localhost:8080/list/'">הצגה ברשימה</button>
 
-    <!-- footer -->
-
-    <!-- JS of Leaflet -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    
-    <!-- Remove Leaflet Routing Machine JS -->
-    <!-- <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script> -->
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -134,10 +127,8 @@
             console.log("Waypoints:", waypoints);
 
             if (waypoints.length > 1) {
-                // Create a polyline between waypoints
                 const polyline = L.polyline(waypoints, {color: 'blue', weight: 4, opacity: 0.6}).addTo(map);
 
-                // Calculate distances and times between waypoints
                 const distancesAndTimes = waypoints.slice(0, -1).map((wp, index) => {
                     const from = waypoints[index];
                     const to = waypoints[index + 1];
