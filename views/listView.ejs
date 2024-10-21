@@ -4,6 +4,13 @@
 <%- include('./partials/head') %>
 <head>
     <style>
+        .center{
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
         :root {
             --pinSize: 35px;
             --cardSpacing: 40px;
@@ -12,11 +19,14 @@
             --lineContainerWidth: 100px;
             --placeListWidth: 310px;
 
-            --grayColor: #dfdfdf;
-            --lineColor: #babec6;
-            
+            --grayColor: #6c6c6c;
+            --btnColor: #f16624;
+            --lineColor: #cccccc;
+            --textFont: 1.4em;
+            --offsetWidth: 100px;
         }
         .container{
+            width: calc(var(--placeListWidth) + var(--lineContainerWidth) + var(--offsetWidth) + var(--pinSize)/2);
             display:flex;
             flex-direction: column;
             align-items: center;
@@ -68,10 +78,10 @@
             width:90%;
             height:auto;
             text-align: center;
-            font-size:1.4em;
+            font-size:var(--textFont);
             font-weight: 500;
             margin: 0;
-            
+            color:white;
         }
         .distanceText{
             text-align: left;
@@ -82,6 +92,7 @@
             font-weight: 400;
         }
         .places{
+            margin-top:30px;
             width:var(--placeListWidth)
         }
         .placeHeader{
@@ -91,40 +102,74 @@
             font-weight: 400;
         }
         .button:hover{
-            background-color: hsl(0, 0%, 50%);
+            background-color: hsl(19, 88%, 45%);
             color:white;
         }
         .button{
             margin-top: 80px;
-            width:200px
+            width:200px;
+            background-color: var(--btnColor);
+        }
+
+        @media screen and (max-width: 500px) {
+            :root{
+                --placeListWidth: 250px;
+                --cardHeight: 55px;
+                --textFont: 1.2em;
+                --offsetWidth: 70px;
+            }
+        }
+        @media screen and (max-width: 440px){
+            :root{
+                --placeListWidth: 200px;
+                --cardHeight: 40px;
+                --textFont: 0.75em;
+                --offsetWidth: 40px;
+                --cardSpacing: 30px;
+            }
+        }
+        @media screen and (max-width: 360px){
+            :root{
+                --placeListWidth: 160px;
+                --cardHeight: 40px;
+                --textFont: 0.6em;
+                --offsetWidth: 30px;
+                --cardSpacing: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <%- include('./partials/navbar', {currentPage: 'list view'}) %>
+    <%- include('./partials/navbar', {currentPage: 'List View'}) %>
 
-    <div class="container">
-        <br><br>
-        <h1 id="name"></h1>
-
-        <div class="places">
-            <h1 class="placeHeader">תחנות</h1>
-            <div id="placeList"></div>
+    <div class="center">
+        <div class="container">
+            <br><br>
+            <h1 id="name"></h1>
+    
+            <div class="places">
+                <h1 class="placeHeader">תחנות</h1>
+                <div id="placeList"></div>
+            </div>
+            <button id="backButton" class="card button">
+                <h1 class="textInside">חזרה למפה</h1>
+            </button>
         </div>
-        <button id="backButton" class="card button">
-            <h1 class="textInside">חזרה למפה</h1>
-        </button>
     </div>
+    
 
     <script>
-        const nameText = document.getElementById("name")
-        const placesDiv = document.getElementById("placeList")
-        const back = document.getElementById("backButton")
+        const queryString = window.location.search;  
+        const urlParams = new URLSearchParams(queryString);
 
-        const ID = "670f90813ad3b9ca711932c4";
+        const ID = urlParams.get("id");
 
         const PROTOCOL = window.location.protocol
         const URL = `${PROTOCOL}/api/v1/routes/${ID}`
+
+        const nameText = document.getElementById("name")
+        const placesDiv = document.getElementById("placeList")
+        const back = document.getElementById("backButton")
 
         const locationPin = () => {
             return `
@@ -134,68 +179,32 @@
             `
         }
 
-        const toRadians = (degrees) => degrees * (Math.PI / 180);
-
-        const haversine = (lat1, lon1, lat2, lon2) => {
-            const R = 6371000;
-            
-            console.log(lat1, lon1)
-            console.log(lat2, lon2)
-
-            const x1 = lat2 - lat1;
-            const dLat = toRadians(x1);  
-            const x2 = lon2 - lon1;
-            const dLon = toRadians(x2);  
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
-                            Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * 
-                            Math.sin(dLon/2) * Math.sin(dLon/2);  
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-            const d = R * c; 
-
-            return d
-        }
-
         const formulateDistance = (distanceMeters) => {
             if (distanceMeters >= 1000) {
                 const km = (distanceMeters / 1000).toFixed(1);
                 return `${km} ק"מ`;
-            } else{ // if(distanceMeters >= 50) {
+            } else {
                 return `${Math.round(distanceMeters)} מ'`;
-            // }else{
-            //     return ""
             }
         }
 
-        const getDistance = (place1, place2) => {
-            const lat1 = place1.coordinates.latitude
-            const lon1 = place1.coordinates.longitude
-
-            const lat2 = place2.coordinates.latitude
-            const lon2 = place2.coordinates.longitude
-            distance = haversine(lat1, lon1, lat2, lon2)
-            console.log(distance)
-            return formulateDistance(distance)
-        }
-
-        const line = (place1, place2) =>{
+        const line = (distance) => {
             return `
                 <div class="linecontainer">
                     <div class="line"></div>
-                    <h1 class="distanceText">${getDistance(place1, place2)}</h1>
+                    <h1 class="distanceText">${formulateDistance(distance)}</h1>
                 </div>
-
             `
         }
 
-        const placeDiv = (place, addLine, place2) => {
-            console.log(place2)
+        const placeDiv = (place, addLine, distance) => {
             return `
                 <div class="place">
                     <div class="card">
                         <h1 class="textInside">${place.name}</h1>
                     </div>
                     ${locationPin()}
-                    ${addLine ? line(place, place2) : ""} 
+                    ${addLine ? line(distance) : ""} 
                 </div>
             `
         }
@@ -203,30 +212,29 @@
         const addToView = (data) => {
             nameText.textContent = data.name
 
-            for(let index in data.places){
-                index = parseInt(index)
-                const place = data.places[index]
+            const distancesAndTimes = JSON.parse(sessionStorage.getItem('routeDistancesAndTimes')) || [];
 
-                placesDiv.innerHTML += placeDiv(place, index < data.places.length - 1, data.places[index + 1]);        
-            }
+            data.places.forEach((place, index) => {
+                const distanceInfo = distancesAndTimes[index] || {};
+                placesDiv.innerHTML += placeDiv(place, index < data.places.length - 1, distanceInfo.distance);
+            });
         }
 
-        const fetchPlace = async () => {
-            try{
+        const fetchRoute = async () => {
+            try {
                 const response = await fetch(URL)
                 const data = await response.json()
-
                 return data
-            }catch(err){
-                throw new Error(err)
+            } catch(err) {
+                console.error(err)
                 return {}
             }
         }
 
-        fetchPlace().then(addToView)
+        fetchRoute().then(addToView)
 
         back.addEventListener("click", () => {
-            window.location.href = "/map"
+            window.location.href = `/map?id=${ID}`
         })
     </script>
 </body>

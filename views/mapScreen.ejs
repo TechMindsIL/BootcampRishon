@@ -74,36 +74,46 @@
     <!-- JS of Leaflet -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     
-    <!-- JS of Leaflet Routing Machine -->
-    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <!-- Remove Leaflet Routing Machine JS -->
+    <!-- <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script> -->
 
     <script>
-        const ID = "67123caa24d5ef0a8ab8377c";
+        const urlParams = new URLSearchParams(window.location.search);
+        let ID = urlParams.get("id");
+
+        if (!ID) {
+            ID = "67123caa24d5ef0a8ab8377c";
+            window.history.replaceState({}, '', `${window.location.pathname}?id=${ID}`);
+        }
 
         const PROTOCOL = window.location.protocol
         const URL = `${PROTOCOL}/api/v1/routes/${ID}`
 
-        // Initialize the map object
-        const map = L.map('map').setView([31.95966273043602, 34.80208048694831], 12); // Rishon coordinates
+        console.log("Initializing map...");
+        const map = L.map('map').setView([31.95966273043602, 34.80208048694831], 12);
 
-        // Setting map layer from OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        const fetchRoute = async () => {
-            try{
-                const response = await fetch(URL)
-                const data = await response.json()
+        console.log("Map initialized");
 
+        const fetchRoute = async () => {
+            try {
+                console.log("Fetching route data...");
+                const response = await fetch(URL)
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json()
+                console.log("Route data fetched:", data);
                 return data
-            }catch(err){
-                throw new Error(err)
-                return {}
+            } catch(err) {
+                console.error("Fetch error:", err)
+                return null
             }
         }
 
-        // Fetching the route data from the API
         const addRouteToMap = async() => {
             const route = await fetchRoute();
 
@@ -112,33 +122,49 @@
                 return;
             }
 
-            const waypoints = []; // Create an array to hold all the coordinates
+            document.querySelector('h1').textContent = route.name;
 
-            
-            // Loop through each place to add markers and collect waypoints
-            for(place of route.places){
-                const coordinates = [place.coordinates.latitude, place.coordinates.longitude]; // [latitude, longitude]
-                L.marker(coordinates).addTo(map).bindPopup(place.name); // Create a marker for each place
-                waypoints.push(L.latLng(coordinates)); // Add coordinates to the waypoints array
-            };
+            console.log("Adding markers and route to map...");
+            const waypoints = route.places.map(place => {
+                const latLng = L.latLng(place.coordinates.latitude, place.coordinates.longitude);
+                L.marker(latLng).addTo(map).bindPopup(place.name);
+                return latLng;
+            });
 
-            // Add a single routing control for all the waypoints
-            L.Routing.control({
-                waypoints: waypoints,
-                routeWhileDragging: false,
-                createMarker: function () {
-                    return null;  // Prevent adding additional markers for waypoints
-                },
-                show: false,
-                draggableWaypoints: false
-            }).addTo(map);
+            console.log("Waypoints:", waypoints);
+
+            if (waypoints.length > 1) {
+                // Create a polyline between waypoints
+                const polyline = L.polyline(waypoints, {color: 'blue', weight: 4, opacity: 0.6}).addTo(map);
+
+                // Calculate distances and times between waypoints
+                const distancesAndTimes = waypoints.slice(0, -1).map((wp, index) => {
+                    const from = waypoints[index];
+                    const to = waypoints[index + 1];
+                    const distance = from.distanceTo(to);
+                    const time = distance / 1.4; // Assuming average walking speed of 1.4 m/s
+                    return {
+                        distance: distance,
+                        time: time,
+                        from: route.places[index].name,
+                        to: route.places[index + 1].name
+                    };
+                });
+
+                sessionStorage.setItem('routeDistancesAndTimes', JSON.stringify(distancesAndTimes));
+                console.log("Route information stored in session storage");
+
+                // Fit the map to the route bounds
+                map.fitBounds(polyline.getBounds());
+            } else {
+                console.log("Not enough waypoints to create a route");
+            }
         }
 
         addRouteToMap();
 
-        // Event listener for the button to redirect to list view
         document.getElementById("toggleListView").addEventListener("click", function () {
-            window.location.href = "/list";  // Redirects to the list page
+            window.location.href = `/list?id=${ID}`;
         });
     </script>
 </body>
