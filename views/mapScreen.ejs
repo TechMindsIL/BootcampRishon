@@ -197,6 +197,8 @@
                 const toggleText = document.getElementById("toggle-description");
                 const showLess = document.getElementById("show-less");
 
+                let fullDescription = '';
+
                 const queryString = window.location.search;
                 const urlParams = new URLSearchParams(queryString);
 
@@ -272,21 +274,6 @@
                     return icons["default"]
                 }
 
-                function getCharacterLimit() {
-                    const screenWidth = window.innerWidth; 
-                    if (screenWidth < 600) {
-                        return 40;
-                    } else if (screenWidth < 800) {
-                        return 45;
-                    } else if (screenWidth < 1000) {
-                        return 55;
-                    } else if (screenWidth < 1200) {
-                        return 70;
-                    } else {
-                        return 85;
-                    }
-                }
-
                 // Fetching the route data from the API
                 const addRouteToMap = async () => {
                     const route = await fetchRoute();
@@ -301,33 +288,9 @@
                     time.innerHTML = "<strong>זמן משוער:</strong> " + route.duration + " דקות";
                     distance.innerHTML = "<strong>מרחק:</strong> " + route.distance + " קילומטרים";
 
-                    description.textContent = route.description;
+                    fullDescription = route.description;
 
-                    const charLimit = getCharacterLimit(); 
-
-                    const shortDescription = route.description.slice(0, charLimit); 
-
-                    if (route.description.length > shortDescription.length) {
-                        description.textContent = shortDescription; 
-                        showLess.style.display = "none";
-                    } else {
-                        description.textContent = route.description; 
-                        toggleText.style.display = 'none'; 
-                        showLess.style.display = "none";
-                    }
-
-                    toggleText.addEventListener("click", function () {
-                        description.textContent = route.description;
-                        showLess.style.display = "block";
-                        toggleText.style.display = "none";
-
-                    });
-
-                    showLess.addEventListener("click", function () {
-                        description.textContent = shortDescription; 
-                        showLess.style.display = "none";
-                        toggleText.style.display = "inline";
-                    })
+                    setDescription();
 
                     const waypoints = []; // Create an array to hold all the coordinates
                     const coordsFinal = [];
@@ -495,6 +458,53 @@
                         routingContainer.style.display = 'none'; // הסתר את המיכל של הוראות ההגעה
                     }
                 });
+
+                function getCharacterLimit() {
+                    const screenWidth = window.innerWidth;
+                    if (screenWidth < 600) {
+                        return 40;
+                    } else if (screenWidth < 800) {
+                        return 45;
+                    } else if (screenWidth < 1000) {
+                        return 55;
+                    } else if (screenWidth < 1200) {
+                        return 70;
+                    } else {
+                        return 85;
+                    }
+                }
+
+                function setDescription() {
+                    description.textContent = fullDescription;
+
+                    const charLimit = getCharacterLimit();
+
+                    const shortDescription = fullDescription.slice(0, charLimit);
+
+                    if (fullDescription.length > shortDescription.length) {
+                        description.textContent = shortDescription;
+                        showLess.style.display = "none";
+                    } else {
+                        description.textContent = fullDescription;
+                        toggleText.style.display = 'none';
+                        showLess.style.display = "none";
+                    }
+
+                    toggleText.addEventListener("click", function () {
+                        description.textContent = fullDescription;
+                        showLess.style.display = "block";
+                        toggleText.style.display = "none";
+
+                    });
+
+                    showLess.addEventListener("click", function () {
+                        description.textContent = shortDescription;
+                        showLess.style.display = "none";
+                        toggleText.style.display = "inline";
+                    })
+                }
+
+                window.addEventListener('resize', setDescription);
 
             </script>
     </body>
