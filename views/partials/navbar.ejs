@@ -3,7 +3,8 @@
     <a class="navbar-brand" href="/">
       <img src="/images/techminds.png" alt="Techminds" width="175" class="d-inline-block align-text-top">
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
@@ -17,8 +18,32 @@
         <li class="nav-item">
           <a class="nav-link <%= currentPage === 'register' ? 'active' : '' %>" href="/register">Register</a>
         </li>
-
+        <li class="nav-item">
+          <a class="nav-link " href="/" onclick=logout()>Logout</a>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
+
+<script>
+  async function logout() {
+    try {
+      // שליחת בקשת POST ל-API לניהול יציאה מהמערכת
+      const response = await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        credentials: 'include' // מאפשר לשלוח עוגיות עם הבקשה
+      });
+
+      if (response.ok) {
+        // אם היציאה הצליחה, נבצע ניווט לדף הבית
+        window.location.href = "/";
+      } else {
+        console.error("Logout failed", response.status);
+        alert("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout", error);
+    }
+  }
+</script>
