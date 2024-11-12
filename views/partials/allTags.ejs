@@ -46,9 +46,9 @@
                     const button = document.createElement('button');
                     button.textContent = tag.name;
                     button.classList.add('btn', 'btn-secondary', 'tag-button');
-                    button.onclick = () => {
-                        filterByTag(tag.name);
-                    };
+                    
+                    button.onclick = () => filterByTag(tag);
+                    
                     if (['מספר מתקנים'].includes(tag.category.name)) {
                         document.getElementById('Num').appendChild(button);
                     } else if (['סוג'].includes(tag.category.name)) {
