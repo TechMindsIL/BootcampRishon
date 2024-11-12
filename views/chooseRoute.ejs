@@ -67,6 +67,10 @@
                 font-weight: bold;
             }
 
+            .centered-text{
+                margin-top: 50px;
+                text-align: center;
+            }
             .invisibleText {
                 display: none;
             }
@@ -92,12 +96,9 @@
 
             /* tags section */
             #allTagsSection {
-                direction: rtl;
-                direction: ltr; 
-
                 display: none;
                 /* Initially hidden */
-                overflow-x: scroll;
+                overflow-x: auto;
                 height: 100px;
 
                 /* Set initial height to 0 */
@@ -109,7 +110,7 @@
 
             #allTagsSection.show {
                 display: block;
-                max-height: 1000px;
+                max-height: 800px;
                 /* Max height large enough to contain the content */
                 opacity: 1;
                 /* Fully visible */
@@ -124,8 +125,7 @@
             .bi-filter{
                 font-size: 3em;
                 align-self: center;
-                margin-right: 10px;
-                margin-left: 10px;
+                margin: 5px 0;
             }
             .bi-search{
                 font-size: 1.6em;
@@ -162,11 +162,10 @@
             }
             
             /* Responsiveness */
-            @media (max-width: 1350px){
+            @media (max-width: 1400px){
                 :root{
-                    --cardsInRow: 3;
+                    --cardsInRow: 3
                 }
-
             }
 
             @media (max-width: 1200px){
@@ -184,7 +183,7 @@
 
             @media (max-width: 1000px){
                 :root{
-                    --mainPadding: 13%
+                    --mainPadding: 13%;
                     --cardPadding: 0.4rem
                 }
                 .card-title{
@@ -301,7 +300,7 @@
             };
 
             
-            div.className = "col-4 p-3  ";
+            div.className = "col-4 p-3";
             div.innerHTML = `
                 <div class="card">
                     <h5 class="card-title">${training.name}</h5>
@@ -332,6 +331,19 @@
         suggestions: {
             filter: (data) => data, //.slice(0, 3),
             name: "הצעות בשבילך" 
+        },
+        tags: {
+            filter: (filterTag) => {
+                return fetchedRoutes.filter(training => {
+                    for (const tag of training.tags){
+                        if(filterTag._id === tag._id){
+                            return true
+                        }
+                    }
+                    return false
+                })
+            },
+            name: ""
         }
     };
 
@@ -399,12 +411,34 @@
         displayTitles(false)
 
         const filteredData = categories.search.filter(fetchedRoutes, searchValue)
-        makeCards(filteredData, allContainer)
+        if(filteredData.length){
+            makeCards(filteredData, allContainer)
+            return;
+        }
+
+        allContainer.innerHTML = `
+            <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
+        `
     };
 
+    const filterByTag = (filterTag) => {
+        const filteredData = categories.tags.filter(filterTag);
+
+        allContainer.innerHTML = "" 
+        allContainer.classList = "row justify-content-s flex-row-reverse"
+
+        if(filteredData.length){
+            makeCards(filteredData, allContainer)
+            return;
+        }
+
+        allContainer.innerHTML = `
+            <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
+        `
+    }
 
     // Function to fetch data from the API
-    const fetchData = async () => {
+    const fetchRoutes = async () => {
         try{
             const response = await fetch("/api/v1/routes");
 
@@ -421,7 +455,7 @@
 
     // Function to initialize the page and fetch data
     const init = async () => {
-        await fetchData(); // wait for data to be fetched
+        await fetchRoutes(); // wait for data to be fetched
 
         populateDataDefault();
     };

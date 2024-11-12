@@ -1,76 +1,68 @@
 <style>
-    #allTagsSection{
+    #allTagsSection {
         height: 450px;
+        overflow-y: auto;
     }
-    </style>
-    
-    <div class="col-6 mx-auto text-end" id="tagContainer"> 
-        <div id="typeOfTraining">
-            <h3>סוג אימון</h3>
-        </div>
-        <br>
-        <div id="Num">
-            <h3>מספר מתקנים</h3>
-        </div>
-        <br>
-        <div id="type">
-            <h3>סוג</h3>
-        </div>
-        <br>
-        <div id="area">
-            <h3>אזור</h3>
-        </div>
-        <br>
-        <div id="typeMetkan">
-            <h3>סוג מתקן</h3>
-        </div>
+    #tagContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .tag-header {
+        font-size: 1.5rem;
+        margin: 10px 0;
+    }
+    .tag-button {
+        height: 60px;
+        border-radius: 35px;
+        margin: 5px;
+        width: 100%;
+        max-width: 200px;
+    }
+</style>
+  <div class="col-12 mx-auto text-center" id="tagContainer"> 
+    <div id="typeOfTraining" class="tag-header">
+        <h3>סוג אימון</h3>
     </div>
+    <div id="Num" class="tag-header">
+        <h3>מספר מתקנים</h3>
+    </div>
+    <div id="type" class="tag-header">
+        <h3>סוג</h3>
+    </div>
+    <div id="area" class="tag-header">
+        <h3>אזור</h3>
+    </div>
+    <div id="typeMetkan" class="tag-header">
+        <h3>סוג מתקן</h3>
+    </div>
+</div>
     <script>
-        const fetchData2 = () => {
-            fetch('/api/v1/tags')
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(tag => {
-                        const button = document.createElement('button'); // Create a new button element
-                        button.textContent = tag.name; // Set the button text to the tag name
-                        button.style.height = "60px";
-                        button.classList.add('btn', 'btn-secondary', 'm-2', 'col-2'); // Optionally, add Bootstrap classes for styling
-                        button.style.borderRadius = '35px';
-                        button.onclick = () => {
-                            filterByTag(tag.name)
-                        };
-                        console.log(tag.name)
-                        // Hardcoded category assignment
-                         if (['מספר מתקנים'].includes(tag.category.name)) {
-                            document.getElementById('Num').appendChild(button);
-                        } else if ([ 'סוג'].includes(tag.category.name)) {
-                            document.getElementById('type').appendChild(button);
-                        } else if ([ 'אזור'].includes(tag.category.name)) {
-                            document.getElementById('area').appendChild(button);
-                        } else if ([`סוג מתקן`].includes(tag.category.name)) {
-                            document.getElementById('typeMetkan').appendChild(button);
-                        }
-                         else if ([`סוג מתקן`].includes(tag.category.name)) {
-                            document.getElementById('typeMetkan').appendChild(button);
-                        }
-                    });
-                    
-                })
-                .catch(error => console.error('Error fetching tags:', error));
+        const fetchTags = () => {
+        fetch('/api/v1/tags')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(tag => {
+                    const button = document.createElement('button');
+                    button.textContent = tag.name;
+                    button.classList.add('btn', 'btn-secondary', 'tag-button');
+                    button.onclick = () => {
+                        filterByTag(tag.name);
+                    };
+                    if (['מספר מתקנים'].includes(tag.category.name)) {
+                        document.getElementById('Num').appendChild(button);
+                    } else if (['סוג'].includes(tag.category.name)) {
+                        document.getElementById('type').appendChild(button);
+                    } else if (['אזור'].includes(tag.category.name)) {
+                        document.getElementById('area').appendChild(button);
+                    } else if (['סוג מתקן'].includes(tag.category.name)) {
+                        document.getElementById('typeMetkan').appendChild(button);
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching tags:', error));
         }
-        const filterByTag = (tag) => {
-            const filteredData = allData.filter(training =>
-                training.name.includes(tag) || training.description.includes(tag)
-            );
-            console.log(filteredData.length);
-            if (filteredData.length>0){
-                populateFilteredResults(filteredData);
-            }
-            else{
-                const allContainer = document.getElementById('all');
-                    allContainer.innerHTML = '<h1 class="text-end">אין מידע</h1>'
-            }
-        }
+        
         // Call fetchData2 when the script runs
-        fetchData2();
+        fetchTags();
         </script>
