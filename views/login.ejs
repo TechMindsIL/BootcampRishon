@@ -7,12 +7,11 @@
 <body>
     <%- include('./partials/navbar', { currentPage: 'login' }) %>
     <div class="cardplace" id="main">
-        <div class = "nicetomeetyou">
-            <h1>התחברות</h1>
-            <h1>ברוך\ה הבא\ה</h1>
-        </div>
         <div id="message" class="message"></div>
         <form id="loginForm" action="/api/v1/auth/login" method="POST" class="card">
+            <div class = "WelcomeText">
+                התחברות
+            </div>
             <label for="email">דוא"ל</label>
             <input type="email" class="Email" name="email" id="email" placeholder="example@example.com" required>
             <label for="password">סיסמה</label>
