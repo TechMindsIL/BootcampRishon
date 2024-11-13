@@ -93,7 +93,7 @@
         for(const [category, { id }] of Object.entries(tagCategories)){
             allTagsSection.innerHTML += `
                 <div class="tagCategory">
-                    <h3 class="categoryName">${category}</h3>
+                    <h3 class="categoryName">${category === "שכונות" ? "שכונה" : category}</h3>
                     <div class="cardContainer" id=${id}>
                     </div>
                 </div>
@@ -124,7 +124,6 @@
             `   
             container.appendChild(div)
         }    
-        console.log(tagCategories)
     }
     
     const fetchTags = async () => {
