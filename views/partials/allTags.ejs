@@ -1,68 +1,151 @@
 <style>
+    /* tags section */
     #allTagsSection {
-        height: 450px;
-        overflow-y: auto;
+        display: none;
+        /* Initially hidden */
+        height: 380px;
+        /* Set initial height to 0 */
+        opacity: 0;
+        /* Set initial opacity to 0 */
+        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        /* Smooth transition */
     }
-    #tagContainer {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    
+    #allTagsSection.show {
+        display: block;
+        max-height: 800px;
+        /* Max height large enough to contain the content */
+        opacity: 1;
+        /* Fully visible */
     }
-    .tag-header {
+    
+    .tagCategory {
         font-size: 1.5rem;
         margin: 10px 0;
-    }
-    .tag-button {
-        height: 60px;
-        border-radius: 35px;
-        margin: 5px;
         width: 100%;
-        max-width: 200px;
+        display: flex;
+        text-align: right;
+        flex-direction: column;
+        align-content: right;
+    }
+    .tagPadding{
+        padding: 0 var(--tagPadding);
+        width: calc(100% / var(--tagsInRow));
+        flex-shrink: 0;
+        height: 60px;
+        margin-bottom: 3px;
+    }
+    .tagCard {
+        cursor: pointer;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: 30px;
+        background: #6c757d;
+
+        display:flex;
+        align-content: center;
+        justify-content: center;
+    }
+    .tagText{
+        text-align: center;
+        color: white;
+        padding: 10px;
+        font-size: 1rem;
+        font-weight: 400;
+        height: fit-content;
+        margin: auto;
+    }
+    .categoryName{
+        font-size: 1.7rem
+    }
+    .tagsDivider {
+        overflow-x: visible;
+        width: 100%; 
+        margin: 30px 0; 
+        height: 3px !important;
     }
 </style>
-  <div class="col-12 mx-auto text-center" id="tagContainer"> 
-    <div id="typeOfTraining" class="tag-header">
-        <h3>סוג אימון</h3>
-    </div>
-    <div id="Num" class="tag-header">
-        <h3>מספר מתקנים</h3>
-    </div>
-    <div id="type" class="tag-header">
-        <h3>סוג</h3>
-    </div>
-    <div id="area" class="tag-header">
-        <h3>אזור</h3>
-    </div>
-    <div id="typeMetkan" class="tag-header">
-        <h3>סוג מתקן</h3>
-    </div>
+
+<div class="col-12 mx-auto text-center" id="allTagsSection"> 
+    
 </div>
-    <script>
-        const fetchTags = () => {
-        fetch('/api/v1/tags')
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(tag => {
-                    const button = document.createElement('button');
-                    button.textContent = tag.name;
-                    button.classList.add('btn', 'btn-secondary', 'tag-button');
-                    
-                    button.onclick = () => filterByTag(tag);
-                    
-                    if (['מספר מתקנים'].includes(tag.category.name)) {
-                        document.getElementById('Num').appendChild(button);
-                    } else if (['סוג'].includes(tag.category.name)) {
-                        document.getElementById('type').appendChild(button);
-                    } else if (['אזור'].includes(tag.category.name)) {
-                        document.getElementById('area').appendChild(button);
-                    } else if (['סוג מתקן'].includes(tag.category.name)) {
-                        document.getElementById('typeMetkan').appendChild(button);
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching tags:', error));
+
+
+<script>
+    const ORIGIN = window.location.origin;
+    const tagsURL = `${ORIGIN}/api/v1/tags`;
+    
+    const tagCategories = {
+        "סוג": {
+            id:"type",
+        },
+        "אזור": {
+            id:"area",
+        },
+        "שכונות":{
+            id:"hoods"
         }
-        
-        // Call fetchData2 when the script runs
-        fetchTags();
-        </script>
+    }
+    
+    const makeContainers = () => {
+        for(const [category, { id }] of Object.entries(tagCategories)){
+            allTagsSection.innerHTML += `
+                <div class="tagCategory">
+                    <h3 class="categoryName">${category}</h3>
+                    <div class="cardContainer" id=${id}>
+                    </div>
+                </div>
+            `
+        }
+        allTagsSection.innerHTML += `
+            <hr class="tagsDivider">
+        `
+    }
+    
+    const makeTagCards = (allTags) => {
+        for(const tag of allTags){ 
+            if(tag.category.for !== "Route") continue;
+            
+            const container = document.getElementById(tagCategories[tag.category.name]?.id)
+            
+            if(!container) continue;
+            
+            const div = document.createElement("div");
+            
+            div.classList.add("tagPadding");
+            div.onclick = () => filterByTag(tag);
+            
+            div.innerHTML += `
+                <div class="tagCard">
+                    <h5 class="tagText">${tag.name}</h5>
+                </div>
+            `   
+            container.appendChild(div)
+        }    
+        console.log(tagCategories)
+    }
+    
+    const fetchTags = async () => {
+        try{
+            const response = await fetch(tagsURL)
+            
+            if(!response.ok){
+                throw new Error("Response is not ok")
+            }
+            
+            const data = await response.json()
+            return data
+        } catch(error){
+            console.error('Error fetching tags:', error)
+        }
+    }
+    
+    const initTags = async () => {
+        makeContainers();
+        const allTags = await fetchTags();
+        makeTagCards(allTags);
+    }
+    initTags()
+</script>

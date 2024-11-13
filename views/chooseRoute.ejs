@@ -5,8 +5,10 @@
             /* CSS variables for responsiveness */
             :root{
                 --cardsInRow: 4;
+                --tagsInRow: 6;
                 --mainPadding: 17%;
                 --cardPadding: 0.7rem;
+                --tagPadding: 0.3rem;
             }
 
             /* layout and spacing */
@@ -15,11 +17,10 @@
                 padding: 0 var(--mainPadding);
             }
             .cardPadding{
+                aspect-ratio: 16/9;
                 padding: var(--cardPadding);
                 width: calc(100% / var(--cardsInRow));
                 flex-shrink: 0;
-                height: 160px;
-
             }
             .categoryContainer{
                 margin-top: 10px;
@@ -41,6 +42,8 @@
                 justify-content: center;
                 text-align: center;
                 align-content: center;
+
+                box-shadow: 1.5px 3px 4px rgba(0, 0, 0, 0.25);
             }
 
             .card-title{
@@ -54,7 +57,7 @@
                 display: flex;
                 flex-direction: row-reverse;
                 flex-wrap: nowrap; 
-                overflow-x: scroll; 
+                overflow-x: auto; 
                 overflow-y: hidden; 
                 width: 100%;
             }
@@ -77,44 +80,24 @@
             
             /* Scrollbar styles */
 
-            .cardContainer::-webkit-scrollbar {
+            div::-webkit-scrollbar {
                 height: 8px;
+                width: 5px;
             }
 
-            .cardContainer::-webkit-scrollbar-track {
+            div::-webkit-scrollbar-track {
                 background: transparent;
             }
 
-            .cardContainer::-webkit-scrollbar-thumb {
+            div::-webkit-scrollbar-thumb {
                 background-color: #818B99;
                 border-radius: 10px;
             }
 
-            .cardContainer::-webkit-scrollbar-thumb:hover {
+            div::-webkit-scrollbar-thumb:hover {
                 background: #555;
             }
 
-            /* tags section */
-            #allTagsSection {
-                display: none;
-                /* Initially hidden */
-                overflow-x: auto;
-                height: 100px;
-
-                /* Set initial height to 0 */
-                opacity: 0;
-                /* Set initial opacity to 0 */
-                transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-                /* Smooth transition */
-            }
-
-            #allTagsSection.show {
-                display: block;
-                max-height: 800px;
-                /* Max height large enough to contain the content */
-                opacity: 1;
-                /* Fully visible */
-            }
             
             /* Icons */
             #search-icon{
@@ -184,7 +167,8 @@
             @media (max-width: 1000px){
                 :root{
                     --mainPadding: 13%;
-                    --cardPadding: 0.4rem
+                    --cardPadding: 0.4rem;
+                    --tagsInRow: 5;
                 }
                 .card-title{
                     font-size:1.2em;
@@ -192,11 +176,15 @@
                 .searchForm{
                     width: 65%;
                 }
+                .tagCard{
+                    border-radius: 25px !important;
+                }
             }
 
             @media (max-width: 800px){
                 :root{
-                    --mainPadding: 11%
+                    --mainPadding: 11%;
+                    --tagsInRow: 4;
                 }
                 .card-title{
                     font-size:1.1em;
@@ -204,12 +192,17 @@
                 .searchForm{
                     width: 70%;
                 }
+                .tagCard{
+                    border-radius: 20px !important;
+                }
+
             }
 
             @media (max-width: 600px){
                 :root{
                     --cardsInRow: 2;
-                    --cardPadding: 0.3rem
+                    --tagPadding: 0.2rem;
+                    --tagsInRow: 3;
                 }
                 .card-title{
                     font-size:1.1em;
@@ -217,8 +210,19 @@
                 .searchForm{
                     width: 100%;
                 }
+                .tagText{
+                    font-size: 0.9rem !important;
+                }
             }
 
+            @media (max-width: 400px){
+                :root{
+                    --tagsInRow: 2.2;
+                }
+                .tagText{
+                    font-size: 0.8rem !important;
+                }
+            }
 
         </style>
 
@@ -239,9 +243,7 @@
                 </form>
 
                 <!-- AllTags partial will be hidden initially -->
-                <div id="allTagsSection" style="display: none;">
-                    <%- include('./partials/allTags', { currentPage: 'register' }) %>
-                </div>
+                <%- include('./partials/allTags', { currentPage: 'register' }) %>
 
                 <div id="all">
                 
