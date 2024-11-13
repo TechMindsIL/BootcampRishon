@@ -1,0 +1,80 @@
+<style>
+    .info-block {
+        display: flex;
+        justify-content: center;
+        width: 50%;
+        margin: 10px auto;
+        direction: rtl;
+    }
+
+    .description {
+        margin-top: 10px;
+        /* display: inline; */
+        text-align: right;
+    }
+</style>
+
+<div class="info-block">
+    <span id="distance" class="info-item"></span>
+    <p style="font-weight: bold; margin: 0 12px">|</p>
+    <span id="duration" class="info-item"></span>
+    <p style="font-weight: bold; margin: 0 12px">|</p>
+    <span id="area" class="info-item"></span>
+    <p style="font-weight: bold; margin: 0 12px">|</p>
+    <span id="type" class="info-item"></span>
+</div>
+<div class="description-container">
+    <p id="description" class="description"></p>
+</div>
+
+<script>
+    const time = document.getElementById("duration");
+    const distance = document.getElementById("distance");
+    const description = document.getElementById("description");
+    const area = document.getElementById("area");
+    const type = document.getElementById("type");
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
+    const ID = urlParams.get("id");
+
+    const ORIGIN = window.location.origin;
+
+    const SAVE_URL = `${ORIGIN}/api/v1/savedRoutes/`;
+    const URL = `${ORIGIN}/api/v1/routes/${ID}`;
+
+    const fetchRoute = async () => {
+        try {
+            const response = await fetch(URL);
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            throw new Error(err);
+            return {};
+        }
+    };
+
+    const setRouteDescription = async () => {
+        const route = await fetchRoute();
+        if (!route || !route.places || route.places.length === 0) {
+            console.error("Invalid route data");
+            return;
+        }
+
+        nameText.textContent = route.name;
+
+        time.innerHTML = "<strong>משך:</strong> " + route.duration + " דקות";
+        distance.innerHTML =
+            "<strong>מרחק:</strong> " + route.distance + " קילומטרים";
+        for (tag of route.tags) {
+            if (tag.category.name == "אזור") {
+                area.innerHTML = "<strong>אזור:</strong> " + tag.name;
+            } else if (tag.category.name == "סוג") {
+                type.innerHTML = "<strong>סוג:</strong> " + tag.name;
+            }
+        }
+        description.textContent = route.description;
+    };
+    setRouteDescription();
+</script>
