@@ -81,7 +81,7 @@
             /* Scrollbar styles */
 
             div::-webkit-scrollbar {
-                height: 8px;
+                height: 7px;
                 width: 5px;
             }
 
@@ -279,17 +279,27 @@
     const allContainer = document.getElementById("all");
     const allTagsSection = document.getElementById("allTagsSection");
     const toggleIcon = document.getElementById("toggleTags");
-
+    
     let fetchedRoutes = [];
 
     // utility
     const showAllTags = () => {
         if (allTagsSection.classList.contains("show")) {
             allTagsSection.classList.remove("show"); // Hide the allTags section
-            setTimeout(() => (allTagsSection.style.display = "none"), 300); // Wait for animation to complete before hiding
+            tagsDivider.classList.remove("show");
+
+            setTimeout(() => {
+                allTagsSection.style.display = "none";
+                tagsDivider.style.display = "none";
+            }, 300); // Wait for animation to complete before hiding
         } else {
             allTagsSection.style.display = "block"; // Show the allTags section
-            setTimeout(() => allTagsSection.classList.add("show"), 10); // Allow display to apply before starting transition
+            tagsDivider.style.display = "block"; // Show the allTags section
+
+            setTimeout(() => {
+                allTagsSection.classList.add("show");
+                tagsDivider.classList.add("show");
+            }, 10); // Allow display to apply before starting transition
         }
     }
 
