@@ -179,6 +179,9 @@
                 .tagCard{
                     border-radius: 25px !important;
                 }
+                .text-end{
+                    font-size:1.35em;
+                }
             }
 
             @media (max-width: 800px){
@@ -195,7 +198,9 @@
                 .tagCard{
                     border-radius: 20px !important;
                 }
-
+                .text-end{
+                    font-size:1.2em;
+                }
             }
 
             @media (max-width: 600px){
@@ -213,6 +218,9 @@
                 .tagText{
                     font-size: 0.9rem !important;
                 }
+                .text-end{
+                    font-size:1.1em;
+                }
             }
 
             @media (max-width: 400px){
@@ -222,8 +230,22 @@
                 .tagText{
                     font-size: 0.8rem !important;
                 }
+                .card-title{
+                    font-size:0.9em;
+                }
             }
 
+            @media (max-width: 370px){
+                :root{
+                    --tagsInRow: 2.2;
+                }
+                .tagText{
+                    font-size: 0.8rem !important;
+                }
+                .card-title{
+                    font-size:0.75em;
+                }
+            }
         </style>
 
         <body onload="init()">
