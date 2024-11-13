@@ -1,7 +1,44 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+<style>
+  .nav-item.hide {
+    display: none;
+  }
+
+  nav {
+    background: transparent !important;
+  }
+
+  .username {
+    color: white;
+    font-size: 1.2em;
+    margin-left: -15px;
+    margin-top: -4.5px;
+    font-weight: bold;
+  }
+
+  .navbar-brand {
+    display: flex;
+    align-items:center;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(to right bottom, #75A9E1, #82B9E7, #F2C37B, #F7A15D, #F9D2A0);
+    background-repeat: no-repeat;
+    z-index: -1;
+  }
+</style>
+
+<div id="background-gradient"></div>
+<nav class="navbar navbar-expand-lg navbar-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
       <img src="/images/techminds.png" alt="Techminds" width="175" class="d-inline-block align-text-top">
+      <span class="username d-inline-block align-text-top">, Username</span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -9,16 +46,19 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
+        <li class="nav-item" id="myWorkouts">
+          <a class="nav-link <%= currentPage === 'MyWorkouts' ? 'active' : '' %>" href="/MyWorkouts">My workouts</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link <%= currentPage === 'home' ? 'active' : '' %>" href="/">Home</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="login">
           <a class="nav-link <%= currentPage === 'login' ? 'active' : '' %>" href="/login">Login</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="register">
           <a class="nav-link <%= currentPage === 'register' ? 'active' : '' %>" href="/register">Register</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="logout">
           <a class="nav-link " href="/" onclick=logout()>Logout</a>
         </li>
       </ul>
@@ -27,16 +67,40 @@
 </nav>
 
 <script>
+  document.addEventListener('DOMContentLoaded', async function () {
+    const response = await fetch('/api/v1/auth/');
+    const isLoggedIn = response.ok;
+    const usernameElement = document.getElementsByClassName(`username`)[0];
+
+    if (isLoggedIn) {
+      const userData = await response.json();
+      usernameElement.innerHTML = `, ${userData.name}`;
+    }
+    else {
+      usernameElement.parentNode.removeChild(usernameElement);
+    }
+
+    const elementsToUpdate = [
+      { id: 'myWorkouts', action: !isLoggedIn ? 'add' : 'remove' },
+      { id: 'login', action: isLoggedIn ? 'add' : 'remove' },
+      { id: 'register', action: isLoggedIn ? 'add' : 'remove' },
+      { id: 'logout', action: !isLoggedIn ? 'add' : 'remove' }
+    ];
+
+    elementsToUpdate.forEach(element => {
+      const elementToUpdate = document.getElementById(element.id);
+      elementToUpdate.classList[element.action]('hide');
+    });
+  });
+
   async function logout() {
     try {
-      // שליחת בקשת POST ל-API לניהול יציאה מהמערכת
       const response = await fetch('/api/v1/auth/logout', {
         method: 'POST',
-        credentials: 'include' // מאפשר לשלוח עוגיות עם הבקשה
+        credentials: 'include'
       });
 
       if (response.ok) {
-        // אם היציאה הצליחה, נבצע ניווט לדף הבית
         window.location.href = "/";
       } else {
         console.error("Logout failed", response.status);

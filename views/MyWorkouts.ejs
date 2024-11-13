@@ -180,7 +180,8 @@ footer {
         let workouts = [];
         async function fetchSavedRoutes() {
             try {
-                const response = await fetch('/api/saved-routes'); // Adjust route if necessary
+                const PROTOCOL = window.location.protocol
+                const response = await fetch(`${PROTOCOL}/api/v1/savedRoutes`); // Adjust route if necessary
                 if (!response.ok) throw new Error('Network response was not ok');
                 return await response.json();
             } catch (error) {
