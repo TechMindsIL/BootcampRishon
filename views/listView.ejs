@@ -106,7 +106,7 @@
             color:white;
         }
         .button{
-            margin-top: 50px;
+            margin-top: 80px;
             width:200px;
             background-color: var(--btnColor);
         }
@@ -143,9 +143,10 @@
     <%- include('./partials/navbar', {currentPage: 'List View'}) %>
 
     <div class="center">
-        <h1 id="name"></h1>
-        <%- include('./partials/listinfo')%>
         <div class="container">
+            <br><br>
+            <h1 id="name"></h1>
+    
             <div class="places">
                 <h1 class="placeHeader">תחנות</h1>
                 <div id="placeList"></div>
@@ -161,6 +162,14 @@
         const nameText = document.getElementById("name")
         const placesDiv = document.getElementById("placeList")
         const back = document.getElementById("backButton")
+
+        const queryString = window.location.search;  
+        const urlParams = new URLSearchParams(queryString);
+
+        const ID = urlParams.get("id");
+
+        const PROTOCOL = window.location.protocol
+        const URL = `${PROTOCOL}/api/v1/routes/${ID}`
 
         const locationPin = () => {
             return `
@@ -210,6 +219,18 @@
                 const isLastPlace = index === data.places.length - 1;
 
                 placesDiv.innerHTML += placeDiv(place, index, isLastPlace);        
+            }
+        }
+
+        const fetchRoute = async () => {
+            try{
+                const response = await fetch(URL)
+                const data = await response.json()
+
+                return data
+            }catch(err){
+                throw new Error(err)
+                return {}
             }
         }
 
