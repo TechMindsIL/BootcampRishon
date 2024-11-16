@@ -7,203 +7,12 @@
         <link rel="stylesheet" href="/css/index.css">
         <style>
             body {
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Anton', sans-serif;
-    direction: rtl;
-    min-height: 100vh;
-    background: linear-gradient(270deg, orange, #ff8c00);
-    background-size: 200% 200%;
-    animation: gradientBG 15s ease infinite;
-    padding: 20px;
-}
-
-@keyframes gradientBG {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-/* Top section with image and title */
-.top {
-    position: relative;
-    height: 50vh;
-    overflow: hidden;
-    max-width: 1000px;
-    margin: 20px auto;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    border: 3px solid white;
-    transform: translateY(0);
-    transition: transform 0.3s ease;
-}
-
-.top:hover {
-    transform: translateY(-5px);
-}
-
-.image-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
-.image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.7);
-    transition: filter 0.3s ease;
-}
-
-.top:hover .image {
-    filter: brightness(0.8);
-}
-
-h1 {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 4.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    letter-spacing: 2px;
-    animation: titlePulse 2s infinite;
-}
-
-@keyframes titlePulse {
-    0% {
-        transform: translate(-50%, -50%) scale(1);
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(1.05);
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-    }
-}
-
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 30px;
-    animation: fadeIn 1s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Button styles - Enhanced orange hover */
-button {
-    padding: 15px 50px;
-    font-size: 1.2rem;
-    border-radius: 30px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    background-color: white;
-    color: orange;
-    border: 2px solid orange;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-button:hover {
-    background-color: orange;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(255, 165, 0, 0.4);
-}
-
-
-#guest {
-    display: block;
-    text-align: center;
-    margin-top: 30px;
-    color: white;
-    text-decoration: none;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    position: relative;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#guest:after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -5px;
-    left: 0;
-    background-color: white;
-    transition: width 0.3s ease;
-}
-
-#guest:hover:after {
-    width: 100%;
-}
-
-@media (max-width: 768px) {
-    h1 {
-        font-size: 3rem;
-    }
-
-    .button-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    button {
-        width: 80%;
-        max-width: 300px;
-    }
-
-    .top {
-        margin: 10px;
-        height: 40vh;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 2.5rem;
-    }
-
-    .top {
-        height: 35vh;
-        border-width: 2px;
-    }
-
-    body {
-        padding: 10px;
-    }
-}
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
             }
         </style>
     </head>
@@ -215,29 +24,27 @@ button:hover {
             <%- include('./partials/navbar', {currentPage: 'home'}) %>
             <!-- end of navigation -->
             
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Document</title>
-                <link rel="stylesheet" href="home.css">
-                <link rel="preconnect" href="https://fonts.googleapis.com">
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-                <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
-            </head>
-            <body>
-                <div class="top">
-                    <div class="image-container">
-                        <img src="https://i.ibb.co/hfB6SPx/young-athletic-man-working-out-listening-music-riverside-outdoors.jpg" class="image" alt="Athletic man working out by the riverside">
-                    </div>
-                    <h1>Rishonfit</h1>
-                </div>
-            
-                <div class="button-container">
-                    <button id="login" onclick="location.href='views/login'">התחברות</button>
-                    <button id="singin" onclick="location.href='views/login'">הרשמה</button>
-                </div>
+            <div style="text-align: center;">
+                <h1 >!ברוכים הבאים לראשון בוטקאמפ</h1>
+                <h5 >השתמש <span class="text-primary">בתפריט ניווט </span>כדי לעבור בין עמודים</h5>
+            </div>
                 
-                <a href="#" id="guest">כניסה ללא חשבון</a>
+          <div id="buttons">
+                <a href="/register">
+                    <button class="button small black">הרשמה</button>
+                </a>
+                
+                <a href="/login">
+                    <button class="button small orange">התחברות</button>
+                </a>
+            </div>
+            <div id="buttons">
 
-            
+            <a href="/welcome">
+                <button class="button small grey">כניסה ללא חשבון</button>      
+            </a>
+        </div>
+  
+        </div>
         </body>
     </html>
