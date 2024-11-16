@@ -1,0 +1,117 @@
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      document
+        .getElementById("btnSearch")
+        .addEventListener("click", async () => {
+          // showNotification("פתח חיפוש");
+          window.location.href = "/chooseRoute";
+        });
+      document
+        .getElementById("btnWorkoutes")
+        .addEventListener("click", async () => {
+          const response = await fetch("/api/v1/auth/");
+          const isLoggedIn = response.ok;
+          window.location.href = isLoggedIn ? "/MyWorkouts" : "/register";
+        });
+    });
+
+    function showNotification(message) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+      Toast.fire({
+        icon: "info",
+        title: message,
+      });
+    }
+  </script>
+  <style>
+    .navbarButton {
+      border-radius: 0.6rem;
+      padding: 0.6rem 1.2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
+    }
+    .navbarButton:hover {
+      background: linear-gradient(90deg, #fb923c 0%, #fdba74 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(249, 115, 22, 0.3);
+    }
+    footer {
+      background-color: transparent;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background-image: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0.877),
+        rgba(240, 120, 8, 0.3)
+      );
+      border-top: 2px solid rgba(249, 115, 22, 0.1);
+    }
+  </style>
+</head>
+
+<footer class="fixed bg-white border-t border-gray-200 inset-x-0 bottom-0">
+  <div class="max-w-2xl mx-auto px-4">
+    <div class="flex justify-evenly py-1.5">
+      <button
+        id="btnWorkoutes"
+        class="navbarButton flex flex-col items-center gap-1 text-gray-600 hover:text-orange-500 transition-colors"
+      >
+        <svg
+          class="h-6 w-30"
+          fill="none"
+          stroke="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.3"
+            d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.3"
+            d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z"
+          />
+        </svg>
+        <span class="text-xs">האימונים שלי</span>
+      </button>
+      <button
+        id="btnSearch"
+        class="navbarButton flex flex-col items-center gap-1 text-gray-600 hover:text-orange-500 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-30"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <span class="text-xs">חיפוש אימון</span>
+      </button>
+    </div>
+  </div>
+</footer>
