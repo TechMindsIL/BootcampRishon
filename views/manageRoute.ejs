@@ -69,6 +69,18 @@
             background-color: black;
             color: white;
         }
+        .form-group{
+            position:relative;
+        }
+        .lengthIdentifier{
+            position: absolute;
+            top:calc(100% - 23px);
+            height: 60px;
+            font-size: 100%;
+            text-align: left;
+            width: 99%;
+            color: #858585
+        }
     </style>
 
     <body>
@@ -84,8 +96,9 @@
                     </div>
                     <div class="form-group">
                         <label for="routeDescription">תיאור </label>
-                        <textarea class="form-control" id="routeDescription" name="description" rows="3"
+                        <textarea class="form-control" id="routeDescription" name="description" rows="3" MaxLength="200"
                             placeholder="הכנס תיאור"></textarea>
+                        <h3 class="lengthIdentifier"><span id="descriptionLength"></span>/200</h3>
                     </div>
 
                     <label for="routeDistance">מרחק </label>
@@ -120,6 +133,9 @@
 
 
             <script>
+                const descriptionText = document.getElementById("routeDescription")
+                const descriptionLength = document.getElementById("descriptionLength")
+
                 $(document).ready(async function () {
                     const formTitle = $('#form-title');
                     const routeForm = $('#routeForm');
@@ -190,6 +206,7 @@
                 function fetchNewRouteData(routeData) {
                     $('#routeName').val(routeData.name);
                     $('#routeDescription').val(routeData.description);
+                    $('#descriptionLength').val(routeData.description.length);
 
                     $('#routeDistance').val(routeData.distance);
                     $('#routeDuration').val(routeData.duration);
@@ -213,6 +230,7 @@
 
                         $('#routeName').val(route.name);
                         $('#routeDescription').val(route.description);
+                        $('#descriptionLength').val(route.description.length);
 
                         $('#routeDistance').val(route.distance);
                         $('#routeDuration').val(route.duration);
@@ -312,12 +330,17 @@
                             alert(`Error loading tags for category: ${category.name}. Please try again later.`);
                         }
                     }
+
+                    descriptionLength.textContent = descriptionText.value.length
                 }
 
                 $(document).on('click', '.tag-button', function () {
                     $(this).toggleClass('selected');
                 });
 
+                descriptionText.addEventListener('input', (text) => {
+                    descriptionLength.textContent = descriptionText.value.length
+                });
             </script>
 
     </body>

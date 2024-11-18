@@ -1,512 +1,529 @@
 <!DOCTYPE html>
 <html lang="en">
+  <%- include('./partials/head') %> <%- include('./partials/insidenavbar') %>
 
-<%- include('./partials/head') %>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Screen</title>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Map Screen</title>
+    <!-- CSS of Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <!-- CSS of Leaflet Routing Machine -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
+    />
 
-        <!-- CSS of Leaflet -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-        <!-- CSS of Leaflet Routing Machine -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+      .leaflet-touch .leaflet-control-layers,
+      .leaflet-touch .leaflet-bar,
+      .leaflet-touch .leaflet-control-layers,
+      .leaflet-touch .leaflet-bar {
+        display: none !important;
+        /* הסתר את המיכל של הוראות ההגעה */
+      }
 
-        <style>
-            .leaflet-touch .leaflet-control-layers,
-            .leaflet-touch .leaflet-bar,
-            .leaflet-touch .leaflet-control-layers,
-            .leaflet-touch .leaflet-bar {
-                display: none !important;
-                /* הסתר את המיכל של הוראות ההגעה */
+      .leaflet-routing-container {
+        display: none !important;
+        /* הסתר את המיכל של הוראות ההגעה */
+      }
+
+      .leaflet-routing-container * {
+        display: none !important;
+        /* הסתר את המיכל של הוראו�� ההגעה */
+      }
+
+      body {
+        text-align: center;
+      }
+
+      #map {
+        height: 300px;
+        width: 100%;
+        display: block;
+        margin: 0 auto;
+      }
+
+      .icons {
+        width: 100%;
+        text-align: left;
+      }
+
+      .mapicons {
+        width: 50%;
+      }
+
+      i {
+        font-size: 24px;
+        margin: 0 4px;
+        cursor: pointer;
+      }
+
+      .textInside {
+        width: 90%;
+        height: auto;
+        text-align: center;
+        font-size: 1.4em;
+        font-weight: 500;
+        margin: 0;
+        color: white;
+      }
+
+      .button:hover {
+        background-color: hsl(19, 88%, 45%);
+        color: white;
+      }
+
+      .button {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: 200px;
+        height: 60px;
+        background-color: #f16624;
+        border-radius: 20px;
+        padding: 5px 5px;
+        text-align: center;
+        border: none;
+      }
+
+      .center {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+      }
+
+      .fa-star {
+        color: #f16624;
+      }
+
+      .fa-star:hover {
+        color: hsl(19, 88%, 42%);
+      }
+
+      @media screen and (max-width: 768px) {
+        #map {
+          height: 275px;
+        }
+      }
+
+      @media screen and (max-width: 440px) {
+        #map {
+          height: 240px;
+        }
+      }
+
+      @media screen and (max-width: 360px) {
+        #map {
+          height: 220px;
+        }
+      }
+
+      .info-block {
+        display: flex;
+        justify-content: center;
+        width: 50%;
+        margin: 10px auto;
+      }
+
+      .description {
+        margin-top: 10px;
+        display: inline;
+      }
+
+      .toggle-text {
+        cursor: pointer;
+        text-decoration: underline;
+        font-weight: bold;
+        display: inline;
+        margin-right: 7px;
+      }
+
+      .description-container {
+        width: 50%;
+        margin: 10px auto;
+        margin-top: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      class="col-md-9 position-absolute start-50 translate-middle-x"
+      style="bottom: 120px"
+    >
+      <h1 id="name" class="nametxt">שם האימון</h1>
+      <div class="center">
+        <div class="info-block">
+          <span id="duration" class="info-item"></span>
+          <p style="font-weight: bold; margin: 0 12px">|</p>
+          <span id="distance" class="info-item"></span>
+        </div>
+        <div class="description-container">
+          <p id="description" class="description"></p>
+        </div>
+        <span id="toggle-description" class="toggle-text">הראה הכל...</span>
+        <span id="show-less" class="toggle-text" style="margin-bottom: 15px"
+          >הראה פחות</span
+        >
+
+        <div class="mapicons">
+          <div class="icons" style="align-self: flex-end">
+            <!-- <i class="fa fa-share-alt" id="share" aria-hidden="true"></i> -->
+            <i id="toggleSave" class="far fa-star" aria-hidden="true"></i>
+          </div>
+
+          <div id="map"></div>
+        </div>
+
+        <button id="toggleListView" class="button center">
+          <h1 class="textInside">הצגה ברשימה</h1>
+        </button>
+      </div>
+      <!-- JS of Leaflet -->
+      <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+      <!-- JS of Leaflet Routing Machine -->
+      <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+      <script>
+        const nameText = document.getElementById("name");
+
+        const time = document.getElementById("duration");
+        const distance = document.getElementById("distance");
+        const description = document.getElementById("description");
+        const toggleText = document.getElementById("toggle-description");
+        const showLess = document.getElementById("show-less");
+
+        let fullDescription = "";
+
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        const ID = urlParams.get("id");
+
+        const PROTOCOL = window.location.protocol;
+        const URL = `${PROTOCOL}/api/v1/routes/${ID}`;
+
+        const getCenter = (coords) => {
+          if (!coords.length) return null;
+
+          let totalLat = 0;
+          let totalLng = 0;
+
+          for (coord of coords) {
+            totalLat += coord[0];
+            totalLng += coord[1];
+          }
+
+          const centerLat = totalLat / coords.length;
+          const centerLng = totalLng / coords.length;
+
+          return [centerLat, centerLng];
+        };
+
+        const fetchRoute = async () => {
+          try {
+            const response = await fetch(URL);
+            const data = await response.json();
+            return data;
+          } catch (err) {
+            throw new Error(err);
+            return {};
+          }
+        };
+
+        // Initialize the map object
+        const map = L.map("map", { zoomSnap: 0.5 });
+
+        // Setting map layer from OpenStreetMap
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
+
+        const icons = {
+          "התחלת מסלול אופניים": "biking.png",
+          "מסלול אופניים": "biking.png",
+          "סיום מסלול אופניים": "biking.png",
+          "סיום מסלול הליכה.ריצה": "running.png",
+          "התחלת מסלול הליכה.ריצה": "running.png",
+          "אולם ספורט": "field.png",
+          "נקודת מפגש קבוצת הליכה": "walking.png",
+          "מגרש טניס": "tennis.png",
+          "שולחן פינג פונג": "pingpong.png",
+          "מגרש כדורגל": "football.png",
+          "מגרש כדורסל": "basketball.png",
+          "מתקני כושר": "dumbbell.png",
+          "אימון כוח": "dumbbell.png",
+          default: "locationMark.png",
+        };
+
+        const getIcon = (tags) => {
+          console.log(tags);
+          for (tag of tags) {
+            if (tag.category.name !== "סוג מתקן") {
+              continue;
             }
+            console.log(icons[tag.name]);
+            console.log(tag);
+            return icons[tag.name] ? icons[tag.name] : icons["default"];
+          }
+          console.log("DEFAULT");
+          return icons["default"];
+        };
 
-            .leaflet-routing-container {
-                display: none !important;
-                /* הסתר את המיכל של הוראות ההגעה */
+        // Fetching the route data from the API
+        const addRouteToMap = async () => {
+          const route = await fetchRoute();
+
+          if (!route || !route.places || route.places.length === 0) {
+            console.error("Invalid route data");
+            return;
+          }
+
+          nameText.textContent = route.name;
+
+          time.innerHTML =
+            "<strong>זמן משוער:</strong> " + route.duration + " דקות";
+          distance.innerHTML =
+            "<strong>מרחק:</strong> " + route.distance + " קילומטרים";
+
+          fullDescription = route.description;
+
+          setDescription();
+
+          const waypoints = []; // Create an array to hold all the coordinates
+          const coordsFinal = [];
+          const distances = []; // Create an array to store the distances between waypoints
+
+          // Loop through each place to add markers and collect waypoints
+          for (let i = 0; i < route.places.length; i++) {
+            const place = route.places[i];
+            const coordinates = [
+              place.coordinates.latitude,
+              place.coordinates.longitude,
+            ]; // [latitude, longitude]
+            L.marker(coordinates, {
+              icon: L.icon({
+                iconUrl: `/images/icons/${getIcon(place.tags)}`,
+                iconSize: [42, 42],
+              }),
+            })
+              .addTo(map)
+              .bindPopup(place.name); // Create a marker for each place
+            waypoints.push(L.latLng(coordinates)); // Add coordinates to the waypoints array
+            coordsFinal.push(coordinates);
+
+            // Calculate the distance to the next waypoint (except for the last waypoint)
+            if (i < route.places.length - 1) {
+              const nextPlace = route.places[i + 1];
+              const nextCoordinates = [
+                nextPlace.coordinates.latitude,
+                nextPlace.coordinates.longitude,
+              ];
+              const distance = L.latLng(coordinates).distanceTo(
+                L.latLng(nextCoordinates)
+              );
+              distances.push(distance);
             }
+          }
 
-            .leaflet-routing-container * {
-                display: none !important;
-                /* הסתר את המיכל של הוראות ההגעה */
+          // Store the distances in session storage
+          sessionStorage.setItem("distances", JSON.stringify(distances));
+
+          const center = getCenter(coordsFinal);
+          map.setView(center, 12);
+
+          // Add a single routing control for all the waypoints
+          L.Routing.control({
+            waypoints: waypoints,
+            routeWhileDragging: false,
+            serviceUrl: "https://routing.openstreetmap.de/routed-bike/route/v1",
+            createMarker: function () {
+              return null; // Prevent adding additional markers for waypoints
+            },
+            // show: false,
+            draggableWaypoints: false,
+            fitSelectedRoutes: true,
+            lineOptions: {
+              addWaypoints: false,
+              styles: [{ color: "#f16624", weight: 3 }],
+            },
+          }).addTo(map);
+        };
+
+        addRouteToMap();
+
+        // Event listener for the button to redirect to list view
+        document
+          .getElementById("toggleListView")
+          .addEventListener("click", () => {
+            window.location.href = `/list?id=${ID}`; // Redirects to the list page
+          });
+
+        const saveButton = document.getElementById("toggleSave");
+        const SAVE_URL = `${PROTOCOL}/api/v1/savedRoutes/`;
+        const routeSaved = (routes, routeId) => {
+          for (let i = 0; i < routes.length; i++) {
+            if (routes[i]._id === routeId) {
+              return true;
             }
-
-
-            body {
-                text-align: center;
+          }
+          return false;
+        };
+        const getRoutes = async () => {
+          try {
+            const response = await fetch(SAVE_URL);
+            const data = await response.json();
+            return data;
+          } catch (err) {
+            throw new Error(err);
+            return [];
+          }
+        };
+        const saveRoute = async (routeId) => {
+          try {
+            const response = await fetch(`${SAVE_URL}${routeId}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || "Failed to save route");
             }
-
-            #map {
-                height: 350px;
-                width: 100%;
-                margin: 0 auto;
+            const savedRoutes = await response.json();
+            console.log("Route saved successfully:", savedRoutes);
+          } catch (error) {
+            console.error("Error saving route:", error);
+          }
+        };
+        const deleteRoute = async (routeId) => {
+          try {
+            const response = await fetch(`${SAVE_URL}${routeId}`, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || "Failed to delete route");
             }
+            const updatedSavedRoutes = await response.json();
+            console.log("Route deleted successfully:", updatedSavedRoutes);
+          } catch (error) {
+            console.error("Error deleting route:", error);
+          }
+        };
 
-            .icons {
-                width: 100%;
-                text-align: left;
-            }
+        async function checkAuthStatus() {
+          try {
+            const response = await fetch("/api/v1/auth/");
 
-            .mapicons {
-                width: 50%;
-            }
+            if (response.ok) {
+              const data = await response.json();
+              console.log("User authenticated:", data);
 
-            i {
-                font-size: 24px;
-                margin: 0 4px;
-                cursor: pointer;
-            }
-
-            .textInside {
-                width: 90%;
-                height: auto;
-                text-align: center;
-                font-size: 1.4em;
-                font-weight: 500;
-                margin: 0;
-                color: white;
-            }
-
-            .button:hover {
-                background-color: hsl(19, 88%, 45%);
-                color: white;
-            }
-
-            .button {
-                margin-top: 20px;
-                margin-bottom: 20px;
-                width: 200px;
-                height: 60px;
-                background-color: #f16624;
-                border-radius: 20px;
-                padding: 5px 5px;
-                text-align: center;
-                border: none
-            }
-
-            .center {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-content: center;
-                align-items: center;
-            }
-
-            .fa-star {
-                color: #f16624;
-            }
-
-            .fa-star:hover {
-                color: hsl(19, 88%, 42%);
-            }
-
-            @media screen and (max-width: 500px) {
-                #map {
-                    height: 275px
-                }
-            }
-
-            @media screen and (max-width: 440px) {
-                #map {
-                    height: 240px
-                }
-            }
-
-            @media screen and (max-width: 360px) {
-                #map {
-                    height: 220px
-                }
-            }
-
-            .info-block {
-                display: flex;
-                justify-content: center;
-                width: 50%;
-                margin: 10px auto;
-            }
-
-            .description {
-                margin-top: 10px;
-                display: inline;
-            }
-
-            .toggle-text {
-                cursor: pointer;
-                text-decoration: underline;
-                font-weight: bold;
-                display: inline;
-                margin-right: 7px;
-            }
-
-            .description-container {
-                width: 50%;
-                margin: 10px auto;
-                margin-top: 0;
-            }
-        </style>
-    </head>
-
-    <body>
-        <%- include('./partials/navbar', {currentPage: 'List View' }) %>
-
-            <!-- header -->
-            <br>
-            <h1 id="name" class="nametxt">שם האימון </h1>
-
-            <div class="info-block">
-                <span id="duration" class="info-item"></span>
-                <p style="font-weight: bold; margin: 0 12px;"> | </p>
-                <span id="distance" class="info-item"></span>
-            </div>
-            <div class="description-container">
-                <p id="description" class="description"></p>
-            </div>
-            <span id="toggle-description" class="toggle-text">הראה הכל...</span>
-            <span id="show-less" class="toggle-text" style="margin-bottom: 15px;">הראה פחות</span>
-
-            <div class="center">
-                <div class="mapicons">
-                    <div class="icons" style="align-self: flex-end;">
-                        <!-- <i class="fa fa-share-alt" id="share" aria-hidden="true"></i> -->
-                        <i id="toggleSave" class="far fa-star" aria-hidden="true"></i>
-                    </div>
-
-                    <div id="map"></div>
-                </div>
-
-                <button id="toggleListView" class="button center">
-                    <h1 class="textInside">הצגה ברשימה</h1>
-                </button>
-            </div>
-
-            <!-- footer -->
-
-            <!-- JS of Leaflet -->
-            <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-            <!-- JS of Leaflet Routing Machine -->
-            <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-
-            <script>
-                const nameText = document.getElementById("name")
-
-                const time = document.getElementById("duration")
-                const distance = document.getElementById("distance")
-                const description = document.getElementById("description")
-                const toggleText = document.getElementById("toggle-description");
-                const showLess = document.getElementById("show-less");
-
-                let fullDescription = '';
-
-                const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString);
-
-                const ID = urlParams.get("id");
-
-                const PROTOCOL = window.location.protocol
-                const URL = `${PROTOCOL}/api/v1/routes/${ID}`
-
-                const getCenter = (coords) => {
-                    if (!coords.length) return null;
-
-                    let totalLat = 0;
-                    let totalLng = 0;
-
-                    for (coord of coords) {
-                        totalLat += coord[0];
-                        totalLng += coord[1];
-                    }
-
-                    const centerLat = totalLat / coords.length;
-                    const centerLng = totalLng / coords.length;
-
-                    return [centerLat, centerLng]
-                }
-
-                const fetchRoute = async () => {
-                    try {
-                        const response = await fetch(URL)
-                        const data = await response.json()
-                        return data
-                    } catch (err) {
-                        throw new Error(err)
-                        return {}
-                    }
-                }
-
-                // Initialize the map object
-                const map = L.map('map', { zoomSnap: 0.5 })
-
-                // Setting map layer from OpenStreetMap
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(map);
-
-                const icons = {
-                    "התחלת מסלול אופניים": "biking.png",
-                    "מסלול אופניים": "biking.png",
-                    "סיום מסלול אופניים": "biking.png",
-                    "סיום מסלול הליכה.ריצה": "running.png",
-                    "התחלת מסלול הליכה.ריצה": "running.png",
-                    "אולם ספורט": "field.png",
-                    "נקודת מפגש קבוצת הליכה": "walking.png",
-                    "מגרש טניס": "tennis.png",
-                    "שולחן פינג פונג": "pingpong.png",
-                    "מגרש כדורגל": "football.png",
-                    "מגרש כדורסל": "basketball.png",
-                    "מתקני כושר": "dumbbell.png",
-                    "אימון כוח": "dumbbell.png",
-                    "default": "locationMark.png"
-                }
-
-                const getIcon = (tags) => {
-                    console.log(tags)
-                    for (tag of tags) {
-                        if (tag.category.name !== "סוג מתקן") {
-                            continue
-                        }
-                        console.log(icons[tag.name])
-                        console.log(tag)
-                        return icons[tag.name] ? icons[tag.name] : icons["default"]
-                    }
-                    console.log("DEFAULT")
-                    return icons["default"]
-                }
-
-                // Fetching the route data from the API
-                const addRouteToMap = async () => {
-                    const route = await fetchRoute();
-
-                    if (!route || !route.places || route.places.length === 0) {
-                        console.error("Invalid route data");
-                        return;
-                    }
-
-                    nameText.textContent = route.name;
-
-                    time.innerHTML = "<strong>זמן משוער:</strong> " + route.duration + " דקות";
-                    distance.innerHTML = "<strong>מרחק:</strong> " + route.distance + " קילומטרים";
-
-                    fullDescription = route.description;
-
-                    setDescription();
-
-                    const waypoints = []; // Create an array to hold all the coordinates
-                    const coordsFinal = [];
-                    const distances = []; // Create an array to store the distances between waypoints
-
-                    // Loop through each place to add markers and collect waypoints
-                    for (let i = 0; i < route.places.length; i++) {
-                        const place = route.places[i];
-                        const coordinates = [place.coordinates.latitude, place.coordinates.longitude]; // [latitude, longitude]
-                        L.marker(coordinates, {
-                            icon: L.icon({
-                                iconUrl: `/images/icons/${getIcon(place.tags)}`,
-                                iconSize: [42, 42],
-                            })
-                        }).addTo(map).bindPopup(place.name); // Create a marker for each place
-                        waypoints.push(L.latLng(coordinates)); // Add coordinates to the waypoints array
-                        coordsFinal.push(coordinates);
-
-                        // Calculate the distance to the next waypoint (except for the last waypoint)
-                        if (i < route.places.length - 1) {
-                            const nextPlace = route.places[i + 1];
-                            const nextCoordinates = [nextPlace.coordinates.latitude, nextPlace.coordinates.longitude];
-                            const distance = L.latLng(coordinates).distanceTo(L.latLng(nextCoordinates));
-                            distances.push(distance);
-                        }
-                    }
-
-                    // Store the distances in session storage
-                    sessionStorage.setItem('distances', JSON.stringify(distances));
-
-                    const center = getCenter(coordsFinal);
-                    map.setView(center, 12);
-
-                    // Add a single routing control for all the waypoints
-                    L.Routing.control({
-                        waypoints: waypoints,
-                        routeWhileDragging: false,
-                        serviceUrl: 'https://routing.openstreetmap.de/routed-bike/route/v1',
-                        createMarker: function () {
-                            return null;  // Prevent adding additional markers for waypoints
-                        },
-                        // show: false,
-                        draggableWaypoints: false,
-                        fitSelectedRoutes: true,
-                        lineOptions: {
-                            addWaypoints: false,
-                            styles: [{ color: "#f16624", weight: 3 }]
-                        },
-                    }).addTo(map);
-                }
-
-                addRouteToMap();
-
-                // Event listener for the button to redirect to list view
-                document.getElementById("toggleListView").addEventListener("click", () => {
-                    window.location.href = `/list?id=${ID}`;  // Redirects to the list page
+              getRoutes().then((savedArr) => {
+                let saved = routeSaved(savedArr, ID);
+                saveButton.addEventListener("click", async () => {
+                  if (saved) {
+                    deleteRoute(ID);
+                    saveButton.classList.remove("fa");
+                    saveButton.classList.add("far");
+                  } else {
+                    saveRoute(ID);
+                    saveButton.classList.remove("far");
+                    saveButton.classList.add("fa");
+                  }
+                  saved = !saved;
                 });
-
-                const saveButton = document.getElementById("toggleSave");
-                const SAVE_URL = `${PROTOCOL}/api/v1/savedRoutes/`;
-                const routeSaved = (routes, routeId) => {
-                    for (let i = 0; i < routes.length; i++) {
-                        if (routes[i]._id === routeId) {
-                            return true;
-                        }
-                    }
-                    return false;
-                };
-                const getRoutes = async () => {
-                    try {
-                        const response = await fetch(SAVE_URL)
-                        const data = await response.json()
-                        return data
-                    } catch (err) {
-                        throw new Error(err)
-                        return []
-                    }
-                };
-                const saveRoute = async (routeId) => {
-                    try {
-                        const response = await fetch(`${SAVE_URL}${routeId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            }
-                        });
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            throw new Error(errorData.message || 'Failed to save route');
-                        }
-                        const savedRoutes = await response.json();
-                        console.log('Route saved successfully:', savedRoutes);
-                    } catch (error) {
-                        console.error('Error saving route:', error);
-                    }
-                };
-                const deleteRoute = async (routeId) => {
-                    try {
-                        const response = await fetch(`${SAVE_URL}${routeId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            }
-                        });
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            throw new Error(errorData.message || 'Failed to delete route');
-                        }
-                        const updatedSavedRoutes = await response.json();
-                        console.log('Route deleted successfully:', updatedSavedRoutes);
-                    } catch (error) {
-                        console.error('Error deleting route:', error);
-                    }
-                };
-
-                async function checkAuthStatus() {
-                    try {
-                        const response = await fetch('/api/v1/auth/');
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            console.log('User authenticated:', data);
-
-                            getRoutes().then((savedArr) => {
-                                let saved = routeSaved(savedArr, ID)
-                                saveButton.addEventListener('click', async () => {
-                                    if (saved) {
-                                        deleteRoute(ID)
-                                        saveButton.classList.remove('fa');
-                                        saveButton.classList.add('far');
-                                    } else {
-                                        saveRoute(ID)
-                                        saveButton.classList.remove('far');
-                                        saveButton.classList.add('fa');
-                                    }
-                                    saved = !saved
-                                });
-                                if (!saved) {
-                                    saveButton.classList.remove('fa');
-                                    saveButton.classList.add('far');
-                                }
-                                else {
-                                    saveButton.classList.remove('far');
-                                    saveButton.classList.add('fa');
-                                }
-                            })
-                        } else if (response.status === 401) {
-                            // אם הסטטוס שחזר הוא 401 Unauthorized
-                            console.log('No user is logged in.');
-                            saveButton.style.display = "none"
-                        }
-                    } catch (error) {
-                        // טיפול בשגיאה ברמת התקשורת או בעיות אחרות
-                        console.log('Error fetching auth status:', error);
-                        saveButton.style.display = "none"
-                    }
+                if (!saved) {
+                  saveButton.classList.remove("fa");
+                  saveButton.classList.add("far");
+                } else {
+                  saveButton.classList.remove("far");
+                  saveButton.classList.add("fa");
                 }
+              });
+            } else if (response.status === 401) {
+              // אם הסטטוס שחזר הוא 401 Unauthorized
+              console.log("No user is logged in.");
+              saveButton.style.display = "none";
+            }
+          } catch (error) {
+            // טיפול בשגיאה ברמת התקשורת או בע��ות אחרות
+            console.log("Error fetching auth status:", error);
+            saveButton.style.display = "none";
+          }
+        }
 
-                // קריאה לפונקציה כאשר הדף נטען או בזמן מסוים אחר
-                checkAuthStatus();
+        // קריאה לפונקציה כאשר הדף נטען או בזמן מסוים אחר
+        checkAuthStatus();
 
-                map.on('load', () => {
-                    const routingContainer = document.querySelector('.leaflet-routing-container');
-                    if (routingContainer) {
-                        routingContainer.style.display = 'none'; // הסתר את המיכל של הוראות ההגעה
-                    }
-                });
+        map.on("load", () => {
+          const routingContainer = document.querySelector(
+            ".leaflet-routing-container"
+          );
+          if (routingContainer) {
+            routingContainer.style.display = "none"; // הסתר את המיכל של הוראות ההגעה
+          }
+        });
 
-                function getCharacterLimit() {
-                    const screenWidth = window.innerWidth;
-                    if (screenWidth < 600) {
-                        return 40;
-                    } else if (screenWidth < 800) {
-                        return 45;
-                    } else if (screenWidth < 1000) {
-                        return 55;
-                    } else if (screenWidth < 1200) {
-                        return 70;
-                    } else {
-                        return 85;
-                    }
-                }
+        function getCharacterLimit() {
+          const screenWidth = window.innerWidth;
+          if (screenWidth < 600) {
+            return 40;
+          } else if (screenWidth < 800) {
+            return 45;
+          } else if (screenWidth < 1000) {
+            return 55;
+          } else if (screenWidth < 1200) {
+            return 70;
+          } else {
+            return 85;
+          }
+        }
 
-                function setDescription() {
-                    description.textContent = fullDescription;
+        function setDescription() {
+          description.textContent = fullDescription;
 
-                    const charLimit = getCharacterLimit();
+          const charLimit = getCharacterLimit();
 
-                    const shortDescription = fullDescription.slice(0, charLimit);
+          const shortDescription = fullDescription.slice(0, charLimit);
 
-                    if (fullDescription.length > shortDescription.length) {
-                        description.textContent = shortDescription;
-                        showLess.style.display = "none";
-                    } else {
-                        description.textContent = fullDescription;
-                        toggleText.style.display = 'none';
-                        showLess.style.display = "none";
-                    }
+          if (fullDescription.length > shortDescription.length) {
+            description.textContent = shortDescription;
+            showLess.style.display = "none";
+          } else {
+            description.textContent = fullDescription;
+            toggleText.style.display = "none";
+            showLess.style.display = "none";
+          }
 
-                    toggleText.addEventListener("click", function () {
-                        description.textContent = fullDescription;
-                        showLess.style.display = "block";
-                        toggleText.style.display = "none";
+          toggleText.addEventListener("click", function () {
+            description.textContent = fullDescription;
+            showLess.style.display = "block";
+            toggleText.style.display = "none";
+          });
 
-                    });
+          showLess.addEventListener("click", function () {
+            description.textContent = shortDescription;
+            showLess.style.display = "none";
+            toggleText.style.display = "inline";
+          });
+        }
 
-                    showLess.addEventListener("click", function () {
-                        description.textContent = shortDescription;
-                        showLess.style.display = "none";
-                        toggleText.style.display = "inline";
-                    })
-                }
-
-                window.addEventListener('resize', setDescription);
-
-            </script>
-    </body>
-
+        window.addEventListener("resize", setDescription);
+      </script>
+    </div>
+  </body>
 </html>
