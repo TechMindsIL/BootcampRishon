@@ -2,30 +2,97 @@
     .info-block {
         display: flex;
         justify-content: center;
-        width: 50%;
+        width: 100%;
         margin: 10px auto;
         direction: rtl;
     }
-
+    
     .description {
         margin-top: 10px;
         /* display: inline; */
         text-align: right;
     }
+    
+    .description-container {
+        width: 100%;
+        margin: 10px auto;
+        margin-top: 0;
+    }
+    
+    .center {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+    }
+    .fullWidth {
+        width:100% !important;
+        height: 100vh !important;
+    }
+
+    @media screen and (max-width: 1200px){
+        #map{
+            height: 350px
+        }
+    }
+    @media screen and (max-width: 1000px){
+        #map{
+            height: 320px
+        }
+    }
+    @media screen and (max-width: 800px) {
+        #map {
+            height: 275px
+        }
+        .center{
+            width: 60%
+        }
+    }
+    @media screen and (max-width: 600px) {
+        #map {
+            height: 275px
+        }
+        .center{
+            width: 65%
+        }
+    }
+    
+    @media screen and (max-width: 440px) {
+        #map {
+            height: 240px
+        }
+        .center{
+            width: 70%
+        }
+    }
+    
+    @media screen and (max-width: 360px) {
+        #map {
+            height: 220px
+        }
+        .center{
+            width: 75%
+        }
+    }
 </style>
 
-<div class="info-block">
-    <span id="distance" class="info-item"></span>
-    <p style="font-weight: bold; margin: 0 12px">|</p>
-    <span id="duration" class="info-item"></span>
-    <p style="font-weight: bold; margin: 0 12px">|</p>
-    <span id="area" class="info-item"></span>
-    <p style="font-weight: bold; margin: 0 12px">|</p>
-    <span id="type" class="info-item"></span>
+<div>
+    <div class="info-block">
+        <span id="distance" class="info-item"></span>
+        <p style="font-weight: bold; margin: 0 12px">|</p>
+        <span id="duration" class="info-item"></span>
+        <p style="font-weight: bold; margin: 0 12px">|</p>
+        <span id="area" class="info-item"></span>
+        <p style="font-weight: bold; margin: 0 12px">|</p>
+        <span id="type" class="info-item"></span>
+    </div>
+    <div class="description-container">
+        <p id="description" class="description"></p>
+    </div>
 </div>
-<div class="description-container">
-    <p id="description" class="description"></p>
-</div>
+
 
 <script>
     const time = document.getElementById("duration");
@@ -33,17 +100,17 @@
     const description = document.getElementById("description");
     const area = document.getElementById("area");
     const type = document.getElementById("type");
-
+    
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-
+    
     const ID = urlParams.get("id");
-
+    
     const ORIGIN = window.location.origin;
-
+    
     const SAVE_URL = `${ORIGIN}/api/v1/savedRoutes/`;
     const URL = `${ORIGIN}/api/v1/routes/${ID}`;
-
+    
     const fetchRoute = async () => {
         try {
             const response = await fetch(URL);
@@ -54,17 +121,17 @@
             return {};
         }
     };
-
+    
     const setRouteDescription = async () => {
         const route = await fetchRoute();
         if (!route || !route.places || route.places.length === 0) {
             console.error("Invalid route data");
             return;
         }
-
+        
         time.innerHTML = "<strong>משך:</strong> " + route.duration + " דקות";
         distance.innerHTML =
-            "<strong>מרחק:</strong> " + route.distance + " קילומטרים";
+        "<strong>מרחק:</strong> " + route.distance + " קילומטרים";
         for (tag of route.tags) {
             if (tag.category.name == "אזור") {
                 area.innerHTML = "<strong>אזור:</strong> " + tag.name;

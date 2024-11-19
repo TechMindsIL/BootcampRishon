@@ -3,12 +3,11 @@
   <%- include('./partials/head') %> <%- include('./partials/insidenavbar') %>
   <head>
     <style>
-      .center {
+      .listCenter {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        min-height: 80vh;
       }
       :root {
         --pinSize: 35px;
@@ -24,11 +23,9 @@
         --textFont: 1.4em;
         --offsetWidth: 100px;
       }
-      .list-container {
+      .listContainer {
         width: calc(
-          var(--placeListWidth) + var(--lineContainerWidth) + var(--offsetWidth) +
-            var(--pinSize) / 2
-        );
+          var(--placeListWidth) + var(--lineContainerWidth) + var(--offsetWidth) + var(--pinSize) / 2);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -108,67 +105,88 @@
         color: white;
       }
       .button {
-        margin-top: 80px;
+        margin-top: 50px;
         width: 200px;
         background-color: var(--btnColor);
       }
 
       @media screen and (max-width: 500px) {
         :root {
-          --placeListWidth: 250px;
+          --placeListWidth: 270px;
           --cardHeight: 55px;
           --textFont: 1.2em;
           --offsetWidth: 70px;
+          --lineContainerWidth: 80px;
+        }
+        .fullWidth{
+            height: 90vh !important;
         }
       }
       @media screen and (max-width: 440px) {
         :root {
-          --placeListWidth: 200px;
-          --cardHeight: 40px;
-          --textFont: 0.75em;
+          --placeListWidth: 250px;
+          --cardHeight: 50px;
+          --textFont: 0.9em;
           --offsetWidth: 40px;
           --cardSpacing: 30px;
+        }
+        .fullWidth{
+            height: 88vh !important;
+        }
+      }
+    @media screen and (max-width: 400px) {
+        :root {
+          --placeListWidth: 220px;
+          --cardHeight: 45px;
+          --textFont: 0.8em;
+          --offsetWidth: 30px;
+          --cardSpacing: 30px;
+        }
+        .fullWidth{
+            height: 82vh !important;
+        }
+        .distanceText{
+            font-size:95%;
         }
       }
       @media screen and (max-width: 360px) {
         :root {
-          --placeListWidth: 160px;
-          --cardHeight: 40px;
-          --textFont: 0.6em;
-          --offsetWidth: 30px;
+          --placeListWidth: 197px;
+          --cardHeight: 50px;
+          --textFont: 0.8em;
+          --offsetWidth: 10px;
           --cardSpacing: 20px;
         }
+      }
+      #name{
+        text-align:center;
       }
     </style>
   </head>
   <body>
-    <div class="center">
-      <div class="list-container">
-        <br /><br />
-        <h1 id="name"></h1>
-
-        <div class="places">
-          <h1 class="placeHeader">תחנות</h1>
-          <div id="placeList"></div>
+    <div class="fullWidth center">
+        <div class="center">
+            <h1 id="name"></h1>
+            <%- include('./partials/listinfo')%>
         </div>
-        <button id="backButton" class="card button">
-          <h1 class="textInside">חזרה למפה</h1>
-        </button>
-      </div>
+
+        <div class="listCenter">
+            <div class="listContainer">
+                <div class="places">
+                    <h1 class="placeHeader">תחנות</h1>
+                    <div id="placeList"></div>
+                </div>
+                <button id="backButton" class="card button">
+                    <h1 class="textInside">חזרה למפה</h1>
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
       const nameText = document.getElementById("name");
       const placesDiv = document.getElementById("placeList");
       const back = document.getElementById("backButton");
-
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-
-      const ID = urlParams.get("id");
-
-      const PROTOCOL = window.location.protocol;
-      const URL = `${PROTOCOL}/api/v1/routes/${ID}`;
 
       const locationPin = () => {
         return `
@@ -218,18 +236,6 @@
           const isLastPlace = index === data.places.length - 1;
 
           placesDiv.innerHTML += placeDiv(place, index, isLastPlace);
-        }
-      };
-
-      const fetchRoute = async () => {
-        try {
-          const response = await fetch(URL);
-          const data = await response.json();
-
-          return data;
-        } catch (err) {
-          throw new Error(err);
-          return {};
         }
       };
 
