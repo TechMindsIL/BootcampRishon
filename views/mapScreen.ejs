@@ -179,7 +179,8 @@
     <script>
         const nameText = document.getElementById("name");
         const mapContainer = document.getElementById("map");
-        
+        const fullscreenIcon = document.getElementsByClassName("fullscreenIcon")[0];
+
         const getCenter = (coords) => {
             if (!coords.length) return null;
             
@@ -431,8 +432,12 @@
         const expandMap = () => {
             if(mapContainer.classList.contains("fullScreen")){
                 mapContainer.classList.remove("fullScreen")
+                fullscreenIcon.classList.remove("fa-compress")
+                fullscreenIcon.classList.add("fa-expand")
             }else{
                 mapContainer.classList.add("fullScreen")
+                fullscreenIcon.classList.add("fa-compress")
+                fullscreenIcon.classList.remove("fa-expand")
             }
             map.invalidateSize();
         }
