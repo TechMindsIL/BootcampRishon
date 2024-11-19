@@ -1,170 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <title>Welcome</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      .cardplace {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 100px auto;
+        text-align: center;
+        padding: 20px;
+      }
+      .profileImg {
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        border: 4px solid #ffa500;
+      }
+      .button {
+        background-color: #ffa500;
+        color: white;
+        padding: 12px 30px;
+        font-size: 1.2em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+      }
+      .button:hover {
+        background-color: #ff8c00;
+      }
+    </style>
+  </head>
+  <body>
     <%- include('./partials/insidenavbar') %>
-    <title>Document</title>
-   <style>
-      /* Navigation Bar */
-/* Navigation Bar *//* Navigation Bar */
-/* Navigation Bar */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    background-color: #007BFF;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    padding-top: 10px;
-}
-/* Ensure the rest of the page starts below the navbar */
-body {
-    /* padding-top: 70px; This adds space below the navbar for content */
-    background-color: #F0F2F5;
-    font-family: 'Roboto', sans-serif;
-    color: #343A40;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    /* height: 100vh; */
-}
-html {
-    height: 100%; /* Ensure the root element takes full height for scrolling */
-    overflow-y: auto; /* Allow scrolling if content exceeds the screen height */
-}
-.cardplace {
-    background-color: white;
-    padding: 100px;
-    border-radius: 15px;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    margin: 0 20px;
-    margin-bottom: 100px;
-}
-h1 {
-    font-size: 2.5em;
-    color: #333;
-    margin-bottom: 40px;
-    margin-top:3px;
-}
-p1 {
-    font-size: 1.2em;
-    color: #6C757D;
-    display: block;
-    margin-bottom: 20px;
-}
-/* Profile Image Styling */
-#profile {
-    border-radius: 50%;
-    width: 200px;
-    height: 200px;
-    display: block;
-    margin: 20px auto;
-    border: 4px solid #FFA500;
-}
-/* Button Styling */
-.button {
-    background-color: #FFA500;
-    color: white;
-    padding: 12px 30px;
-    font-size: 1.2em;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: background-color 0.3s ease;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-.button:hover {
-    background-color: #FF8C00;
-}
-/* Bottom Navigation Bar */
-.cantainer {
-    /* position: fixed; */
-    bottom: 0;
-    width: 100%;
-    background-color: #007BFF;
-    padding: 15px 0;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-}
-li {
-    margin: 0 15px;
-}
-li a {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    text-align: center;
-    transition: color 0.3s ease;
-}
-li a:hover {
-    color: #F8F9FA;
-}
-.material-icons {
-    font-size: 28px;
-    margin-bottom: 5px;
-}
-/* Logo Styling */
-img {
-    width: 40px;
-    height: auto;
-}
-   </style>
-    <body data-spy="scroll" data-target=".fixed-top">
-        <!-- Navigation -->
-        <%- include('./partials/insidenavbar') %>
-        <!-- end of navigation -->
-        <div class="cardplace">
-            <h1 id="userDisplay">ברוך הבא</h1>
-            <img id="profile" src="https://i.ibb.co/qR7YGVn/200802067.png" alt="Profile">
-            <button type="button" class="button" onclick="nextPage()">בוא נצא להתאמן!</button>
-        </div>
-        <div class="cantainer">
-            <ul>
-                <li><a href="#" class="nav__link">
-                    <i class="material-icons">account_circle</i>
-                    חשבון
-                </a></li>
-                <li><a href="#" class="nav__link">
-                    <img src="https://i.postimg.cc/FK3CTCDm/Rishon-Fit-1.png" alt="Logo">
-                </a></li>
-                <li><a href="#" class="nav__link">
-                    <i class="material-icons">search</i>
-                    חפש
-                </a></li>
-            </ul>
-        </div>
-         <script>
-           function nextPage(){
-            location.href="/chooseRoute";}
-          function displayName(){
-            //this function displays hi(username) after the log in was succssessfull in the welcome page.
-            const username = localStorage.getItem('username');
-           // Check if the username exists
-            document.getElementById('userDisplay').innerText = ("ברוך הבא , "+username);}
-          function getUserName(){
-            //supposed to be in the login/sign up/register page to send the username here so the welcome page will display it.
-           const  user=document.getElementsByClassName("UserName")
-            localStorage.setItem('username', user);
-            //trigger the function once the log in is sucssessfull.
-            displayName()
-          }
-         </script>
-</body>
+    <div class="cardplace">
+      <h1 id="userDisplay">ברוך הבא</h1>
+      <img
+        class="profileImg"
+        src="https://i.ibb.co/qR7YGVn/200802067.png"
+        alt="Profile"
+      />
+      <button type="button" class="button" onclick="nextPage()">
+        בוא נצא להתאמן!
+      </button>
+    </div>
+
+    <script>
+      function nextPage() {
+        location.href = "/chooseRoute";
+      }
+      function displayName() {
+        const username = localStorage.getItem("username");
+        document.getElementById("userDisplay").innerText =
+          "ברוך הבא , " + username;
+      }
+      function getUserName() {
+        const user = document.getElementsByClassName("UserName");
+        localStorage.setItem("username", user);
+        displayName();
+      }
+    </script>
+  </body>
 </html>

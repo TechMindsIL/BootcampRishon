@@ -1,197 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<%- include('./partials/head') %>
-<head>
+  <%- include('./partials/head') %> <%- include('./partials/insidenavbar') %>
+  <head>
     <style>
-        .center{
-            display:flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
-        }
+      .center {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+      }
+      :root {
+        --pinSize: 35px;
+        --cardSpacing: 40px;
+        --cardHeight: 60px;
+
+        --lineContainerWidth: 100px;
+        --placeListWidth: 310px;
+
+        --grayColor: #6c6c6c;
+        --btnColor: #f16624;
+        --lineColor: #cccccc;
+        --textFont: 1.4em;
+        --offsetWidth: 100px;
+      }
+      .list-container {
+        width: calc(
+          var(--placeListWidth) + var(--lineContainerWidth) + var(--offsetWidth) +
+            var(--pinSize) / 2
+        );
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .place {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: var(--cardSpacing);
+        margin-top: 20px;
+      }
+      .linecontainer {
+        width: var(--lineContainerWidth);
+        position: absolute;
+        top: calc(50% + var(--pinSize) / 2);
+        left: calc(100% - var(--pinSize) / 2 - 1.5px);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize));
+      }
+      .line {
+        width: 3px;
+        background-color: var(--lineColor);
+        height: 100%;
+      }
+      .card {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        width: calc(var(--placeListWidth) - 60px);
+        height: var(--cardHeight);
+        border-radius: 20px;
+        background-color: var(--grayColor);
+        padding: 5px 5px;
+      }
+      .locationPin {
+        width: var(--pinSize);
+        height: var(--pinSize);
+        z-index: 2;
+      }
+      .textInside {
+        width: 90%;
+        height: auto;
+        text-align: center;
+        font-size: var(--textFont);
+        font-weight: 500;
+        margin: 0;
+        color: white;
+      }
+      .distanceText {
+        text-align: left;
+        direction: rtl;
+        margin-left: 20px;
+        width: 100px;
+        font-size: 100%;
+        font-weight: 400;
+      }
+      .places {
+        margin-top: 30px;
+        width: var(--placeListWidth);
+      }
+      .placeHeader {
+        direction: rtl;
+        font-size: 1.5em;
+        margin-right: calc(0px - 1 * var(--pinSize));
+        font-weight: 400;
+      }
+      .button:hover {
+        background-color: hsl(19, 88%, 45%);
+        color: white;
+      }
+      .button {
+        margin-top: 80px;
+        width: 200px;
+        background-color: var(--btnColor);
+      }
+
+      @media screen and (max-width: 500px) {
         :root {
-            --pinSize: 35px;
-            --cardSpacing: 40px;
-            --cardHeight: 60px;
-
-            --lineContainerWidth: 100px;
-            --placeListWidth: 310px;
-
-            --grayColor: #6c6c6c;
-            --btnColor: #f16624;
-            --lineColor: #cccccc;
-            --textFont: 1.4em;
-            --offsetWidth: 100px;
+          --placeListWidth: 250px;
+          --cardHeight: 55px;
+          --textFont: 1.2em;
+          --offsetWidth: 70px;
         }
-        .container{
-            width: calc(var(--placeListWidth) + var(--lineContainerWidth) + var(--offsetWidth) + var(--pinSize)/2);
-            display:flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+      }
+      @media screen and (max-width: 440px) {
+        :root {
+          --placeListWidth: 200px;
+          --cardHeight: 40px;
+          --textFont: 0.75em;
+          --offsetWidth: 40px;
+          --cardSpacing: 30px;
         }
-        .place{
-            position:relative;
-            display:flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: var(--cardSpacing);
-            margin-top: 20px;
+      }
+      @media screen and (max-width: 360px) {
+        :root {
+          --placeListWidth: 160px;
+          --cardHeight: 40px;
+          --textFont: 0.6em;
+          --offsetWidth: 30px;
+          --cardSpacing: 20px;
         }
-        .linecontainer{
-            width:var(--lineContainerWidth);
-            position:absolute;
-            top:calc(50% + var(--pinSize)/2);
-            left:calc(100% - var(--pinSize)/2 - 1.5px);
-            display:flex;
-            flex-direction: row;
-            align-items: center;
-            height: calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize));
-        }
-        .line{
-            width:3px;
-            background-color: var(--lineColor);
-            height: 100%;
-        }
-        .card{
-            text-align: center;
-            display:flex;
-            justify-content: center;
-            align-content:center;
-            align-items:center;
-            width: calc(var(--placeListWidth) - 60px);
-            height: var(--cardHeight);
-            border-radius: 20px;
-            background-color: var(--grayColor);
-            padding: 5px 5px;
-        }
-        .locationPin{
-            width: var(--pinSize);
-            height: var(--pinSize);
-            z-index: 2;
-        }
-        .textInside{
-            width:90%;
-            height:auto;
-            text-align: center;
-            font-size:var(--textFont);
-            font-weight: 500;
-            margin: 0;
-            color:white;
-        }
-        .distanceText{
-            text-align: left;
-            direction: rtl;
-            margin-left: 20px;
-            width: 100px;
-            font-size: 100%;
-            font-weight: 400;
-        }
-        .places{
-            margin-top:30px;
-            width:var(--placeListWidth)
-        }
-        .placeHeader{
-            direction: rtl;
-            font-size: 1.5em;
-            margin-right: calc(0px - 1 * var(--pinSize));
-            font-weight: 400;
-        }
-        .button:hover{
-            background-color: hsl(19, 88%, 45%);
-            color:white;
-        }
-        .button{
-            margin-top: 50px;
-            width:200px;
-            background-color: var(--btnColor);
-        }
-
-        @media screen and (max-width: 500px) {
-            :root{
-                --placeListWidth: 250px;
-                --cardHeight: 55px;
-                --textFont: 1.2em;
-                --offsetWidth: 70px;
-            }
-        }
-        @media screen and (max-width: 440px){
-            :root{
-                --placeListWidth: 200px;
-                --cardHeight: 40px;
-                --textFont: 0.75em;
-                --offsetWidth: 40px;
-                --cardSpacing: 30px;
-            }
-        }
-        @media screen and (max-width: 360px){
-            :root{
-                --placeListWidth: 160px;
-                --cardHeight: 40px;
-                --textFont: 0.6em;
-                --offsetWidth: 30px;
-                --cardSpacing: 20px;
-            }
-        }
+      }
     </style>
-</head>
-<body>
-    <%- include('./partials/navbar', {currentPage: 'List View'}) %>
-
+  </head>
+  <body>
     <div class="center">
+      <div class="list-container">
+        <br /><br />
         <h1 id="name"></h1>
-        <%- include('./partials/listinfo')%>
-        <div class="container">
-            <div class="places">
-                <h1 class="placeHeader">תחנות</h1>
-                <div id="placeList"></div>
-            </div>
-            <button id="backButton" class="card button">
-                <h1 class="textInside">חזרה למפה</h1>
-            </button>
+
+        <div class="places">
+          <h1 class="placeHeader">תחנות</h1>
+          <div id="placeList"></div>
         </div>
+        <button id="backButton" class="card button">
+          <h1 class="textInside">חזרה למפה</h1>
+        </button>
+      </div>
     </div>
-    
 
     <script>
-        const nameText = document.getElementById("name")
-        const placesDiv = document.getElementById("placeList")
-        const back = document.getElementById("backButton")
+      const nameText = document.getElementById("name");
+      const placesDiv = document.getElementById("placeList");
+      const back = document.getElementById("backButton");
 
-        const locationPin = () => {
-            return `
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+
+      const ID = urlParams.get("id");
+
+      const PROTOCOL = window.location.protocol;
+      const URL = `${PROTOCOL}/api/v1/routes/${ID}`;
+
+      const locationPin = () => {
+        return `
                 <svg class="locationPin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
                     <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
                 </svg>
-            `
-        }
+            `;
+      };
 
-        const formulateDistance = (distanceMeters) => {
-            if (distanceMeters >= 1000) {
-                const km = (distanceMeters / 1000).toFixed(1);
-                return `${km} ק"מ`;
-            } else {
-                return `${Math.round(distanceMeters)} מ'`;
-            }
+      const formulateDistance = (distanceMeters) => {
+        if (distanceMeters >= 1000) {
+          const km = (distanceMeters / 1000).toFixed(1);
+          return `${km} ק"מ`;
+        } else {
+          return `${Math.round(distanceMeters)} מ'`;
         }
+      };
 
-        const line = (index) => {
-            const distances = JSON.parse(sessionStorage.getItem('distances')) || [];
-            const distance = distances[index] || 0;
-            return `
+      const line = (index) => {
+        const distances = JSON.parse(sessionStorage.getItem("distances")) || [];
+        const distance = distances[index] || 0;
+        return `
                 <div class="linecontainer">
                     <div class="line"></div>
                     <h1 class="distanceText">${formulateDistance(distance)}</h1>
                 </div>
             `;
-        }
+      };
 
-        const placeDiv = (place, index, isLastPlace) => {
-            return `
+      const placeDiv = (place, index, isLastPlace) => {
+        return `
                 <div class="place">
                     <div class="card">
                         <h1 class="textInside">${place.name}</h1>
@@ -200,24 +208,36 @@
                     ${!isLastPlace ? line(index) : ""} 
                 </div>
             `;
+      };
+
+      const addToView = (data) => {
+        nameText.textContent = data.name;
+
+        for (let index = 0; index < data.places.length; index++) {
+          const place = data.places[index];
+          const isLastPlace = index === data.places.length - 1;
+
+          placesDiv.innerHTML += placeDiv(place, index, isLastPlace);
         }
+      };
 
-        const addToView = (data) => {
-            nameText.textContent = data.name
+      const fetchRoute = async () => {
+        try {
+          const response = await fetch(URL);
+          const data = await response.json();
 
-            for(let index = 0; index < data.places.length; index++){
-                const place = data.places[index];
-                const isLastPlace = index === data.places.length - 1;
-
-                placesDiv.innerHTML += placeDiv(place, index, isLastPlace);        
-            }
+          return data;
+        } catch (err) {
+          throw new Error(err);
+          return {};
         }
+      };
 
-        fetchRoute().then(addToView)
+      fetchRoute().then(addToView);
 
-        back.addEventListener("click", () => {
-            window.location.href = `/map?id=${ID}`
-        })
+      back.addEventListener("click", () => {
+        window.location.href = `/map?id=${ID}`;
+      });
     </script>
-</body>
+  </body>
 </html>
