@@ -17,6 +17,11 @@ const routeSchema = new mongoose.Schema({
         type: Number,
         default: ""
     },
+    level: {
+        type: String,
+        enum: ['מתחיל', 'בינוני', 'מתקדם'], 
+        required: true, 
+    },
     places: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Place',
