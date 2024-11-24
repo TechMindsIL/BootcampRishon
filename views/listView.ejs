@@ -76,8 +76,12 @@
           width: calc(var(--placeListWidth) - 60px);
           height: var(--cardHeight);
           border-radius: 20px;
-          /* background-color: var(--grayColor); */
+          background-color: var(--grayColor);
           padding: 5px 5px;
+        }
+
+        .card-p.completed {
+          background-color: var(--btnColor) !important;
         }
 
         .locationPin {
@@ -208,6 +212,51 @@
           }
 
         }
+
+        .completed {
+          background-color: var(--btnColor) !important;
+        }
+
+        .completeButton {
+          background-color: #ccc;
+          border: none;
+          border-radius: 12px;
+          padding: 10px 20px;
+          color: black;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background-color 0.3s ease, transform 0.2s ease;
+          margin-right: 15px;
+        }
+
+        .completeButton:hover {
+          background-color: #bbb;
+          transform: scale(1.05);
+        }
+
+        .completeButton.active {
+          background-color: transparent;
+          border: none;
+        }
+
+        .completionIcon {
+          display: none;
+        }
+
+        .completeButton.active .completionIcon {
+          display: inline-block;
+          color: var(--btnColor);
+          font-size: 20px;
+          margin-left: 10px;
+        }
+
+        .completeButton .completionIcon {
+          background: none;
+        }
+
+        .completeButton.active .buttonText {
+          display: none;
+        }
       </style>
     </head>
 
@@ -266,20 +315,34 @@
 
         const placeDiv = (place, index, isLastPlace) => {
           return `
-                <div class="place">
-                    <div class="card-p" style="background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), 
-          url('images/default-place-img.png');
-                      background-size: cover;
-                      background-position: center;
-                      background-repeat: no-repeat;
-                    ">
+                <div class="place"  data-index="${index}">
+                    <button class="completeButton" onclick="toggleCompleted(${index})">
+                      <span class="buttonText">סיימתי</span>
+                      <i class="fa fa-check-circle completionIcon" aria-hidden="true"></i> 
+                    </button>
+                    <div class="card-p">
                         <h1 class="textInside">${place.name}</h1>
                     </div>
                     ${locationPin()}
                     ${!isLastPlace ? line(index) : ""} 
+       
                 </div>
             `;
         };
+
+        function toggleCompleted(index) {
+          const placeDiv = document.querySelector(`.place[data-index="${index}"] .card-p`);
+          const button = document.querySelector(`.place[data-index="${index}"] .completeButton`);
+
+          if (placeDiv && button) {
+            placeDiv.classList.toggle('completed');
+            button.classList.toggle('active');
+
+            console.log(`Completed status for place ${index}: ${placeDiv.classList.contains('completed')}`);
+          } else {
+            console.error(`Could not find place div for index ${index}`);
+          }
+        }
 
         const addToView = (data) => {
           nameText.textContent = data.name;
