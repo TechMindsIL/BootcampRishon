@@ -163,10 +163,9 @@
       <div class="content">
         <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-6 space-y-6">
           <!-- Hero Section -->
-          <div class="relative rounded-2xl overflow-hidden h-72 shadow-lg">
+          <div class="relative rounded-2xl overflow-hidden h-36 shadow-lg mt-3">
             <div class="absolute inset-0 gradient-overlay"></div>
             <div class="absolute bottom-0 right-0 p-6 text-white">
-              <!-- <p class="text-sm uppercase tracking-wider mb-2">ברוך שובך</p> -->
               <h2 class="text-3xl font-bold mb-1">מוכן לאימון הבא שלך?</h2>
             </div>
           </div>
@@ -237,12 +236,6 @@
                               </div>
                           </div>
                           <div class="flex items-center gap-2">
-                              <button onclick="toggleWorkoutDetails('${workout._id
-                    }')" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                  </svg>
-                              </button>
                               <button onclick="removeWorkout('${workout._id
                     }')" class="p-2 hover:bg-red-50 rounded-lg transition-colors">
                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
@@ -257,47 +250,7 @@
               .join("");
           }
         }
-        async function toggleWorkoutDetails(workoutId) {
-          event.stopPropagation();
-          try {
-            const isAlreadySaved = await isSavedRoute(workoutId);
-            const workout = workouts.find((w) => w._id === workoutId);
-            const result = await Swal.fire({
-              title: workout.name,
-              html: `
-                        <div class="text-right">
-                            <p class="mb-2"><strong>משך:</strong> ${workout.duration
-                }</p>
-                            <p class="mb-2"><strong>מרחק:</strong> ${workout.distance
-                }</p>
-                            <p class="mb-4"><strong>סטטוס:</strong> ${isAlreadySaved ? "שמור" : "לא שמור"
-                }</p>
-                        </div>
-                    `,
-              showCancelButton: true,
-              confirmButtonColor: "#F97316",
-              cancelButtonColor: "#6B7280",
-              confirmButtonText: isAlreadySaved ? "הסר מהשמורים" : "שמור מסלול",
-              cancelButtonText: "סגור",
-              reverseButtons: true,
-            });
-            if (result.isConfirmed) {
-              if (isAlreadySaved) {
-                await removeSavedRoute(workoutId);
-              } else {
-                await addSavedRoute(workoutId);
-              }
-              await refreshWorkouts();
-            }
-          } catch (error) {
-            console.error("Error in toggleWorkoutDetails:", error);
-            Swal.fire({
-              icon: "error",
-              title: "שגיאה",
-              text: "אירעה שגיאה בעת עיבוד הבקשה",
-            });
-          }
-        }
+
         async function isSavedRoute(workoutId) {
           try {
             const savedRoutes = await fetchSavedRoutes();
