@@ -419,19 +419,31 @@
                 strength: {
                     filter: (data) => {
                         return data.filter((route) => {
-                            return route.name.includes("כח") &&
+                            return route.name.includes("כוח") &&
                                 !route.name.includes("אופניים")
                         })
                     },
-                    name: "אימוני כוח"
+                    name: "אימוני כוח",
                 },
                 bicycle: {
-                    filter: (data) => data.filter((route) => route.name.includes("אופניים")),
-                    name: "אימונים עם אופניים"
+                    filter: (data) => data.filter((route) => {
+                        return !route.name.includes("כוח") &&
+                            route.name.includes("אופניים")
+                    }),
+                    name: "אימונים עם אופניים",
                 },
                 suggestions: {
-                    filter: (data) => data, //.slice(0, 3),
-                    name: "הצעות בשבילך"
+                    // filter: (data) => data, //.slice(0, 3),
+                    filter: (data) => {
+                        // סינון נתיבים שכבר הופיעו בקטגוריות הקודמות
+                        const filteredStrength = data.filter(route => route.name.includes("כוח") && !route.name.includes("אופניים"));
+                        const filteredBicycle = data.filter(route => !route.name.includes("כוח") && route.name.includes("אופניים"));
+
+                        // הסרת נתיבים שכבר סוננו
+                        return data.filter(route =>
+                            !filteredStrength.includes(route) && !filteredBicycle.includes(route)
+                        );
+                    }, name: "הצעות בשבילך",
                 },
                 tags: {
                     filter: (filterTag) => {
@@ -454,12 +466,20 @@
 
                     div.classList.add("cardPadding");
 
+                    let bgImage = "/images/third-bg.png"; // ברירת מחדל
+
+                    if (route.name.includes("כוח") && !route.name.includes("אופניים")) {
+                        bgImage = "/images/first-bg.png";
+                    } else if (!route.name.includes("כוח") && route.name.includes("אופניים")) {
+                        bgImage = "/images/sec-bg.png";
+                    }
+
                     div.onclick = () => {
                         window.location.href = `/map/?id=${route._id}`;
                     };
 
                     div.innerHTML = `
-                <div class="card">
+                <div class="card" style="background-image: url('${bgImage}'); background-size: cover; background-position: center;">
                     <h5 class="card-title">${route.name}</h5>
                 </div>
             `;
