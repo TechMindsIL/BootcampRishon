@@ -111,11 +111,8 @@
 <div>
     <div class="info-block">
         <span id="distance" class="info-item"></span>
-        <p style="font-weight: bold; margin: 0 12px">|</p>
         <span id="duration" class="info-item"></span>
-        <p style="font-weight: bold; margin: 0 12px">|</p>
         <span id="area" class="info-item"></span>
-        <p style="font-weight: bold; margin: 0 12px">|</p>
         <span id="type" class="info-item"></span>
     </div>
     <div class="description-container">
@@ -153,23 +150,63 @@
     };
     
     const setRouteDescription = async () => {
-        const route = await fetchRoute();
-        if (!route || !route.places || route.places.length === 0) {
-            console.error("Invalid route data");
-            return;
+    const route = await fetchRoute();
+    if (!route || !route.places || route.places.length === 0) {
+        console.error("Invalid route data");
+        return;
+    }
+
+    let infoHTML = '';
+
+    if (route.duration) {
+        infoHTML += `<span><strong>משך:</strong> ${route.duration} דקות</span>`;
+    }
+
+    if (route.distance) {
+        if (infoHTML) {
+            infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
         }
-        
-        time.innerHTML = "<strong>משך:</strong> " + route.duration + " דקות";
-        distance.innerHTML =
-        "<strong>מרחק:</strong> " + route.distance + " קילומטרים";
-        for (tag of route.tags) {
-            if (tag.category.name == "אזור") {
-                area.innerHTML = "<strong>אזור:</strong> " + tag.name;
-            } else if (tag.category.name == "סוג") {
-                type.innerHTML = "<strong>סוג:</strong> " + tag.name;
+        infoHTML += `<span><strong>מרחק:</strong> ${route.distance} קילומטרים</span>`;
+    }
+
+    if (route.tags) {
+        let areaFound = false;
+        for (const tag of route.tags) {
+            if (tag.category.name === "אזור") {
+                if (infoHTML) {
+                    infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
+                }
+                infoHTML += `<span><strong>אזור:</strong> ${tag.name}</span>`;
+                areaFound = true;
+                break;
             }
         }
+    }
+
+    if (route.tags) {
+        let typeFound = false;
+        for (const tag of route.tags) {
+            if (tag.category.name === "סוג") {
+                if (infoHTML) {
+                    infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
+                }
+                infoHTML += `<span><strong>סוג:</strong> ${tag.name}</span>`;
+                typeFound = true;
+                break;
+            }
+        }
+    }
+
+    if (infoHTML) {
+        document.querySelector('.info-block').innerHTML = infoHTML;
+    }
+
+    if (route.description) {
         description.textContent = route.description;
-    };
-    setRouteDescription();
+    } else {
+        description.textContent = ''; 
+    }
+};
+
+setRouteDescription();
 </script>

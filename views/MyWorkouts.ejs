@@ -230,11 +230,9 @@
                                   <h3 class="font-medium text-gray-900">${workout.name || "שם לא זמין"
                     }</h3>
                                   <div class="flex items-center gap-3 text-sm text-gray-600">
-                                      <span>${workout.duration || "משך לא זמין"
-                    } דקות</span>
-                                      <span class="w-1 h-1 rounded-full bg-gray-300"></span>
-                                      <span>${workout.distance || "מרחק לא זמין"
-                    } ק"מ</span>
+                                    <span>${workout.duration ? `${workout.duration} דקות` : "משך לא זמין"}</span>
+                                    <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                                    <span>${workout.distance ? `${workout.distance} ק"מ` : "מרחק לא זמין"}</span>
                                   </div>
                               </div>
                           </div>
