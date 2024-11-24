@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
 <head>
     <link rel="stylesheet" type="text/css" href="/css/register.css">
 </head>
 <body>
-    <%- include('./partials/navbar', { currentPage: 'login' }) %>
+    <%- include('partials/navbar', { currentPage: 'login' }) %>
     <div class="cardplace" id="main">
         <div id="message" class="message"></div>
         <form id="loginForm" action="/api/v1/auth/login" method="POST" class="card">

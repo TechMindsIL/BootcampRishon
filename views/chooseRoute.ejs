@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('./partials/head') %> <%- include('./partials/insidenavbar') %>
+<%- include('partials/head') %> <%- include('partials/insidenavbar') %>
         <style>
             :root {
                 --cardsInRow: 4;
@@ -333,7 +333,7 @@
                 </form>
 
                 <div id="allTagsSection" style="display: none">
-                    <%- include('./partials/allTags', { currentPage: 'register' }) %>
+                    <%- include('partials/allTags', { currentPage: 'register' }) %>
                 </div>
 
                 <div id="all" class="mt-3">
