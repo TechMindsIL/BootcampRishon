@@ -1,323 +1,341 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %> <%- include('partials/insidenavbar') %>
-        <style>
-            :root {
-                --cardsInRow: 4;
-                --tagsInRow: 6;
-                --mainPadding: 17%;
-                --cardPadding: 0.7rem;
-                --tagPadding: 0.3rem;
-            }
 
-            .mainContent {
-                width: 100%;
-                padding: 0 var(--mainPadding);
-                margin-top: 90px;
-                margin-bottom: 60px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                min-height: calc(100vh - 200px);
-            }
+        <head>
+            <link rel="stylesheet" href="https://storage.googleapis.com/chipp-chat-widget-assets/build/bundle.css" />
 
-            .cardPadding {
-                aspect-ratio: 16/9;
-                padding: var(--cardPadding);
-                width: calc(100% / var(--cardsInRow));
-                flex-shrink: 0;
-            }
-
-            .categoryContainer {
-                margin-top: 10px;
-                width: 100%;
-                margin-right: auto;
-                margin-left: auto;
-            }
-
-            .card {
-                cursor: pointer;
-                border: none;
-                background: #d9d9d9;
-                border-radius: 20px;
-
-                width: 100%;
-                height: 100%;
-
-                display: flex;
-                justify-content: center;
-                text-align: center;
-                align-content: center;
-
-                box-shadow: 1.5px 3px 4px rgba(0, 0, 0, 0.25);
-            }
-
-            .card-title,
-            .card-text {
-                text-align: center;
-            }
-
-            .card-body {
-                box-shadow: 2px 4px 5px #f16624;
-                background-color: #f16624;
-            }
-
-            .card-title {
-                padding: 25px;
-                font-size: 1.5em;
-                display: inline;
-                word-wrap: normal;
-            }
-
-            .cardContainer {
-                display: flex;
-                flex-direction: row-reverse;
-                flex-wrap: wrap;
-                overflow-x: visible;
-                overflow-y: hidden;
-                width: 100%;
-                margin-bottom: -10px;
-            }
-
-            .text-end {
-                padding: 0 0.7em;
-                font-size: 1.5em;
-                margin-top: -5px;
-                margin-bottom: calc(0 - var(--cardPadding));
-                font-weight: bold;
-            }
-
-            .centered-text {
-                margin-top: 50px;
-                text-align: center;
-            }
-
-            .invisibleText {
-                display: none;
-            }
-
-            #allTagsSection {
-                direction: rtl;
-                display: none;
-            }
-
-            div::-webkit-scrollbar {
-                height: 7px;
-                width: 5px;
-            }
-
-            div::-webkit-scrollbar-track {
-                background: transparent;
-            }
-
-            div::-webkit-scrollbar-thumb {
-                background-color: #818b99;
-                border-radius: 10px;
-            }
-
-            div::-webkit-scrollbar-thumb:hover {
-                background: #555;
-            }
-
-            #search-icon {
-                padding: 15px;
-                border: none;
-                background: transparent;
-                display: flex;
-                align-items: center;
-                height: 100%;
-            }
-
-            .bi-filter {
-                font-size: 3em;
-                align-self: center;
-                margin: 5px 0;
-            }
-
-            .bi-search {
-                font-size: 1.6em;
-            }
-
-            .search {
-                background: #efefef;
-                position: relative;
-                display: flex;
-                flex-wrap: wrap;
-                align-items: stretch;
-                width: 100%;
-                border-radius: 20px;
-                border: 1px solid #c6c6c6;
-            }
-
-            .searchForm {
-                width: 50%;
-                height: 60px;
-            }
-
-            input[type="text"] {
-                text-align: left;
-                width: 70%;
-                box-sizing: border-box;
-                border: none;
-                background-color: transparent;
-                color: black;
-                margin: 0;
-                flex-grow: 1;
-                height: 100%;
-            }
-
-            input[type="text"]:focus {
-                outline: none;
-                box-shadow: none;
-                background-color: transparent;
-            }
-
-            @media (max-width: 1400px) {
+            <style>
                 :root {
-                    --cardsInRow: 3.5;
-                }
-            }
-
-            @media (max-width: 1155px) {
-                :root {
-                    --mainPadding: 15%;
-                    --cardsInRow: 3;
+                    --cardsInRow: 4;
+                    --tagsInRow: 6;
+                    --mainPadding: 17%;
+                    --cardPadding: 0.7rem;
+                    --tagPadding: 0.3rem;
                 }
 
-                .card-title {
-                    padding: 15px;
-                    font-size: 1.3em;
-                }
-
-                .searchForm {
-                    width: 60%;
-                }
-            }
-
-            @media (max-width: 1000px) {
-                :root {
-                    --mainPadding: 13%;
-                    --cardPadding: 0.4rem;
-                    --tagsInRow: 5;
-                }
-
-                .card-title {
-                    font-size: 1.2em;
-                }
-
-                .searchForm {
-                    width: 65%;
-                }
-
-                .tagCard {
-                    border-radius: 25px !important;
-                }
-
-                .text-end {
-                    font-size: 1.35em;
-                }
-            }
-
-            @media (max-width: 800px) {
-                :root {
-                    --mainPadding: 11%;
-                    --tagsInRow: 4;
-                }
-
-                .card-title {
-                    font-size: 1.1em;
-                }
-
-                .searchForm {
-                    width: 70%;
-                }
-
-                .tagCard {
-                    border-radius: 20px !important;
-                }
-
-                .text-end {
-                    font-size: 1.2em;
-                }
-            }
-
-            @media (max-width: 600px) {
-                :root {
-                    --cardsInRow: 2;
-                    --tagPadding: 0.2rem;
-                    --tagsInRow: 3;
-                }
-
-                .card-title {
-                    font-size: 1.1em;
-                }
-
-                .searchForm {
+                .mainContent {
                     width: 100%;
-                    height: 50px;
+                    padding: 0 var(--mainPadding);
+                    margin-top: 90px;
+                    margin-bottom: 60px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    min-height: calc(100vh - 200px);
                 }
 
-                .bi-filter {
-                    font-size: 2.5rem;
+                .cardPadding {
+                    aspect-ratio: 16/9;
+                    padding: var(--cardPadding);
+                    width: calc(100% / var(--cardsInRow));
+                    flex-shrink: 0;
                 }
 
-                .bi-search {
-                    font-size: 1.7rem;
+                .categoryContainer {
+                    margin-top: 10px;
+                    width: 100%;
+                    margin-right: auto;
+                    margin-left: auto;
                 }
 
-                .tagText {
-                    font-size: 0.9rem !important;
+                .card {
+                    cursor: pointer;
+                    border: none;
+                    background: #d9d9d9;
+                    border-radius: 20px;
+
+                    width: 100%;
+                    height: 100%;
+
+                    display: flex;
+                    justify-content: center;
+                    text-align: center;
+                    align-content: center;
+
+                    box-shadow: 1.5px 3px 4px rgba(0, 0, 0, 0.25);
+                }
+
+                .card-title,
+                .card-text {
+                    text-align: center;
+                }
+
+                .card-body {
+                    box-shadow: 2px 4px 5px #f16624;
+                    background-color: #f16624;
+                }
+
+                .card-title {
+                    padding: 25px;
+                    font-size: 1.5em;
+                    display: inline;
+                    word-wrap: normal;
+                }
+
+                .cardContainer {
+                    display: flex;
+                    flex-direction: row-reverse;
+                    flex-wrap: wrap;
+                    overflow-x: visible;
+                    overflow-y: hidden;
+                    width: 100%;
+                    margin-bottom: -10px;
                 }
 
                 .text-end {
-                    font-size: 1.1em;
-                }
-            }
-
-            @media (max-width: 400px) {
-                :root {
-                    --tagsInRow: 2.2;
+                    padding: 0 0.7em;
+                    font-size: 1.5em;
+                    margin-top: -5px;
+                    margin-bottom: calc(0 - var(--cardPadding));
+                    font-weight: bold;
                 }
 
-                .tagText {
-                    font-size: 0.8rem !important;
+                .centered-text {
+                    margin-top: 50px;
+                    text-align: center;
                 }
 
-                .card-title {
-                    font-size: 0.9em;
+                .invisibleText {
+                    display: none;
                 }
 
-                .searchForm {
-                    height: 45px;
+                #allTagsSection {
+                    direction: rtl;
+                    display: none;
+                }
+
+                div::-webkit-scrollbar {
+                    height: 7px;
+                    width: 5px;
+                }
+
+                div::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                div::-webkit-scrollbar-thumb {
+                    background-color: #818b99;
+                    border-radius: 10px;
+                }
+
+                div::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+
+                #search-icon {
+                    padding: 15px;
+                    border: none;
+                    background: transparent;
+                    display: flex;
+                    align-items: center;
+                    height: 100%;
                 }
 
                 .bi-filter {
-                    font-size: 2rem;
+                    font-size: 3em;
+                    align-self: center;
+                    margin: 5px 0;
                 }
 
                 .bi-search {
-                    font-size: 1.3rem;
-                }
-            }
-
-            @media (max-width: 370px) {
-                :root {
-                    --tagsInRow: 2.2;
+                    font-size: 1.6em;
                 }
 
-                .tagText {
-                    font-size: 0.8rem !important;
-                }
-
-                .card-title {
-                    font-size: 0.75em;
+                .search {
+                    background: #efefef;
+                    position: relative;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: stretch;
+                    width: 100%;
+                    border-radius: 20px;
+                    border: 1px solid #c6c6c6;
                 }
 
                 .searchForm {
-                    height: 40px;
+                    width: 50%;
+                    height: 60px;
                 }
-            }
-        </style>
+
+                input[type="text"] {
+                    text-align: left;
+                    width: 70%;
+                    box-sizing: border-box;
+                    border: none;
+                    background-color: transparent;
+                    color: black;
+                    margin: 0;
+                    flex-grow: 1;
+                    height: 100%;
+                }
+
+                input[type="text"]:focus {
+                    outline: none;
+                    box-shadow: none;
+                    background-color: transparent;
+                }
+
+                @media (max-width: 1400px) {
+                    :root {
+                        --cardsInRow: 3.5;
+                    }
+                }
+
+                @media (max-width: 1155px) {
+                    :root {
+                        --mainPadding: 15%;
+                        --cardsInRow: 3;
+                    }
+
+                    .card-title {
+                        padding: 15px;
+                        font-size: 1.3em;
+                    }
+
+                    .searchForm {
+                        width: 60%;
+                    }
+                }
+
+                @media (max-width: 1000px) {
+                    :root {
+                        --mainPadding: 13%;
+                        --cardPadding: 0.4rem;
+                        --tagsInRow: 5;
+                    }
+
+                    .card-title {
+                        font-size: 1.2em;
+                    }
+
+                    .searchForm {
+                        width: 65%;
+                    }
+
+                    .tagCard {
+                        border-radius: 25px !important;
+                    }
+
+                    .text-end {
+                        font-size: 1.35em;
+                    }
+                }
+
+                @media (max-width: 800px) {
+                    :root {
+                        --mainPadding: 11%;
+                        --tagsInRow: 4;
+                    }
+
+                    .card-title {
+                        font-size: 1.1em;
+                    }
+
+                    .searchForm {
+                        width: 70%;
+                    }
+
+                    .tagCard {
+                        border-radius: 20px !important;
+                    }
+
+                    .text-end {
+                        font-size: 1.2em;
+                    }
+                }
+
+                @media (max-width: 600px) {
+                    :root {
+                        --cardsInRow: 2;
+                        --tagPadding: 0.2rem;
+                        --tagsInRow: 3;
+                    }
+
+                    .card-title {
+                        font-size: 1.1em;
+                    }
+
+                    .searchForm {
+                        width: 100%;
+                        height: 50px;
+                    }
+
+                    .bi-filter {
+                        font-size: 2.5rem;
+                    }
+
+                    .bi-search {
+                        font-size: 1.7rem;
+                    }
+
+                    .tagText {
+                        font-size: 0.9rem !important;
+                    }
+
+                    .text-end {
+                        font-size: 1.1em;
+                    }
+                }
+
+                @media (max-width: 400px) {
+                    :root {
+                        --tagsInRow: 2.2;
+                    }
+
+                    .tagText {
+                        font-size: 0.8rem !important;
+                    }
+
+                    .card-title {
+                        font-size: 0.9em;
+                    }
+
+                    .searchForm {
+                        height: 45px;
+                    }
+
+                    .bi-filter {
+                        font-size: 2rem;
+                    }
+
+                    .bi-search {
+                        font-size: 1.3rem;
+                    }
+                }
+
+                @media (max-width: 370px) {
+                    :root {
+                        --tagsInRow: 2.2;
+                    }
+
+                    .tagText {
+                        font-size: 0.8rem !important;
+                    }
+
+                    .card-title {
+                        font-size: 0.75em;
+                    }
+
+                    .searchForm {
+                        height: 40px;
+                    }
+                }
+
+
+                #chipp-close-icon-container.svelte-1ho6q57 {
+                    width: 60px;
+                    height: 60px;
+                }
+            </style>
+
+            <!-- Chipp Chat Widget -->
+            <script>
+                window.CHIPP_APP_URL = "https://makomrishon-24353.chipp.ai";
+                window.CHIPP_APP_ID = 24353;
+            </script>
+
+        </head>
 
         <body onload="init()">
             <main class="mainContent">
@@ -340,252 +358,257 @@
 
                 </div>
             </main>
-        </body>
 
-        <script>
-            // elements & data save
-            const allContainer = document.getElementById("all");
-            const toggleIcon = document.getElementById("toggleTags");
 
-            let fetchedRoutes = [];
 
-            // utility
-            const showAllTags = () => {
-                if (allTagsSection.classList.contains("show")) {
-                    allTagsSection.classList.remove("show"); // Hide the allTags section
-                    tagsDivider.classList.remove("show");
+            <script>
+                // elements & data save
+                const allContainer = document.getElementById("all");
+                const toggleIcon = document.getElementById("toggleTags");
 
-                    setTimeout(() => {
-                        allTagsSection.style.display = "none";
-                        tagsDivider.style.display = "none";
-                    }, 300); // Wait for animation to complete before hiding
-                } else {
-                    allTagsSection.style.display = "block"; // Show the allTags section
-                    tagsDivider.style.display = "block"; // Show the allTags section
+                let fetchedRoutes = [];
 
-                    setTimeout(() => {
-                        allTagsSection.classList.add("show");
-                        tagsDivider.classList.add("show");
-                    }, 10); // Allow display to apply before starting transition
-                }
-            }
+                // utility
+                const showAllTags = () => {
+                    if (allTagsSection.classList.contains("show")) {
+                        allTagsSection.classList.remove("show"); // Hide the allTags section
+                        tagsDivider.classList.remove("show");
 
-            const displayTitles = (show) => {
-                const titles = document.getElementsByClassName("text-end")
-                for (const title of titles) {
-                    if (!show) {
-                        title.classList.add("invisibleText")
+                        setTimeout(() => {
+                            allTagsSection.style.display = "none";
+                            tagsDivider.style.display = "none";
+                        }, 300); // Wait for animation to complete before hiding
                     } else {
-                        title.classList.remove("invisibleText")
+                        allTagsSection.style.display = "block"; // Show the allTags section
+                        tagsDivider.style.display = "block"; // Show the allTags section
+
+                        setTimeout(() => {
+                            allTagsSection.classList.add("show");
+                            tagsDivider.classList.add("show");
+                        }, 10); // Allow display to apply before starting transition
                     }
                 }
-            }
 
-            // events
-            toggleIcon.addEventListener("click", showAllTags);
+                const displayTitles = (show) => {
+                    const titles = document.getElementsByClassName("text-end")
+                    for (const title of titles) {
+                        if (!show) {
+                            title.classList.add("invisibleText")
+                        } else {
+                            title.classList.remove("invisibleText")
+                        }
+                    }
+                }
 
-            const searchSumbit = (e) => {
-                e.preventDefault(); // Prevent form submission
-                populateBySearch();
-            };
+                // events
+                toggleIcon.addEventListener("click", showAllTags);
+
+                const searchSumbit = (e) => {
+                    e.preventDefault(); // Prevent form submission
+                    populateBySearch();
+                };
 
 
-            const populateFilteredResults = (filteredTrainings) => {
-                allContainer.innerHTML = ""; // Clear previous results
+                const populateFilteredResults = (filteredTrainings) => {
+                    allContainer.innerHTML = ""; // Clear previous results
 
-                filteredTrainings.forEach((training, index) => {
-                    const div = document.createElement("div");
-                    div.style.cursor = "pointer";
-                    div.onclick = () => {
-                        window.location.href = `/map/?id=${training._id}`;
-                    };
+                    filteredTrainings.forEach((training, index) => {
+                        const div = document.createElement("div");
+                        div.style.cursor = "pointer";
+                        div.onclick = () => {
+                            window.location.href = `/map/?id=${training._id}`;
+                        };
 
 
-                    div.className = "col-4 p-3";
-                    div.innerHTML = `
+                        div.className = "col-4 p-3";
+                        div.innerHTML = `
                 <div class="card">
                     <h5 class="card-title">${training.name}</h5>
                 </div>
             `;
-                    allContainer.appendChild(div);
-                });
-            };
+                        allContainer.appendChild(div);
+                    });
+                };
 
-            const categories = {
-                search: {
-                    filter: (data, searchValue) => data.filter((route) => route.name.toLowerCase().includes(searchValue)).sort((a, b) => a.length < b.length),
-                    name: ""
-                },
-                strength: {
-                    filter: (data) => {
-                        return data.filter((route) => {
-                            return route.name.includes("כוח") &&
-                                !route.name.includes("אופניים")
-                        })
+                const categories = {
+                    search: {
+                        filter: (data, searchValue) => data.filter((route) => route.name.toLowerCase().includes(searchValue)).sort((a, b) => a.length < b.length),
+                        name: ""
                     },
-                    name: "אימוני כוח",
-                },
-                bicycle: {
-                    filter: (data) => data.filter((route) => {
-                        return !route.name.includes("כוח") &&
-                            route.name.includes("אופניים")
-                    }),
-                    name: "אימונים עם אופניים",
-                },
-                suggestions: {
-                    // filter: (data) => data, //.slice(0, 3),
-                    filter: (data) => {
-                        // סינון נתיבים שכבר הופיעו בקטגוריות הקודמות
-                        const filteredStrength = data.filter(route => route.name.includes("כוח") && !route.name.includes("אופניים"));
-                        const filteredBicycle = data.filter(route => !route.name.includes("כוח") && route.name.includes("אופניים"));
+                    strength: {
+                        filter: (data) => {
+                            return data.filter((route) => {
+                                return route.name.includes("כוח") &&
+                                    !route.name.includes("אופניים")
+                            })
+                        },
+                        name: "אימוני כוח",
+                    },
+                    bicycle: {
+                        filter: (data) => data.filter((route) => {
+                            return !route.name.includes("כוח") &&
+                                route.name.includes("אופניים")
+                        }),
+                        name: "אימונים עם אופניים",
+                    },
+                    suggestions: {
+                        // filter: (data) => data, //.slice(0, 3),
+                        filter: (data) => {
+                            // סינון נתיבים שכבר הופיעו בקטגוריות הקודמות
+                            const filteredStrength = data.filter(route => route.name.includes("כוח") && !route.name.includes("אופניים"));
+                            const filteredBicycle = data.filter(route => !route.name.includes("כוח") && route.name.includes("אופניים"));
 
-                        // הסרת נתיבים שכבר סוננו
-                        return data.filter(route =>
-                            !filteredStrength.includes(route) && !filteredBicycle.includes(route)
-                        );
-                    }, name: "הצעות בשבילך",
-                },
-                tags: {
-                    filter: (filterTag) => {
-                        return fetchedRoutes.filter(training => {
-                            for (const tag of training.tags) {
-                                if (filterTag._id === tag._id) {
-                                    return true
+                            // הסרת נתיבים שכבר סוננו
+                            return data.filter(route =>
+                                !filteredStrength.includes(route) && !filteredBicycle.includes(route)
+                            );
+                        }, name: "הצעות בשבילך",
+                    },
+                    tags: {
+                        filter: (filterTag) => {
+                            return fetchedRoutes.filter(training => {
+                                for (const tag of training.tags) {
+                                    if (filterTag._id === tag._id) {
+                                        return true
+                                    }
                                 }
-                            }
-                            return false
-                        })
-                    },
-                    name: ""
-                }
-            };
-
-            const makeCards = (routes, container) => {
-                for (const route of routes) {
-                    const div = document.createElement("div");
-
-                    div.classList.add("cardPadding");
-
-                    let bgImage = "/images/third-bg.png"; // ברירת מחדל
-
-                    if (route.name.includes("כוח") && !route.name.includes("אופניים")) {
-                        bgImage = "/images/first-bg.png";
-                    } else if (!route.name.includes("כוח") && route.name.includes("אופניים")) {
-                        bgImage = "/images/sec-bg.png";
+                                return false
+                            })
+                        },
+                        name: ""
                     }
+                };
 
-                    div.onclick = () => {
-                        window.location.href = `/map/?id=${route._id}`;
-                    };
+                const makeCards = (routes, container) => {
+                    for (const route of routes) {
+                        const div = document.createElement("div");
 
-                    div.innerHTML = `
+                        div.classList.add("cardPadding");
+
+                        let bgImage = "/images/third-bg.png"; // ברירת מחדל
+
+                        if (route.name.includes("כוח") && !route.name.includes("אופניים")) {
+                            bgImage = "/images/first-bg.png";
+                        } else if (!route.name.includes("כוח") && route.name.includes("אופניים")) {
+                            bgImage = "/images/sec-bg.png";
+                        }
+
+                        div.onclick = () => {
+                            window.location.href = `/map/?id=${route._id}`;
+                        };
+
+                        div.innerHTML = `
                 <div class="card" style="background-image: url('${bgImage}'); background-size: cover; background-position: center;">
                     <h5 class="card-title">${route.name}</h5>
                 </div>
             `;
-                    container.appendChild(div); // Add the newly created div to the DOM
-                }
-            }
-
-            const makeDiv = (category) => {
-                const container = document.createElement("div");
-                container.className = "categoryContainer"
-
-                const h2 = document.createElement("h2");
-                h2.className = "text-end";
-                h2.textContent = categories[category].name;
-
-                const cardContainer = document.createElement("div");
-                cardContainer.id = category;
-                cardContainer.className = "cardContainer";
-
-                container.appendChild(h2);
-                container.appendChild(cardContainer);
-
-                allContainer.appendChild(container);
-                return cardContainer
-            }
-
-            // Populate Suggestions section
-            const populateDataDefault = () => {
-                allContainer.classList = ""
-                allContainer.innerHTML = ""
-
-                for (const category of Object.keys(categories)) {
-                    const filteredData = categories[category].filter(fetchedRoutes)
-
-                    const container = makeDiv(category)
-                    makeCards(filteredData, container)
-                }
-            };
-
-            // Get search input value and filter the data
-            const populateBySearch = () => {
-                const searchValue = document.querySelector("#inputId").value.toLowerCase();
-                if (searchValue === "") {
-                    populateDataDefault()
-                    return;
+                        container.appendChild(div); // Add the newly created div to the DOM
+                    }
                 }
 
-                allContainer.innerHTML = ""
-                allContainer.classList = "row justify-content-s flex-row-reverse"
-                displayTitles(false)
+                const makeDiv = (category) => {
+                    const container = document.createElement("div");
+                    container.className = "categoryContainer"
 
-                const filteredData = categories.search.filter(fetchedRoutes, searchValue)
-                if (filteredData.length) {
-                    makeCards(filteredData, allContainer)
-                    return;
+                    const h2 = document.createElement("h2");
+                    h2.className = "text-end";
+                    h2.textContent = categories[category].name;
+
+                    const cardContainer = document.createElement("div");
+                    cardContainer.id = category;
+                    cardContainer.className = "cardContainer";
+
+                    container.appendChild(h2);
+                    container.appendChild(cardContainer);
+
+                    allContainer.appendChild(container);
+                    return cardContainer
                 }
 
-                allContainer.innerHTML = `
-            <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
-        `
-            };
+                // Populate Suggestions section
+                const populateDataDefault = () => {
+                    allContainer.classList = ""
+                    allContainer.innerHTML = ""
 
-            const filterByTag = (filterTag) => {
-                const filteredData = categories.tags.filter(filterTag);
+                    for (const category of Object.keys(categories)) {
+                        const filteredData = categories[category].filter(fetchedRoutes)
 
-                allContainer.innerHTML = ""
-                allContainer.classList = "row justify-content-s flex-row-reverse"
+                        const container = makeDiv(category)
+                        makeCards(filteredData, container)
+                    }
+                };
 
-                if (filteredData.length) {
-                    makeCards(filteredData, allContainer)
-                    return;
-                }
-
-                allContainer.innerHTML = `
-            <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
-        `
-            }
-
-            // Function to fetch data from the API
-            const fetchRoutes = async () => {
-                try {
-                    const response = await fetch("/api/v1/routes");
-
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
+                // Get search input value and filter the data
+                const populateBySearch = () => {
+                    const searchValue = document.querySelector("#inputId").value.toLowerCase();
+                    if (searchValue === "") {
+                        populateDataDefault()
+                        return;
                     }
 
-                    fetchedRoutes = await response.json();
+                    allContainer.innerHTML = ""
+                    allContainer.classList = "row justify-content-s flex-row-reverse"
+                    displayTitles(false)
 
-                    fetchedRoutes = fetchedRoutes.filter(route => route.isRelevant === true);
+                    const filteredData = categories.search.filter(fetchedRoutes, searchValue)
+                    if (filteredData.length) {
+                        makeCards(filteredData, allContainer)
+                        return;
+                    }
 
-                    return fetchedRoutes;
-                } catch (err) {
-                    console.error("Couldn't fetch routes data:", error);
+                    allContainer.innerHTML = `
+            <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
+        `
+                };
+
+                const filterByTag = (filterTag) => {
+                    const filteredData = categories.tags.filter(filterTag);
+
+                    allContainer.innerHTML = ""
+                    allContainer.classList = "row justify-content-s flex-row-reverse"
+
+                    if (filteredData.length) {
+                        makeCards(filteredData, allContainer)
+                        return;
+                    }
+
+                    allContainer.innerHTML = `
+            <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
+        `
                 }
-            };
 
-            // Function to initialize the page and fetch data
-            const init = async () => {
-                await fetchRoutes(); // wait for data to be fetched
+                // Function to fetch data from the API
+                const fetchRoutes = async () => {
+                    try {
+                        const response = await fetch("/api/v1/routes");
 
-                populateDataDefault();
-            };
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
 
-            // Call init function when the page loads
-            window.onload = init;
-        </script>
+                        fetchedRoutes = await response.json();
+
+                        fetchedRoutes = fetchedRoutes.filter(route => route.isRelevant === true);
+
+                        return fetchedRoutes;
+                    } catch (err) {
+                        console.error("Couldn't fetch routes data:", error);
+                    }
+                };
+
+                // Function to initialize the page and fetch data
+                const init = async () => {
+                    await fetchRoutes(); // wait for data to be fetched
+
+                    populateDataDefault();
+                };
+
+                // Call init function when the page loads
+                window.onload = init;
+            </script>
+
+            <!-- Chipp Chat Widget -->
+            <script defer src="https://storage.googleapis.com/chipp-chat-widget-assets/build/bundle.js"></script>
+        </body>
 
 </html>
