@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <%- include('./partials/head') %>
+    <%- include('partials/head') %>
         <link rel="stylesheet" href="/css/register.css">
         <!-- <link rel="ejs" href="/views/login.ejs"> -->
         <style>
@@ -19,20 +19,21 @@
 </head>
 
 <body>
-    <%- include('./partials/navbar', {currentPage: 'register' }) %>
+    <%- include('partials/navbar', {currentPage: 'register' }) %>
 
         <div class="cardplace">
             <form class="card">
                 <h1 class="nicetomeetyou">!נעים להכיר</h1>
-                <label>שם</label><br>
+                <label>שם</label>
                 <input type="text" class="UserName" required><br>
-                <label>דוא"ל</label><br>
+                <label>דוא"ל</label>
                 <input type="email" class="Email" required><br>
-                <label>סיסמה</label><br>
+                <label>סיסמה</label>
                 <input type="password" class="password" required><br>
 
-                <p>כבר נרשמת?<a href="/login"> התחברות</a></p>
                 <button onclick="SendData()" type="submit" class="SubmitButton" required>הרשמה</button>
+                
+                <p style="margin-top: 15px;">כבר נרשמת?<a href="/login"> התחברות</a></p>
             </form>
         </div>
         <script>

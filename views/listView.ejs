@@ -1,249 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
-  <%- include('./partials/head') %> <%- include('./partials/insidenavbar') %>
-  <head>
-    <style>
-      .listCenter {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-      :root {
-        --pinSize: 35px;
-        --cardSpacing: 40px;
-        --cardHeight: 60px;
+<%- include('partials/head') %> <%- include('partials/insidenavbar') %>
 
-        --lineContainerWidth: 100px;
-        --placeListWidth: 310px;
-
-        --grayColor: #6c6c6c;
-        --btnColor: #f16624;
-        --lineColor: #cccccc;
-        --textFont: 1.4em;
-        --offsetWidth: 100px;
-      }
-      .listContainer {
-        width: calc(
-          var(--placeListWidth) + var(--lineContainerWidth) + var(--offsetWidth) + var(--pinSize) / 2);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      .place {
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        margin-bottom: var(--cardSpacing);
-        margin-top: 20px;
-      }
-      .linecontainer {
-        width: var(--lineContainerWidth);
-        position: absolute;
-        top: calc(50% + var(--pinSize) / 2);
-        left: calc(100% - var(--pinSize) / 2 - 1.5px);
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        height: calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize));
-      }
-      .line {
-        width: 3px;
-        background-color: var(--lineColor);
-        height: 100%;
-      }
-      .card {
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-        width: calc(var(--placeListWidth) - 60px);
-        height: var(--cardHeight);
-        border-radius: 20px;
-        background-color: var(--grayColor);
-        padding: 5px 5px;
-      }
-      .locationPin {
-        width: var(--pinSize);
-        height: var(--pinSize);
-        z-index: 2;
-      }
-      .textInside {
-        width: 90%;
-        height: auto;
-        text-align: center;
-        font-size: var(--textFont);
-        font-weight: 500;
-        margin: 0;
-        color: white;
-      }
-      .distanceText {
-        text-align: left;
-        direction: rtl;
-        margin-left: 20px;
-        width: 100px;
-        font-size: 100%;
-        font-weight: 400;
-      }
-      .places {
-        margin-top: 30px;
-        width: var(--placeListWidth);
-      }
-      .placeHeader {
-        direction: rtl;
-        font-size: 1.5em;
-        margin-right: calc(0px - 1 * var(--pinSize));
-        font-weight: 400;
-      }
-      .button:hover {
-        background-color: hsl(19, 88%, 45%);
-        color: white;
-      }
-      .button {
-        margin-top: 50px;
-        width: 200px;
-        background-color: var(--btnColor);
-      }
-
-      @media screen and (max-width: 500px) {
-        :root {
-          --placeListWidth: 270px;
-          --cardHeight: 55px;
-          --textFont: 1.2em;
-          --offsetWidth: 70px;
-          --lineContainerWidth: 80px;
+    <head>
+      <style>
+        body {
+          /* margin-top: 350px; */
+          margin-bottom: 300px;
         }
-        .fullWidth{
+
+        .listCenter {
+          display: flex;
+          /* flex-direction: column; */
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+        }
+
+        :root {
+          --pinSize: 35px;
+          --cardSpacing: 40px;
+          --cardHeight: 60px;
+
+          --lineContainerWidth: 100px;
+          --placeListWidth: 310px;
+
+          --grayColor: #6c6c6c;
+          --btnColor: #f16624;
+          --lineColor: #cccccc;
+          --textFont: 1.4em;
+          --offsetWidth: 100px;
+        }
+
+        .listContainer {
+          width: calc(var(--placeListWidth) + var(--lineContainerWidth) + var(--offsetWidth) + var(--pinSize) / 2);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .place {
+          position: relative;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          margin-bottom: var(--cardSpacing);
+          margin-top: 20px;
+        }
+
+        .place.expanded {
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+
+        .linecontainer {
+          width: var(--lineContainerWidth);
+          position: absolute;
+          top: calc(50% + var(--pinSize) / 2);
+          left: calc(100% - var(--pinSize) / 2 - 1.5px);
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          height: calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize));
+        }
+
+        .line {
+          width: 3px;
+          background-color: var(--lineColor);
+          height: 100%;
+        }
+
+        .card-p {
+          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-content: center;
+          align-items: center;
+          width: calc(var(--placeListWidth) - 60px);
+          height: auto;
+          min-height: var(--cardHeight);
+          border-radius: 20px;
+          background-color: var(--grayColor);
+          padding: 5px 5px;
+        }
+
+        .card-p.completed {
+          background-color: var(--btnColor) !important;
+        }
+
+        .locationPin {
+          width: var(--pinSize);
+          height: var(--pinSize);
+          z-index: 2;
+        }
+
+        .textInside {
+          width: 90%;
+          height: auto;
+          text-align: center;
+          font-size: var(--textFont);
+          font-weight: 500;
+          margin: 0;
+          color: black;
+        }
+
+        .distanceText {
+          text-align: left;
+          direction: rtl;
+          margin-left: 20px;
+          width: 100px;
+          font-size: 100%;
+          font-weight: 400;
+        }
+
+        .places {
+          margin-top: 30px;
+          width: var(--placeListWidth);
+        }
+
+        .placeHeader {
+          direction: rtl;
+          font-size: 1.5em;
+          margin-right: calc(0px - 1 * var(--pinSize));
+          font-weight: 400;
+        }
+
+        .button:hover {
+          background-color: hsl(19, 88%, 45%);
+          color: white;
+        }
+
+        .button {
+          margin-top: 50px;
+          width: 200px;
+          background-color: var(--btnColor);
+        }
+
+        @media screen and (max-width: 500px) {
+          :root {
+            --placeListWidth: 270px;
+            --cardHeight: 55px;
+            --textFont: 1.2em;
+            --offsetWidth: 70px;
+            --lineContainerWidth: 80px;
+          }
+
+          .fullWidth {
             height: 90vh !important;
+          }
+
+          body {
+            /* margin-top: 350px; */
+            margin-bottom: 350px;
+          }
         }
-      }
-      @media screen and (max-width: 440px) {
-        :root {
-          --placeListWidth: 250px;
-          --cardHeight: 50px;
-          --textFont: 0.9em;
-          --offsetWidth: 40px;
-          --cardSpacing: 30px;
-        }
-        .fullWidth{
+
+        @media screen and (max-width: 440px) {
+          :root {
+            --placeListWidth: 250px;
+            --cardHeight: 50px;
+            --textFont: 0.9em;
+            --offsetWidth: 40px;
+            --cardSpacing: 30px;
+          }
+
+          .fullWidth {
             height: 88vh !important;
+          }
+
+          body {
+            /* margin-top: 300px; */
+            margin-bottom: 300px;
+          }
         }
-      }
-    @media screen and (max-width: 400px) {
-        :root {
-          --placeListWidth: 220px;
-          --cardHeight: 45px;
-          --textFont: 0.8em;
-          --offsetWidth: 30px;
-          --cardSpacing: 30px;
-        }
-        .fullWidth{
+
+        @media screen and (max-width: 400px) {
+          :root {
+            --placeListWidth: 220px;
+            --cardHeight: 45px;
+            --textFont: 0.8em;
+            --offsetWidth: 30px;
+            --cardSpacing: 30px;
+          }
+
+          .fullWidth {
             height: 82vh !important;
+          }
+
+          .distanceText {
+            font-size: 95%;
+          }
+
+          body {
+            margin-bottom: 20px;
+          }
         }
-        .distanceText{
-            font-size:95%;
+
+        @media screen and (max-width: 360px) {
+          :root {
+            --placeListWidth: 197px;
+            --cardHeight: 50px;
+            --textFont: 0.8em;
+            --offsetWidth: 10px;
+            --cardSpacing: 20px;
+          }
         }
-      }
-      @media screen and (max-width: 360px) {
-        :root {
-          --placeListWidth: 197px;
-          --cardHeight: 50px;
-          --textFont: 0.8em;
-          --offsetWidth: 10px;
-          --cardSpacing: 20px;
+
+        #name {
+          text-align: center;
         }
-      }
-      #name{
-        text-align:center;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="fullWidth center">
+
+        @media (max-width:700px) {
+          body {
+            margin-bottom: 350px;
+          }
+
+        }
+
+        .completed {
+          background-color: var(--btnColor) !important;
+        }
+
+        .completeButton {
+          background-color: #ccc;
+          border: none;
+          border-radius: 12px;
+          padding: 10px 20px;
+          color: black;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background-color 0.3s ease, transform 0.2s ease;
+          margin-right: 15px;
+        }
+
+        .completeButton:hover {
+          background-color: #bbb;
+          transform: scale(1.05);
+        }
+
+        .completeButton.active {
+          background-color: transparent;
+          border: none;
+        }
+
+        .completionIcon {
+          display: none;
+        }
+
+        .completeButton.active .completionIcon {
+          display: inline-block;
+          color: var(--btnColor);
+          font-size: 20px;
+          margin-left: 10px;
+        }
+
+        .completeButton .completionIcon {
+          background: none;
+        }
+
+        .completeButton.active .buttonText {
+          display: none;
+        }
+
+        .details {
+          /* margin-top: 10px; */
+          margin-bottom: 0px;
+          margin-top: 0px;
+          padding: 10px;
+          border-top: 1px solid #ccc;
+          border-radius: 20px;
+          background-color: var(--lineColor);
+          text-align: center;
+          position: relative;
+          z-index: 10;
+        }
+
+        .place-image {
+          width: 100%;
+          max-width: 300px;
+          height: auto;
+          margin-top: 10px;
+        }
+
+        .place-video {
+          width: 100%;
+          max-width: 300px;
+          height: auto;
+          margin-top: 10px;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="fullWidth center"  style="margin-top: 300px;">
         <div class="center">
-            <h1 id="name"></h1>
-            <%- include('./partials/listinfo')%>
+          <h1 id="name"></h1>
+          <%- include('partials/listInfo')%>
         </div>
 
         <div class="listCenter">
-            <div class="listContainer">
-                <div class="places">
-                    <h1 class="placeHeader">תחנות</h1>
-                    <div id="placeList"></div>
-                </div>
-                <button id="backButton" class="card button">
-                    <h1 class="textInside">חזרה למפה</h1>
-                </button>
+          <div class="listContainer">
+            <div class="places">
+              <h1 class="placeHeader">תחנות</h1>
+              <div id="placeList"></div>
             </div>
+            <button id="backButton" class="card-p button">
+              <h1 class="textInside">חזרה למפה</h1>
+            </button>
+          </div>
         </div>
-    </div>
+      </div>
+      <script>
+        const nameText = document.getElementById("name");
+        const placesDiv = document.getElementById("placeList");
+        const back = document.getElementById("backButton");
 
-    <script>
-      const nameText = document.getElementById("name");
-      const placesDiv = document.getElementById("placeList");
-      const back = document.getElementById("backButton");
-
-      const locationPin = () => {
-        return `
+        const locationPin = () => {
+          return `
                 <svg class="locationPin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
                     <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
                 </svg>
             `;
-      };
+        };
 
-      const formulateDistance = (distanceMeters) => {
-        if (distanceMeters >= 1000) {
-          const km = (distanceMeters / 1000).toFixed(1);
-          return `${km} ק"מ`;
-        } else {
-          return `${Math.round(distanceMeters)} מ'`;
-        }
-      };
+        const formulateDistance = (distanceMeters) => {
+          if (distanceMeters >= 1000) {
+            const km = (distanceMeters / 1000).toFixed(1);
+            return `${km} ק"מ`;
+          } else {
+            return `${Math.round(distanceMeters)} מ'`;
+          }
+        };
 
-      const line = (index) => {
-        const distances = JSON.parse(sessionStorage.getItem("distances")) || [];
-        const distance = distances[index] || 0;
-        return `
+        const line = (index) => {
+          const distances = JSON.parse(sessionStorage.getItem("distances")) || [];
+          const distance = distances[index] || 0;
+          return `
                 <div class="linecontainer">
                     <div class="line"></div>
                     <h1 class="distanceText">${formulateDistance(distance)}</h1>
                 </div>
             `;
-      };
+        };
 
-      const placeDiv = (place, index, isLastPlace) => {
-        return `
-                <div class="place">
-                    <div class="card">
+        const placeDiv = (place, index, isLastPlace) => {
+          return `
+                <div class="place" data-index="${index}">
+                    <button class="completeButton" onclick="toggleCompleted(${index})">
+                      <span class="buttonText">סיימתי</span>
+                      <i class="fa fa-check-circle completionIcon" aria-hidden="true"></i> 
+                    </button>
+                    <div class="card-p" onclick="toggleDetails(${index})">
                         <h1 class="textInside">${place.name}</h1>
                     </div>
                     ${locationPin()}
                     ${!isLastPlace ? line(index) : ""} 
                 </div>
+
+                <div class="details" id="details-${index}" style="display: none;">
+                      ${place.description ? `<p><strong>תיאור:</strong> ${place.description}</p>` : ""}
+                      ${place.img ? `<img src="${place.img}" alt="${place.name}" class="place-image">` : ""}
+                      ${place.youtube ? `<iframe src="${place.youtube}" class="place-video" frameborder="0" allowfullscreen></iframe>` : ""}
+                    </div>
             `;
-      };
+        };
 
-      const addToView = (data) => {
-        nameText.textContent = data.name;
+        function toggleCompleted(index) {
+          const placeDiv = document.querySelector(`.place[data-index="${index}"] .card-p`);
+          const button = document.querySelector(`.place[data-index="${index}"] .completeButton`);
 
-        for (let index = 0; index < data.places.length; index++) {
-          const place = data.places[index];
-          const isLastPlace = index === data.places.length - 1;
+          if (placeDiv && button) {
+            placeDiv.classList.toggle('completed');
+            button.classList.toggle('active');
 
-          placesDiv.innerHTML += placeDiv(place, index, isLastPlace);
+            console.log(`Completed status for place ${index}: ${placeDiv.classList.contains('completed')}`);
+          } else {
+            console.error(`Could not find place div for index ${index}`);
+          }
         }
-      };
 
-      fetchRoute().then(addToView);
+        function toggleDetails(index) {
+          const detailsDiv = document.getElementById(`details-${index}`);
+          const placeDiv = document.querySelector(`.place[data-index="${index}"]`);  // שליפת ה-DIV לפי index ישירות
 
-      back.addEventListener("click", () => {
-        window.location.href = `/map?id=${ID}`;
-      });
-    </script>
-  </body>
+          const lineContainer = placeDiv.querySelector('.linecontainer');
+
+          if (detailsDiv.style.display === "none" || !detailsDiv.style.display) {
+            detailsDiv.style.display = "block";
+            placeDiv.classList.add('expanded'); // הוספת class שיקבע את ה-margin החדש
+            const detailsHeight = detailsDiv.offsetHeight; // גובה האלמנט details
+            lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
+          } else {
+            detailsDiv.style.display = "none";
+            placeDiv.classList.remove('expanded'); // הסרת ה-class
+            lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize))`;
+          }
+        }
+
+
+        const addToView = (data) => {
+          nameText.textContent = data.name;
+
+          for (let index = 0; index < data.places.length; index++) {
+            const place = data.places[index];
+            const isLastPlace = index === data.places.length - 1;
+
+            placesDiv.innerHTML += placeDiv(place, index, isLastPlace);
+          }
+        };
+
+        fetchRoute().then(addToView);
+
+        back.addEventListener("click", () => {
+          window.location.href = `/map?id=${ID}`;
+        });
+      </script>
+    </body>
+
 </html>

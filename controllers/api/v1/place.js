@@ -65,7 +65,6 @@ exports.createPlace = asyncHandler(async (req, res) => {
         req.body.img = fullPath;
     }
 
-
     // because FormData accepts only strings and files, we need to convert the coordinates to an array
     // if the coordinates are a string
     // We also need to check if the coordinates are a string and if they include a comma
@@ -93,6 +92,8 @@ exports.createPlace = asyncHandler(async (req, res) => {
     // to the tags property of the body
     if (req.body.tags && req.body.tags.length > 0) {
         req.body.tags = req.body.tags.split(',');
+    }else {
+        req.body.tags = []; // Set an empty array if no valid tags exist
     }
 
     // Create a new Place instance
@@ -155,6 +156,8 @@ exports.updatePlace = asyncHandler(async (req, res) => {
     // to the tags property of the body
     if (req.body.tags && req.body.tags.length > 0) {
         req.body.tags = req.body.tags.split(',');
+    }else {
+        req.body.tags = []; // Set an empty array if no valid tags exist
     }
 
     // Update the Place by ID with the new data from the request body

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
 
     <style>
         .container {
@@ -69,12 +69,14 @@
             background-color: black;
             color: white;
         }
-        .form-group{
-            position:relative;
+
+        .form-group {
+            position: relative;
         }
-        .lengthIdentifier{
+
+        .lengthIdentifier {
             position: absolute;
-            top:calc(100% - 23px);
+            top: calc(100% - 23px);
             height: 60px;
             font-size: 100%;
             text-align: left;
@@ -84,7 +86,7 @@
     </style>
 
     <body>
-        <%- include('./partials/navbar', {currentPage: 'Manage Route' }) %>
+        <%- include('partials/navbar', {currentPage: 'Manage Route' }) %>
 
             <div class="container mt-5" style="max-width: 70%; margin: auto;">
                 <h1 id="form-title" class="text-center">הוסף / ערוך אימון</h1>
@@ -113,6 +115,17 @@
                         <span class="input-group-text">דקות</span>
                         <input type="number" id="routeDuration" class="form-control" placeholder="הזן זמן" min="0"
                             aria-label="הזן זמן" style="direction: rtl;">
+                    </div>
+
+                    <label for="routeDifficulty">רמת קושי</label>
+                    <div class="mb-3 input-group" style="direction: ltr;">
+                        <select id="routeDifficulty" class="form-select" aria-label="בחר רמת קושי"
+                            style="direction: rtl;">
+                            <option value="" disabled selected>בחר רמת קושי</option>
+                            <option value="מתחיל">מתחיל</option>
+                            <option value="בינוני">בינוני</option>
+                            <option value="מתקדם">מתקדם</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -179,6 +192,7 @@
                                 description: $('#routeDescription').val(),
                                 distance: $('#routeDistance').val(),
                                 duration: $('#routeDuration').val(),
+                                level: $('#routeDifficulty').val(),
                                 tags: getSelectedTags()
                             };
                             sessionStorage.setItem('newRouteData', JSON.stringify(newRoute));
@@ -210,6 +224,7 @@
 
                     $('#routeDistance').val(routeData.distance);
                     $('#routeDuration').val(routeData.duration);
+                    $('#routeDifficulty').val(routeData.level);
 
                     if (routeData.tags) {
                         routeData.tags.forEach(tagId => {
@@ -234,6 +249,8 @@
 
                         $('#routeDistance').val(route.distance);
                         $('#routeDuration').val(route.duration);
+                        $('#routeDifficulty').val(route.level);
+
 
                         if (route.places)
                             places = route.places;
@@ -266,6 +283,7 @@
                         description: $('#routeDescription').val(),
                         distance: $('#routeDistance').val(),
                         duration: $('#routeDuration').val(),
+                        level: $('#routeDifficulty').val(),
                         places: places || [],
                         tags: getSelectedTags(),
                         isRelevant: true
@@ -282,6 +300,7 @@
                         description: $('#routeDescription').val(),
                         distance: $('#routeDistance').val(),
                         duration: $('#routeDuration').val(),
+                        level: $('#routeDifficulty').val(),
                         places: [],
                         tags: getSelectedTags(),
                         isRelevant: true
