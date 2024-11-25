@@ -1,0 +1,334 @@
+
+<style>
+        .activeFilters, .filterCategoryContainer {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 10px;
+        }
+        .filterCategory{
+            width:100%
+        }
+        .filterCategoryCard {
+            cursor: pointer;
+            position:relative;
+            margin-left:0;
+            background: rgb(225, 225, 225);
+            height: 60px;
+            width: 100%;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            border: 1.5px solid #555;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
+
+            display: flex;
+            align-content: center;
+            align-items: center;
+            justify-content: center;
+        }
+        .unselectable {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .caret{
+            position: absolute;
+            left:10px;
+            height: 50px;
+        }
+
+        .filterTitle{
+            display: inline;
+            height: fit-content;
+            margin: 0;
+            line-height: 1;
+            font-size: 1.5rem;
+        }
+        #caret-up {
+            transform: rotate(180deg);
+        }
+
+        .advContent, .nonAdvContent {
+            overflow: hidden scroll;
+            height: 0;
+            transition: height 0.2s ease;
+            background: w;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
+            /* padding: 10px; */
+
+            display: grid;
+            direction: rtl;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Responsive grid */
+            grid-auto-rows: 60px;
+            gap: 10px;
+            box-sizing: border-box; 
+        }
+
+        .advContent.open, .nonAdvContent.open {
+            height: 300px;
+            padding: 10px;
+        }
+        .nonAdvContent:not(.open){
+            transition: height 0.2s ease, padding 0.15s ease 0.13s;
+        }
+
+        .tagCard {
+            cursor: pointer;
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            background: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .tagCard:hover {
+            transform: scale(1.05); /* Slight zoom on hover */
+        }
+        .tagText {
+            direction: rtl;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+            padding: 0px 17px;
+
+            margin: auto;
+            align-content: center;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .activeFilters{
+            justify-content: right;
+            margin-bottom: 10px;
+        }
+        .activeFilterCard{
+            display: flex;
+            flex-direction: row;
+            
+            align-content: center;
+
+            background: rgb(225, 225, 225);
+            border-radius: 10px;
+            width: 140px;
+            height: 43px;
+            margin: 0 5px 5px 0;
+            box-shadow: 0 0px 6px rgba(0, 0, 0, 0.2); 
+            transition: background-color 0.2s ease;
+        }
+        .activeFilterCard:hover {
+            background: rgb(205, 205, 205);
+        }
+        .bi-x{
+            cursor: pointer;
+            height: 100%;
+            width: 40%;
+            fill: rgb(255, 0, 0);
+        }
+
+        .bi-x:hover {
+            transform: scale(1.1); 
+        }
+        .currentFilterText{
+            padding-left: 5px;
+            color: #333333;
+        }
+        
+</style>
+<div class="filterCategoryContainer">  
+</div>
+<div class="activeFilters">  
+    <div class="activeFilterCard">
+        <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+        </svg>
+        <h5 class="tagText unselectable currentFilterText">אברמוביץ'</h5>
+    </div>
+    <div class="activeFilterCard">
+        <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+        </svg>
+        <h5 class="tagText unselectable currentFilterText">קריית חתני פרס נובל </h5>
+    </div>
+</div>
+<script>
+    const ORIGIN = window.location.origin;
+    const tagsURL = `${ORIGIN}/api/v1/tags`;
+    
+    // const tagsDivider = document.getElementById("tagsDivider");
+    const filterCategoryContainer = document.getElementsByClassName("filterCategoryContainer")[0];
+    const activeFiltersContainer = document.getElementsByClassName("activeFilters")[0];
+    
+    const menus = {
+        /*
+        id: {
+            text: display text
+            filter: function to filter the tags
+        }
+        */
+        "hood": {
+            "text": "שכונה",
+            "filterFunction": (allTags) => allTags.filter((tag) => tag.category.name === "שכונות"),
+        },
+        "diff": {
+            "text": "רמת קושי",
+            "filterFunction": (allTags) => allTags.filter((tag) => tag.category.name === "אזור"),
+        },
+        "adv": { // special handling.
+            "text": "חיפוש מתקדם",
+        },
+    }
+    
+    let currentOpenMenu = "";
+    let currentFilters = [];
+
+    const arrow = () => {
+        return `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="caret-down" class="caret">
+                <rect width="256" height="256" fill="none"></rect>
+                <path d="M215.39111,92.93848A8.00015,8.00015,0,0,0,208,88H48a8,8,0,0,0-5.65674,13.657l80,79.99976a7.99945,7.99945,0,0,0,11.31348,0l80-79.99976A8.00011,8.00011,0,0,0,215.39111,92.93848Z"></path>
+            </svg>
+        `
+    }
+    
+    const xIcon = () => {
+        return `
+            <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-x" viewBox="0 0 16 16">
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+            </svg>
+        `
+    }
+
+    const makeFilterContainers = () => {
+        for(const [menuId, menu] of Object.entries(menus)){
+            filterCategoryContainer.innerHTML += `
+                <div class="filterCategory">
+                    <div class="filterCategoryCard" onclick="openMenu('${menuId}')">
+                        ${arrow()}
+                        <h1 class="filterTitle unselectable">${menu.text}</h1>
+                    </div>
+                    <div>
+                    <div id="${menuId}-content" class="${menuId === "adv" ? "advContent" : "nonAdvContent"}">
+
+                    </div>
+                </div>
+            `
+        }
+    }
+
+    const openMenu = (menuId) => {
+        console.log(menuId)
+        if (menuId === currentOpenMenu) {
+            closeMenu(menuId);
+            return;
+        }
+
+        if (currentOpenMenu) {
+            closeMenu(currentOpenMenu);
+        }
+
+        const container = document.querySelector(`.filterCategoryCard[onclick="openMenu('${menuId}')"]`);
+        const caret = container.querySelector(".caret");
+        caret.setAttribute("id", "caret-up");
+
+        const content = document.getElementById(`${menuId}-content`);
+        content.classList.add("open");
+
+        currentOpenMenu = menuId;
+    };
+
+    const closeMenu = (menuId) => {
+        const container = document.querySelector(`.filterCategoryCard[onclick="openMenu('${menuId}')"]`);
+        if (container) {
+            const caret = container.querySelector(".caret");
+            caret.setAttribute("id", "caret-down");
+
+            const content = document.getElementById(`${menuId}-content`);
+            content.classList.remove("open");
+        }
+        currentOpenMenu = "";
+    };
+
+    const updateFilters = () => {
+        for(const tag of currentFilters){
+            
+        }
+    }
+
+    const addFilter = (tag) => {
+        const card = document.getElementById(tag);
+
+        if(currentFilters.includes(tag)){
+            currentFilters = currentFilters.filter((filter) => filter !== tag);
+            card.classList.remove("selected");
+            return
+        }
+        card.classList.add("selected");
+        currentFilters.push(tag)
+
+        updateFilters();
+    }
+
+    const populateFilterContainers = (tags) => {
+        for(const [menuId, menu] of Object.entries(menus)){
+            if(menuId === "adv"){
+                continue;
+            }
+            
+            const filteredTags = menu.filterFunction(tags);
+            const container = document.getElementById(`${menuId}-content`);
+            
+            console.log(filteredTags)
+
+            for(const tag of filteredTags){
+                container.innerHTML += `
+                    <div class="tagCard" id="${tag}" onclick="addFilter(${tag})">
+                        <h5 class="tagText unselectable">${tag.name}</h5>
+                    </div>
+                `
+            }
+        }
+    }
+
+    const removeDuplicateTags = (tags) => {
+        const seen = new Set();
+        return tags.filter(tag => {
+            const key = `${tag.category.name}:${tag.name}`;
+            if (seen.has(key)) {
+                return false; // Exclude duplicate
+            }
+            seen.add(key); // Mark as seen
+            return true; // Include unique
+        });
+    }
+
+    const fetchTags = async () => {
+        try {
+            const response = await fetch(tagsURL);
+
+            if (!response.ok) {
+                throw new Error("Response is not ok");
+            }
+
+            const data = await response.json();
+            return removeDuplicateTags(data);
+        } catch (error) {
+            console.error("Error fetching tags:", error);
+        }
+    };
+
+    const initFilter = async () => {
+        makeFilterContainers();
+        const allTags = await fetchTags();
+        populateFilterContainers(allTags);
+    };
+    initFilter();
+</script>
