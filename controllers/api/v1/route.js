@@ -1,3 +1,4 @@
+const User = require('../../../models/User');
 const Route = require('../../../models/Route'); // Import the Route model
 const asyncHandler = require('../../../utils/asyncHandler'); // Adjust the path as needed
 
@@ -160,4 +161,73 @@ exports.deleteRoute = asyncHandler(async (req, res) => {
     await Route.findByIdAndDelete(req.params.id);
 
     res.json({ message: 'Route deleted successfully' });
+});
+
+// Controller function to add / update / delete a rating for a Route by ID
+exports.addUpdateOrDeleteRating = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { id } = req.params;
+    const { stars } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        return res.status(404).send('User not found.');
+    }
+    if (!id) {
+        return res.status(400).send('Route not provided.');
+    }
+    const route = await Route.findById(id);
+    if (!route) {
+        return res.status(404).send('Route not found.');
+    }
+
+    if (stars < 0 || stars > 5) {
+        return res.status(400).send('Invalid rating. Please provide a value between 1 and 5.');
+    }
+
+    try {
+        const existingRating = route.ratings.find(rating => rating.userId.toString() === userId.toString());
+
+        if (route.averageRating && route.ratings.length > 0) {
+            let totalStars = route.averageRating * route.ratings.length;
+
+            if (existingRating) {
+                totalStars = totalStars - existingRating.stars + stars;
+
+                if (stars === 0) {
+                    route.ratings = route.ratings.filter(rating => rating.userId.toString() !== userId.toString());
+                } else {
+                    existingRating.stars = stars;
+                }
+                if (route.ratings.length > 0) {
+                    route.averageRating = totalStars / route.ratings.length;
+                }
+                else
+                    route.averageRating = 0;
+
+            } else {
+                if (stars !== 0) {
+                    totalStars += stars;
+                    route.ratings.push({ userId, stars });
+                    route.averageRating = totalStars / route.ratings.length;
+                }
+            }
+
+        } else {
+            if (stars !== 0) {
+                route.ratings.push({ userId, stars });
+            }
+            route.averageRating = stars;
+        }
+
+        await route.save();
+
+        res.status(200).send({
+            message: 'Rating updated successfully.',
+            averageRating: route.averageRating
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error.');
+    }
 });

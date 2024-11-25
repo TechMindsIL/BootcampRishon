@@ -148,17 +148,78 @@
                         margin-bottom: 8%;
                     }
                 }
+
                 @media (max-width:500px) {
                     body {
                         margin-bottom: 15%;
                     }
                 }
+
                 @media (max-width:400px) {
                     body {
                         margin-top: 25%;
                     }
                 }
-                
+
+                @media (max-width:885px) {
+                    #rating-section {
+                        gap: 50px !important;
+                    }
+                }
+
+                @media (max-width:655px) {
+                    #rating-section {
+                        gap: 15px !important;
+                    }
+                }
+
+                @media (max-width:535px) {
+                    #rating-section {
+                        gap: 5px !important;
+                    }
+                }
+
+                #rating-section {
+                    display: flex;
+                    flex-direction: row-reverse;
+                    justify-content: space-between;
+                    gap: 100px;
+                    flex-wrap: wrap;
+                }
+
+                #div-average-rating {
+                    font-size: 18px;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                #rating-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                #stars-container {
+                    display: flex;
+                    gap: 5px;
+                }
+
+                .star {
+                    font-size: 30px;
+                    cursor: pointer;
+                }
+
+                #rate-button {
+                    font-size: 20px;
+                    cursor: pointer;
+                    background-color: #f16624;
+                    border-radius: 14px;
+                    padding: 0px 5px;
+                    text-align: center;
+                    border: none;
+                }
             </style>
         </head>
 
@@ -167,6 +228,24 @@
                 <div class="center">
                     <h1 id="name" class="nametxt">שם האימון</h1>
                     <%- include('partials/listInfo')%>
+
+                        <div id="rating-section">
+                            <div id="div-average-rating" style="display: none;">
+                                <span id="average-rating">0</span>
+                                <label for="average-rating"><strong>:דירוג משתמשים</strong></label>
+                            </div>
+                            <div id="rating-container" style="display: none;">
+                                <button id="rate-button">דירוג</button>
+                                <div id="stars-container">
+                                    <span class="star" data-value="1">☆</span>
+                                    <span class="star" data-value="2">☆</span>
+                                    <span class="star" data-value="3">☆</span>
+                                    <span class="star" data-value="4">☆</span>
+                                    <span class="star" data-value="5">☆</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mapicons">
                             <div class="icons" style="align-self: flex-end">
                                 <!-- <i class="fa fa-share-alt" id="share" aria-hidden="true"></i> -->
@@ -194,6 +273,23 @@
             <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
             <script>
+
+                document.addEventListener("DOMContentLoaded", async () => {
+                    try {
+                        const route = await fetchRoute(); 
+                        if (route) {
+                            addRouteToMap(route); 
+                            updateRatingDisplay(route); 
+                            checkAuthStatus(route); 
+                        } else {
+                            console.error("Failed to fetch route data.");
+                        }
+
+                    } catch (error) {
+                        console.error("Error during initialization:", error);
+                    }
+                });
+
                 const nameText = document.getElementById("name");
                 const mapContainer = document.getElementById("map");
                 const fullscreenIcon = document.getElementsByClassName("fullscreenIcon")[0];
@@ -256,8 +352,8 @@
                 };
 
                 // Fetching the route data from the API
-                const addRouteToMap = async () => {
-                    const route = await fetchRoute();
+                const addRouteToMap = async (route) => {
+                    //    const route = await fetchRoute();
 
                     if (!route || !route.places || route.places.length === 0) {
                         console.error("Invalid route data");
@@ -326,8 +422,6 @@
                     }).addTo(map);
                 };
 
-                addRouteToMap();
-
                 // Event listener for the button to redirect to list view
                 document
                     .getElementById("toggleListView")
@@ -392,13 +486,21 @@
                     }
                 };
 
-                const checkAuthStatus = async () => {
+                const checkAuthStatus = async (route) => {
                     try {
                         const response = await fetch("/api/v1/auth/");
 
                         if (response.ok) {
                             const data = await response.json();
                             console.log("User authenticated:", data);
+
+                            document.getElementById("rating-container").style.display = "flex";
+
+                            const userRatingObj = route.ratings.find(rating => rating.userId === data._id);
+                            if (userRatingObj) {
+                                userRating = userRatingObj.stars;
+                                highlightStars(userRating);
+                            }
 
                             getRoutes().then((savedArr) => {
                                 let saved = routeSaved(savedArr, ID);
@@ -423,26 +525,22 @@
                                 }
                             });
                         } else if (response.status === 401) {
-                            // אם הסטטוס שחזר הוא 401 Unauthorized
                             console.log("No user is logged in.");
                             saveButton.style.display = "none";
+                            document.getElementById("rating-container").style.display = "none";
                         }
                     } catch (error) {
-                        // טיפול בשגיאה ברמת התקשורת או בע��ות אחרות
                         console.log("Error fetching auth status:", error);
                         saveButton.style.display = "none";
                     }
                 }
-
-                // קריאה לפונקציה כאשר הדף נטען או בזמן מסוים אחר
-                checkAuthStatus();
 
                 map.on("load", () => {
                     const routingContainer = document.querySelector(
                         ".leaflet-routing-container"
                     );
                     if (routingContainer) {
-                        routingContainer.style.display = "none"; // הסתר את המיכל של הוראות ההגעה
+                        routingContainer.style.display = "none";
                     }
                 });
 
@@ -458,6 +556,65 @@
                     }
                     map.invalidateSize();
                 }
+
+                const starsContainer = document.getElementById("stars-container");
+                const averageRatingElement = document.getElementById("average-rating");
+                const rateButton = document.getElementById("rate-button");
+
+                let selectedStars = 0; 
+                let userRating = null; 
+
+                const updateRatingDisplay = async (route) => {
+                    if (route.averageRating > 0) {
+                        document.getElementById("div-average-rating").style.display = "flex";
+                        averageRatingElement.textContent = route.averageRating; 
+                    }
+                    else
+                        document.getElementById("div-average-rating").style.display = "none";
+                };
+
+                const highlightStars = (count) => {
+                    const stars = document.querySelectorAll(".star");
+                    stars.forEach((star, index) => {
+                        star.textContent = index < count ? "★" : "☆"; 
+                    });
+                };
+
+                starsContainer.addEventListener("click", (event) => {
+                    const value = parseInt(event.target.dataset.value); 
+                    
+                    if (!value || value === selectedStars) {
+                        selectedStars = 0;
+                        highlightStars(0); 
+                    } else {
+                        selectedStars = value;
+                        highlightStars(value);
+                    }
+                });
+
+                rateButton.addEventListener("click", async () => {
+                    console.log(selectedStars);
+                    try {
+                        const response = await fetch(`/api/v1/routes/rate/${ID}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ stars: selectedStars }),
+                        });
+
+                        if (response.ok) {
+                            const updatedRoute = await response.json();
+                            updateRatingDisplay(updatedRoute); // עדכון תצוגה לאחר דירוג
+                            alert("הדירוג נשמר בהצלחה!");
+                        } else {
+                            throw new Error("Failed to save rating");
+                        }
+                    } catch (error) {
+                        console.error("Error submitting rating:", error);
+                        alert("שגיאה בשמירת הדירוג");
+                    }
+                });
             </script>
         </body>
 

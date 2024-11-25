@@ -19,8 +19,7 @@ const routeSchema = new mongoose.Schema({
     },
     level: {
         type: String,
-        enum: ['מתחיל', 'בינוני', 'מתקדם'], 
-        required: true, 
+        enum: ['מתחיל', 'בינוני', 'מתקדם'],
     },
     places: {
         type: [mongoose.Schema.Types.ObjectId],
@@ -31,6 +30,14 @@ const routeSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Tag',
         default: []
+    },
+    ratings: [{
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        stars: { type: Number, min: 1, max: 5 }
+    }],
+    averageRating: {
+        type: Number,
+        default: 0
     },
     isRelevant: {
         type: Boolean,

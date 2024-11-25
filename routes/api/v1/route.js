@@ -24,6 +24,9 @@ router.put('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), valida
 // Route to delete a Route by ID
 router.delete('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), routeController.deleteRoute);
 
+// Route to add / update / delete a rating for a Route by ID
+router.post('/rate/:id', SecurityMiddleware.secure(), auth, validateObjectId('id'), routeController.addUpdateOrDeleteRating);
+
 // Handles any Route errors
 router.use((err, req, res, next) => {
     if (req.method === 'GET' && req.path === '/') {
