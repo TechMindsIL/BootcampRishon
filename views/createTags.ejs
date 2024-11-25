@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
     <style>
-      .container{
-        direction: rtl;
-        text-align: center;
-      }
-      #createTagBtn {
+        .container {
+            direction: rtl;
+            text-align: center;
+        }
+
+        #createTagBtn {
             margin: 15px auto;
             padding: 10px 20px;
             font-size: 18px;
@@ -28,7 +29,7 @@
     </style>
 
     <body>
-        <%- include('./partials/navbar', {currentPage: 'create tags' }) %>
+        <%- include('partials/navbar', {currentPage: 'create tags' }) %>
             <div class="container" style="width: 50%;">
                 <h1>תגית חדשה</h1>
 
@@ -43,6 +44,12 @@
                     <label for="tagType" class="mb-0 ms-2">סוג:</label>
                     <div>
                         <input type="text" id="tagType" class="form-control flex-grow-1" disabled>
+
+                        <select id="tagTypeSelect" class="form-control flex-grow-1" style="display: none;">
+                            <option value="" selected disabled>בחר סוג</option>
+                            <option value="Route">Route</option>
+                            <option value="Place">Place</option>
+                        </select>
                     </div>
                 </div>
 
@@ -56,7 +63,7 @@
                     </div>
                 </div>
 
-                <button id="createTagBtn" >הוסף תג</button>
+                <button id="createTagBtn">הוסף תג</button>
             </div>
 
             <script>
@@ -65,7 +72,7 @@
                 let url;
                 $(document).ready(async function () {
                     getRedirectPath();
-                  
+
                     $('#tagType').val(type);
 
                     await fetchAndDisplayCategories();
@@ -73,31 +80,40 @@
 
                 function getRedirectPath() {
                     const urlParams = new URLSearchParams(window.location.search);
-                    const fromPath = urlParams.get('from'); 
-                    const id = urlParams.get('id'); 
+                    const fromPath = urlParams.get('from');
+                    const id = urlParams.get('id');
 
                     if (!fromPath) {
                         console.warn('No "from" parameter found in the URL.');
                         url = "";
-                    }
+                        
+                        document.getElementById('tagType').style.display = 'none';
+                        document.getElementById('tagTypeSelect').style.display = 'block';
 
-                    let redirectPath = fromPath; 
+                        document.getElementById('tagTypeSelect').addEventListener('change',async function () {
+                            type = this.value;  
+                            await fetchAndDisplayCategories();
+                        });
+                    }
+                    else {
+                        let redirectPath = fromPath;
 
-                    if (fromPath.includes('/admin/add-new-route')) {
-                        type = 'Route';
-                    }
-                    else if (fromPath.includes('/admin/update-route')) {
-                        type = 'Route';
-                        if (id)
-                            redirectPath += `?id=${id}`; 
-                    }
-                    else if (fromPath.includes('/admin/edit-activity')) {
-                        type = 'Place';
-                        if (id)
-                            redirectPath += `?id=${id}`; 
-                    }
+                        if (fromPath.includes('/admin/add-new-route')) {
+                            type = 'Route';
+                        }
+                        else if (fromPath.includes('/admin/update-route')) {
+                            type = 'Route';
+                            if (id)
+                                redirectPath += `?id=${id}`;
+                        }
+                        else if (fromPath.includes('/admin/edit-activity')) {
+                            type = 'Place';
+                            if (id)
+                                redirectPath += `?id=${id}`;
+                        }
 
-                    url = redirectPath;
+                        url = redirectPath;
+                    }
                 }
 
                 async function fetchAndDisplayCategories() {
@@ -114,8 +130,8 @@
 
                     categories.forEach(category => {
                         const option = $('<option></option>')
-                            .val(category._id) 
-                            .text(category.name); 
+                            .val(category._id)
+                            .text(category.name);
                         tagCategorySelect.append(option);
                     });
                 }
@@ -136,7 +152,7 @@
                                 window.location.href = url;
                             }
                             else
-                                window.location.href = "/";
+                                window.location.href = "/admin";
                         },
                         error: function (xhr, status, error) {
                             console.error(`Error adding tag: ${xhr.responseText || status}`);

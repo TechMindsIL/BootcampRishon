@@ -2,8 +2,8 @@
     #allTagsSection {
         direction: ltr;
         display: none;
-        height: 350px;
-        overflow-y: scroll;
+        height: auto;
+        overflow-y: visible;
         padding-right: 10px;
         opacity: 0;
         transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
@@ -23,6 +23,7 @@
         flex-direction: column;
         align-content: right;
     }
+
     .tagPadding {
         padding: 0 var(--tagPadding);
         width: calc(100% / var(--tagsInRow));
@@ -30,6 +31,7 @@
         height: 60px;
         margin-bottom: 3px;
     }
+
     .tagCard {
         cursor: pointer;
         width: 100%;
@@ -40,6 +42,11 @@
         align-content: center;
         justify-content: center;
     }
+
+    .tagCard.selected {
+        background: #ff8800;
+    }
+
     .tagText {
         text-align: center;
         color: white;
@@ -49,9 +56,11 @@
         height: fit-content;
         margin: auto;
     }
+
     .categoryName {
         font-size: 1.7rem;
     }
+
     .tagsDivider {
         overflow-x: visible;
         width: 100%;
@@ -62,6 +71,7 @@
         color: rgba(0, 0, 0, 0.3);
         transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
     }
+
     .tagsDivider.show {
         display: block;
         opacity: 1;
@@ -98,9 +108,8 @@
         for (const [category, { id }] of Object.entries(tagCategories)) {
             allTagsSection.innerHTML += `
                 <div class="tagCategory">
-                    <h3 class="categoryName">${
-                        category === "שכונות" ? "שכונה" : category
-                    }</h3>
+                    <h3 class="categoryName">${category === "שכונות" ? "שכונה" : category
+                }</h3>
                     <div class="cardContainer" id=${id}>
                     </div>
                 </div>
@@ -121,7 +130,13 @@
             const div = document.createElement("div");
 
             div.classList.add("tagPadding");
-            div.onclick = () => filterByTag(tag);
+            // div.onclick = () => filterByTag(tag);
+            div.onclick = () => {
+                const card = div.querySelector(".tagCard");
+                card.classList.toggle("selected");
+                filterByTag(tag);
+            };
+
 
             div.innerHTML += `
                 <div class="tagCard">

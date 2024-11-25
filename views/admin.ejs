@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
     <style>
         body {
             text-align: center;
@@ -36,7 +36,7 @@
     </style>
 
     <body>
-        <%- include('./partials/navbar', {currentPage: 'admin' }) %>
+        <%- include('partials/navbar', {currentPage: 'admin' }) %>
             <div class="container mt-5" style="max-width: 70%; margin: auto;">
                 <h1>ניהול אימונים</h1>
 
@@ -144,6 +144,7 @@
                                 description: route.description,
                                 distance: route.distance,
                                 duration: route.duration,
+                                level: route.level,
                                 places: route.places,
                                 tags: route.tags,
                                 isRelevant: !route.isRelevant

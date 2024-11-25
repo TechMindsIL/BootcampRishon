@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         .container {
@@ -42,7 +42,7 @@
     </style>
 
     <body>
-        <%- include('./partials/navbar', {currentPage: 'Add an activity' }) %>
+        <%- include('partials/navbar', {currentPage: 'Add an activity' }) %>
             <div class="container" style="width: 70%;">
                 <h1>הוספת תחנה</h1>
 

@@ -2,7 +2,7 @@
 uploads/
 
 # Node modules
-#node_modules/
+node_modules/
 
 # Logs
 logs
@@ -14,7 +14,7 @@ dist/
 build/
 
 # Environment variables
-#.env
+.env
 .env.local
 .env.*.local
 
