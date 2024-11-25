@@ -5,7 +5,7 @@
     <head>
       <style>
         body {
-          margin-top: 350px;
+          /* margin-top: 350px; */
           margin-bottom: 300px;
         }
 
@@ -14,6 +14,7 @@
           /* flex-direction: column; */
           justify-content: center;
           align-items: center;
+          text-align: center;
         }
 
         :root {
@@ -50,6 +51,11 @@
           margin-top: 20px;
         }
 
+        .place.expanded {
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+
         .linecontainer {
           width: var(--lineContainerWidth);
           position: absolute;
@@ -74,7 +80,8 @@
           align-content: center;
           align-items: center;
           width: calc(var(--placeListWidth) - 60px);
-          height: var(--cardHeight);
+          height: auto;
+          min-height: var(--cardHeight);
           border-radius: 20px;
           background-color: var(--grayColor);
           padding: 5px 5px;
@@ -146,7 +153,7 @@
           }
 
           body {
-            margin-top: 350px;
+            /* margin-top: 350px; */
             margin-bottom: 350px;
           }
         }
@@ -165,7 +172,7 @@
           }
 
           body {
-            margin-top: 300px;
+            /* margin-top: 300px; */
             margin-bottom: 300px;
           }
         }
@@ -257,11 +264,38 @@
         .completeButton.active .buttonText {
           display: none;
         }
+
+        .details {
+          /* margin-top: 10px; */
+          margin-bottom: 0px;
+          margin-top: 0px;
+          padding: 10px;
+          border-top: 1px solid #ccc;
+          border-radius: 20px;
+          background-color: var(--lineColor);
+          text-align: center;
+          position: relative;
+          z-index: 10;
+        }
+
+        .place-image {
+          width: 100%;
+          max-width: 300px;
+          height: auto;
+          margin-top: 10px;
+        }
+
+        .place-video {
+          width: 100%;
+          max-width: 300px;
+          height: auto;
+          margin-top: 10px;
+        }
       </style>
     </head>
 
     <body>
-      <div class="fullWidth center">
+      <div class="fullWidth center"  style="margin-top: 300px;">
         <div class="center">
           <h1 id="name"></h1>
           <%- include('partials/listInfo')%>
@@ -279,7 +313,6 @@
           </div>
         </div>
       </div>
-
       <script>
         const nameText = document.getElementById("name");
         const placesDiv = document.getElementById("placeList");
@@ -315,18 +348,23 @@
 
         const placeDiv = (place, index, isLastPlace) => {
           return `
-                <div class="place"  data-index="${index}">
+                <div class="place" data-index="${index}">
                     <button class="completeButton" onclick="toggleCompleted(${index})">
                       <span class="buttonText">סיימתי</span>
                       <i class="fa fa-check-circle completionIcon" aria-hidden="true"></i> 
                     </button>
-                    <div class="card-p">
+                    <div class="card-p" onclick="toggleDetails(${index})">
                         <h1 class="textInside">${place.name}</h1>
                     </div>
                     ${locationPin()}
                     ${!isLastPlace ? line(index) : ""} 
-       
                 </div>
+
+                <div class="details" id="details-${index}" style="display: none;">
+                      ${place.description ? `<p><strong>תיאור:</strong> ${place.description}</p>` : ""}
+                      ${place.img ? `<img src="${place.img}" alt="${place.name}" class="place-image">` : ""}
+                      ${place.youtube ? `<iframe src="${place.youtube}" class="place-video" frameborder="0" allowfullscreen></iframe>` : ""}
+                    </div>
             `;
         };
 
@@ -343,6 +381,25 @@
             console.error(`Could not find place div for index ${index}`);
           }
         }
+
+        function toggleDetails(index) {
+          const detailsDiv = document.getElementById(`details-${index}`);
+          const placeDiv = document.querySelector(`.place[data-index="${index}"]`);  // שליפת ה-DIV לפי index ישירות
+
+          const lineContainer = placeDiv.querySelector('.linecontainer');
+
+          if (detailsDiv.style.display === "none" || !detailsDiv.style.display) {
+            detailsDiv.style.display = "block";
+            placeDiv.classList.add('expanded'); // הוספת class שיקבע את ה-margin החדש
+            const detailsHeight = detailsDiv.offsetHeight; // גובה האלמנט details
+            lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
+          } else {
+            detailsDiv.style.display = "none";
+            placeDiv.classList.remove('expanded'); // הסרת ה-class
+            lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize))`;
+          }
+        }
+
 
         const addToView = (data) => {
           nameText.textContent = data.name;
