@@ -1,0 +1,454 @@
+<style>
+    .activeFilters,
+    .filterCategoryContainer {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+        gap: 10px;
+    }
+    .filterCategory {
+        width: 100%;
+    }
+    .filterCategoryCard {
+        cursor: pointer;
+        position: relative;
+        margin-left: 0;
+        background: rgb(225, 225, 225);
+        height: 60px;
+        width: 100%;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        border: 1.5px solid #555;
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        justify-content: center;
+    }
+    .unselectable {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .caret {
+        position: absolute;
+        left: 10px;
+        height: 50px;
+    }
+
+    .filterTitle {
+        display: inline;
+        height: fit-content;
+        margin: 0;
+        line-height: 1;
+        font-size: 1.5rem;
+    }
+    #caret-up {
+        transform: rotate(180deg);
+    }
+
+    .scroll-container {
+        direction: ltr; 
+        overflow: hidden scroll; 
+        height: 0;
+        transition: height 0.2s ease;
+
+        background: none;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    .advContent,
+    .nonAdvContent {
+        overflow: none;
+        
+        padding: 5px;
+        padding-top: 10px;
+        height: 100%;
+    }
+    .noPaddingHorizontal { 
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .nonAdvContent{
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        direction: rtl; 
+        grid-auto-rows: 60px;
+        box-sizing: border-box;
+    }
+
+    .scroll-container.open{
+        height: 250px;
+    }
+
+    .tagCardPadding{
+        height: 60px;
+        padding: 0 5px;
+        padding-bottom: 10px;
+    }
+    .tagCard {
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        background: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .selected {
+        background: #2f353b !important;
+    }
+
+    .tagCard:hover {
+        transform: scale(1.05); /* Slight zoom on hover */
+    }
+    .tagText {
+        direction: rtl;
+        text-align: center;
+        height: 100%;
+        width: 100%;
+        padding: 0px 10px;
+
+        margin: auto;
+        align-content: center;
+        color: white;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    .activeFilters {
+        justify-content: right;
+        margin-bottom: 10px;
+        overflow-x: scroll;
+        gap: 0;
+        display:none;
+    }
+    .activeFilters.showActiveFilters{
+        display: flex;
+    }
+    .activeFilterCard {
+        display: flex;
+        flex-direction: row;
+
+        align-content: center;
+
+        width:100%;
+        height: 100%;
+
+        background: rgb(225, 225, 225);
+        border-radius: 10px;
+
+        margin-bottom: 5px;
+        box-shadow: 0 0px 4px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.2s ease;
+        flex-shrink: 0;
+    }
+    .activeFilterCardPadding{
+        height: 55px;
+        padding: 6px calc(var(--filterCardsGap) / 2);
+        width: calc(100% / var(--filterCardsInRow));
+        min-width: calc(100% / var(--filterCardsInRow));
+    }
+    .activeFilterCard:hover {
+        background: rgb(205, 205, 205);
+    }
+    .bi-x {
+        cursor: pointer;
+        height: 43;
+        width: 43;
+        fill: rgb(255, 0, 0);
+    }
+
+    .bi-x:hover {
+        transform: scale(1.1);
+    }
+    .currentFilterText {
+        padding-left: 5px;
+        color: #333333;
+    }
+
+    .width-adjustable{
+        width: fit-content;
+    }
+</style>
+<div class="filterCategoryContainer"></div>
+<div class="activeFilters"></div>
+<script>
+    const ORIGIN = window.location.origin;
+    const tagsURL = `${ORIGIN}/api/v1/tags`;
+
+    // const tagsDivider = document.getElementById("tagsDivider");
+    const filterCategoryContainer = document.getElementsByClassName("filterCategoryContainer")[0];
+    const activeFiltersContainer = document.getElementsByClassName("activeFilters")[0];
+
+    const menus = {
+        /*
+        id: {
+            text: display text
+            filter: function to filter the tags
+        }
+        */
+        hood: {
+            text: "שכונה",
+            filterFunction: (allTags) =>
+                allTags.filter((tag) => tag.category.name === "שכונות"),
+        },
+        diff: {
+            text: "רמת קושי",
+            filterFunction: (allTags) =>
+                allTags.filter((tag) => tag.category.name === "אזור"),
+        },
+        adv: {
+            // special handling.
+            text: "חיפוש מתקדם",
+        },
+    };
+
+    let currentOpenMenu = "";
+    let currentSearchQuery = "";
+    let currentFilters = [];
+    let allTags = [];
+
+    const arrow = () => {
+        return `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="caret-down" class="caret">
+                <rect width="256" height="256" fill="none"></rect>
+                <path d="M215.39111,92.93848A8.00015,8.00015,0,0,0,208,88H48a8,8,0,0,0-5.65674,13.657l80,79.99976a7.99945,7.99945,0,0,0,11.31348,0l80-79.99976A8.00011,8.00011,0,0,0,215.39111,92.93848Z"></path>
+            </svg>
+        `;
+    };
+
+    const xIcon = () => {
+        return `
+            <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-x" viewBox="0 0 16 16">
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+            </svg>
+        `;
+    };
+
+    const makeFilterContainers = () => {
+        for (const [menuId, menu] of Object.entries(menus)) {
+            filterCategoryContainer.innerHTML += `
+                <div class="filterCategory">
+                    <div class="filterCategoryCard" onclick="openMenu('${menuId}')">
+                        ${arrow()}
+                        <h1 class="filterTitle unselectable">${menu.text}</h1>
+                    </div>
+                    <div class="scroll-container" id="${menuId}-content-container">
+                        <div id="${menuId}-content" class="${menuId === "adv" ? "advContent" : "nonAdvContent"}">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    };
+
+    const openMenu = (menuId) => {
+        if (menuId === currentOpenMenu) {
+            closeMenu(menuId);
+            return;
+        }
+
+        if (currentOpenMenu) {
+            closeMenu(currentOpenMenu);
+        }
+
+        const container = document.querySelector(
+            `.filterCategoryCard[onclick="openMenu('${menuId}')"]`
+        );
+        const caret = container.querySelector(".caret");
+        caret.setAttribute("id", "caret-up");
+
+        const contentContainer = document.getElementById(`${menuId}-content-container`);
+        contentContainer.classList.add("open");
+
+        currentOpenMenu = menuId;
+    };
+
+    const closeMenu = (menuId) => {
+        const container = document.querySelector(
+            `.filterCategoryCard[onclick="openMenu('${menuId}')"]`
+        );
+        if (container) {
+            const caret = container.querySelector(".caret");
+            caret.setAttribute("id", "caret-down");
+
+            const contentContainer = document.getElementById(`${menuId}-content-container`);
+            contentContainer.classList.remove("open");
+        }
+        currentOpenMenu = "";
+    };
+
+    const updateFilters = () => {
+        filterRoutes()
+
+        if(!currentSearchQuery.length && !currentFilters.length){
+            activeFiltersContainer.classList.remove("showActiveFilters");
+            return;
+        }
+        activeFiltersContainer.classList.add("showActiveFilters");
+
+        activeFiltersContainer.innerHTML = currentSearchQuery.length === 0 ? "" : `
+            <div class="activeFilterCardPadding width-adjustable">
+                <div class="activeFilterCard" onclick="removeSearch()">
+                    ${xIcon()}
+                    <h5 class="tagText unselectable currentFilterText width-adjustable">כולל: ${currentSearchQuery}</h5>
+                </div>
+            </div>
+        `;
+        
+        for (const tag of currentFilters) {
+            activeFiltersContainer.innerHTML += `
+                <div class="activeFilterCardPadding">
+                    <div class="activeFilterCard" onclick="useFilter('${tag._id}')">
+                        ${xIcon()}
+                        <h5 class="tagText unselectable currentFilterText">${tag.name}</h5>
+                    </div>
+                </div>
+            `;
+        }
+
+    };
+
+    const useFilter = (tagID) => {
+        const tag = allTags.filter((tag) => tag._id === tagID)[0];
+
+        const safeCategoryName = tag.category.name.replace(/['"]/g, "_");
+        const safeTagName = tag.name.replace(/['"]/g, "_");
+
+        const card = document.getElementById(`${safeCategoryName}:${safeTagName   }`);
+
+        const tagIndex = currentFilters.findIndex(
+            (filter) => filter._id === tagID
+        );
+        if (tagIndex > -1) {
+            currentFilters.splice(tagIndex, 1);
+            card.classList.remove("selected");
+        } else {
+            currentFilters.push(tag);
+            card.classList.add("selected");
+        }
+
+        // Sort currentFilters by category name first, then by tag name
+        currentFilters.sort((a, b) => {
+            if (a.category.name < b.category.name) return -1;
+            if (a.category.name > b.category.name) return 1;
+
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+
+            return 0;
+        });
+
+        updateFilters();
+    };
+
+    const populateFilterContainers = (tags) => {
+        for (const [menuId, menu] of Object.entries(menus)) {
+            const container = document.getElementById(`${menuId}-content`);
+
+            if (menuId === "adv") {
+                container.innerHTML += `
+                    <form
+                        onsubmit="searchSumbit(event)"
+                        class="mx-auto d-flex justify-content-center searchForm"
+                    >
+                        <div class="search">
+                            <span onclick="searchSumbit(event)" id="search-icon"
+                                ><i class="bi bi-search"></i
+                            ></span>
+                            <input
+                                id="inputId"
+                                type="text"
+                                placeholder="חפש..."
+                                aria-describedby="search-icon"
+                            />
+                        </div>
+                    </form>
+                    <div class="col-12 mx-auto text-center" id="allTagsSection"></div>
+                `
+                continue;
+            }
+
+            const filteredTags = menu.filterFunction(tags);
+            filteredTags.sort((a, b) => {
+                return a.name.localeCompare(b.name);
+            });
+
+            for (const tag of filteredTags) {
+                const safeCategoryName = tag.category.name.replace(/['"]/g, "_");
+                const safeTagName = tag.name.replace(/['"]/g, "_");
+
+                container.innerHTML += `
+                    <div class="tagCardPadding">
+                        <div class="tagCard" id='${safeCategoryName}:${safeTagName}' onclick="useFilter('${tag._id}')">
+                            <h5 class="tagText unselectable">${tag.name}</h5>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    };
+
+    const removeSearch = () => {
+        currentSearchQuery = "";
+        document.querySelector("#inputId").value = "";
+        updateFilters();
+        filterRoutes;
+    }
+
+    const searchSumbit = (e) => {
+        e.preventDefault();
+        currentSearchQuery = document.querySelector("#inputId").value.toLowerCase().trim();
+        updateFilters();
+        filterRoutes();
+    };
+
+    const removeDuplicateTags = (tags) => {
+        const seen = new Set();
+        return tags.filter((tag) => {
+            const key = `${tag.category.name}:${tag.name}`;
+            if (seen.has(key)) {
+                return false; // Exclude duplicate
+            }
+            seen.add(key); // Mark as seen
+            return true; // Include unique
+        });
+    };
+
+    const fetchTags = async () => {
+        try {
+            const response = await fetch(tagsURL);
+
+            if (!response.ok) {
+                throw new Error("Response is not ok");
+            }
+
+            const data = await response.json();
+            return removeDuplicateTags(data);
+        } catch (error) {
+            console.error("Error fetching tags:", error);
+        }
+    };
+
+    const initFilter = async () => {
+        makeFilterContainers();
+        allTags = await fetchTags();
+
+        populateFilterContainers(allTags);
+
+        makeContainers();
+        makeTagCards(allTags);
+    };
+    initFilter();
+</script>
