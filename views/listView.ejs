@@ -315,6 +315,16 @@
           text-align: center;
           border: none;
         }
+
+        .login-button {
+          font-size: 16px;
+          cursor: pointer;
+          background-color: #f16624;
+          border-radius: 14px;
+          padding: 0px 5px;
+          text-align: center;
+          border: none;
+        }
       </style>
     </head>
 
@@ -522,6 +532,7 @@
               }
             });
             updateRatingDisplay(place.averageRating);
+
             if (userId) {
               ratingContainer.style.display = "flex";
               const userRatingObj = place.ratings.find(rating => rating.userId === userId);
@@ -533,6 +544,21 @@
             }
             else {
               ratingContainer.style.display = "none";
+
+
+              const loginButton = document.createElement("button");
+              loginButton.id = "login-button";
+              loginButton.className = "login-button";
+              loginButton.textContent = "התחבר כדי לדרג";
+
+              // הגדרת אירוע לחיצה
+              loginButton.onclick = function () {
+                window.location.href = "/login"; // מעביר את המשתמש לעמוד ההתחברות
+              };
+
+              const ratingSection = document.getElementById(`rating-section-${index}`);
+              ratingSection.appendChild(loginButton);
+
               changeLineHeight();
             }
           })
