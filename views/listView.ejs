@@ -5,13 +5,11 @@
     <head>
       <style>
         body {
-          /* margin-top: 350px; */
-          margin-bottom: 300px;
+          margin-top: 100px;
         }
 
         .listCenter {
           display: flex;
-          /* flex-direction: column; */
           justify-content: center;
           align-items: center;
           text-align: center;
@@ -49,6 +47,14 @@
           width: 100%;
           margin-bottom: var(--cardSpacing);
           margin-top: 20px;
+        }
+
+        .place:hover {
+          cursor: pointer;
+        }
+
+        .card-p:hover {
+          transform: scale(1.05);
         }
 
         .place.expanded {
@@ -137,6 +143,7 @@
           margin-top: 50px;
           width: 200px;
           background-color: var(--btnColor);
+          margin-bottom: 100px;
         }
 
         @media screen and (max-width: 500px) {
@@ -148,14 +155,6 @@
             --lineContainerWidth: 80px;
           }
 
-          .fullWidth {
-            height: 90vh !important;
-          }
-
-          body {
-            /* margin-top: 350px; */
-            margin-bottom: 350px;
-          }
         }
 
         @media screen and (max-width: 440px) {
@@ -167,14 +166,6 @@
             --cardSpacing: 30px;
           }
 
-          .fullWidth {
-            height: 88vh !important;
-          }
-
-          body {
-            /* margin-top: 300px; */
-            margin-bottom: 300px;
-          }
         }
 
         @media screen and (max-width: 400px) {
@@ -186,16 +177,8 @@
             --cardSpacing: 30px;
           }
 
-          .fullWidth {
-            height: 82vh !important;
-          }
-
           .distanceText {
             font-size: 95%;
-          }
-
-          body {
-            margin-bottom: 20px;
           }
         }
 
@@ -211,13 +194,6 @@
 
         #name {
           text-align: center;
-        }
-
-        @media (max-width:700px) {
-          body {
-            margin-bottom: 350px;
-          }
-
         }
 
         .completed {
@@ -266,7 +242,6 @@
         }
 
         .details {
-          /* margin-top: 10px; */
           margin-bottom: 0px;
           margin-top: 0px;
           padding: 10px;
@@ -291,11 +266,60 @@
           height: auto;
           margin-top: 10px;
         }
+
+        @media (max-width:550px) {
+          .rating-section {
+            gap: 5px !important;
+            justify-content: flex-end !important;
+          }
+        }
+
+        .rating-section {
+          display: flex;
+          flex-direction: row-reverse;
+          justify-content: flex-end;
+          gap: 15px;
+          flex-wrap: wrap;
+        }
+
+        .div-average-rating {
+          font-size: 18px;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .rating-container {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .stars-container {
+          display: flex;
+          gap: 5px;
+        }
+
+        .star {
+          font-size: 30px;
+          cursor: pointer;
+        }
+
+        .rate-button {
+          font-size: 20px;
+          cursor: pointer;
+          background-color: #f16624;
+          border-radius: 14px;
+          padding: 0px 5px;
+          text-align: center;
+          border: none;
+        }
       </style>
     </head>
 
     <body>
-      <div class="fullWidth center"  style="margin-top: 300px;">
+      <div class="fullWidth center">
         <div class="center">
           <h1 id="name"></h1>
           <%- include('partials/listInfo')%>
@@ -314,6 +338,7 @@
         </div>
       </div>
       <script>
+        let userId = null;
         const nameText = document.getElementById("name");
         const placesDiv = document.getElementById("placeList");
         const back = document.getElementById("backButton");
@@ -360,11 +385,28 @@
                     ${!isLastPlace ? line(index) : ""} 
                 </div>
 
-                <div class="details" id="details-${index}" style="display: none;">
-                      ${place.description ? `<p><strong>תיאור:</strong> ${place.description}</p>` : ""}
-                      ${place.img ? `<img src="${place.img}" alt="${place.name}" class="place-image">` : ""}
-                      ${place.youtube ? `<iframe src="${place.youtube}" class="place-video" frameborder="0" allowfullscreen></iframe>` : ""}
+                <div id="rating-section-${index}" class="rating-section">
+                  <div id="div-average-rating-${index}" class="div-average-rating" style="display: none;">
+                    <span id="average-rating-${index}">0</span>
+                    <label for="average-rating"><strong>:דירוג משתמשים</strong></label>
+                  </div>
+                  <div id="rating-container-${index}" class="rating-container" style="display: none;">
+                    <button id="rate-button-${index}" class="rate-button">דירוג</button>
+                    <div id="stars-container-${index}" class="stars-container">
+                        <span class="star" data-value="1">☆</span>
+                        <span class="star" data-value="2">☆</span>
+                        <span class="star" data-value="3">☆</span>
+                        <span class="star" data-value="4">☆</span>
+                        <span class="star" data-value="5">☆</span>
                     </div>
+                  </div>
+                </div>
+
+                <div class="details" id="details-${index}" style="display: none;">
+                  ${place.description ? `<p><strong>תיאור:</strong> ${place.description}</p>` : ""}
+                  ${place.img ? `<img src="${place.img}" alt="${place.name}" class="place-image">` : ""}
+                  ${place.youtube ? `<iframe src="${place.youtube}" class="place-video" frameborder="0" allowfullscreen></iframe>` : ""}
+                  </div>
             `;
         };
 
@@ -384,18 +426,18 @@
 
         function toggleDetails(index) {
           const detailsDiv = document.getElementById(`details-${index}`);
-          const placeDiv = document.querySelector(`.place[data-index="${index}"]`);  // שליפת ה-DIV לפי index ישירות
+          const placeDiv = document.querySelector(`.place[data-index="${index}"]`);
 
           const lineContainer = placeDiv.querySelector('.linecontainer');
 
           if (detailsDiv.style.display === "none" || !detailsDiv.style.display) {
             detailsDiv.style.display = "block";
-            placeDiv.classList.add('expanded'); // הוספת class שיקבע את ה-margin החדש
-            const detailsHeight = detailsDiv.offsetHeight; // גובה האלמנט details
+            placeDiv.classList.add('expanded');
+            const detailsHeight = detailsDiv.offsetHeight;
             lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
           } else {
             detailsDiv.style.display = "none";
-            placeDiv.classList.remove('expanded'); // הסרת ה-class
+            placeDiv.classList.remove('expanded');
             lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize))`;
           }
         }
@@ -404,19 +446,138 @@
         const addToView = (data) => {
           nameText.textContent = data.name;
 
-          for (let index = 0; index < data.places.length; index++) {
-            const place = data.places[index];
+          data.places.forEach((place, index) => {
             const isLastPlace = index === data.places.length - 1;
 
-            placesDiv.innerHTML += placeDiv(place, index, isLastPlace);
-          }
+            placesDiv.insertAdjacentHTML("beforeend", placeDiv(place, index, isLastPlace));
+
+            const ratingContainer = document.querySelector(`#rating-container-${index}`);
+            const starsContainer = document.querySelector(`#stars-container-${index}`);
+            const rateButton = document.querySelector(`#rate-button-${index}`);
+            const averageRatingElement = document.querySelector(`#average-rating-${index}`);
+            const averageRatingDiv = document.querySelector(`#div-average-rating-${index}`);
+
+            let selectedStars = 0;
+
+            const changeLineHeight = () => {
+              const placeDiv = document.querySelector(`.place[data-index="${index}"]`);
+              const lineContainer = placeDiv.querySelector('.linecontainer');
+              const ratingSection = document.getElementById(`rating-section-${index}`);
+
+              const ratingSectionHeight = ratingSection.offsetHeight > 0 ? ratingSection.offsetHeight : 0;
+              lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${ratingSectionHeight}px)`;
+
+            }
+
+            const updateRatingDisplay = (averageRating) => {
+              if (averageRating > 0) {
+                averageRatingDiv.style.display = "flex";
+                averageRatingElement.textContent = averageRating;
+                changeLineHeight();
+              } else {
+                averageRatingDiv.style.display = "none";
+                changeLineHeight();
+              }
+            };
+
+            const highlightStars = (count) => {
+              const stars = starsContainer.querySelectorAll(".star");
+              stars.forEach((star, starIndex) => {
+                star.textContent = starIndex < count ? "★" : "☆";
+              });
+            };
+
+            starsContainer.addEventListener("click", (event) => {
+              const value = parseInt(event.target.dataset.value);
+              if (!value || value === selectedStars) {
+                selectedStars = 0;
+                highlightStars(0);
+              } else {
+                selectedStars = value;
+                highlightStars(value);
+              }
+            });
+
+            rateButton.addEventListener("click", async () => {
+              try {
+                const response = await fetch(`/api/v1/places/rate/${place._id}`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ stars: selectedStars }),
+                });
+
+                if (response.ok) {
+                  const updatedPlace = await response.json();
+                  updateRatingDisplay(updatedPlace.averageRating);
+                  alert("הדירוג נשמר בהצלחה!");
+                  changeLineHeight();
+                } else {
+                  throw new Error("Failed to save rating");
+                }
+              } catch (error) {
+                console.error("Error submitting rating:", error);
+                alert("שגיאה בשמירת הדירוג");
+              }
+            });
+            updateRatingDisplay(place.averageRating);
+            if (userId) {
+              ratingContainer.style.display = "flex";
+              const userRatingObj = place.ratings.find(rating => rating.userId === userId);
+              if (userRatingObj) {
+                selectedStars = userRatingObj.stars;
+                highlightStars(selectedStars);
+              }
+              changeLineHeight();
+            }
+            else {
+              ratingContainer.style.display = "none";
+              changeLineHeight();
+            }
+          })
+
+
         };
 
-        fetchRoute().then(addToView);
 
         back.addEventListener("click", () => {
           window.location.href = `/map?id=${ID}`;
         });
+
+        const checkAuthStatus = async () => {
+          try {
+            const response = await fetch("/api/v1/auth/");
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log("User authenticated:", data);
+
+              userId = data._id;
+              console.log(data);
+
+            } else if (response.status === 401) {
+              console.log("No user is logged in.");
+            }
+          } catch (error) {
+            console.log("Error fetching auth status:", error);
+          }
+        }
+
+        const initializePage = async () => {
+          try {
+            await checkAuthStatus();
+
+            const routeData = await fetchRoute();
+            addToView(routeData);
+            console.log(userId);
+          } catch (error) {
+            console.error("Error initializing page:", error);
+          }
+        };
+
+        initializePage();
+
       </script>
     </body>
 

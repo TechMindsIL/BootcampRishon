@@ -1,3 +1,4 @@
+const User = require('../../../models/User');
 const Place = require('../../../models/Place'); // Import the Place model
 const asyncHandler = require('../../../utils/asyncHandler'); // Adjust the path as needed
 
@@ -176,4 +177,73 @@ exports.deletePlace = asyncHandler(async (req, res) => {
     await Place.findByIdAndDelete(req.params.id);
 
     res.json({ message: 'Place deleted successfully' });
+});
+
+// Controller function to add / update / delete a rating for a Place by ID
+exports.addUpdateOrDeleteRating = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { id } = req.params;
+    const { stars } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        return res.status(404).send('User not found.');
+    }
+    if (!id) {
+        return res.status(400).send('Place not provided.');
+    }
+    const place = await Place.findById(id);
+    if (!place) {
+        return res.status(404).send('Place not found.');
+    }
+
+    if (stars < 0 || stars > 5) {
+        return res.status(400).send('Invalid rating. Please provide a value between 1 and 5.');
+    }
+
+    try {
+        const existingRating = place.ratings.find(rating => rating.userId.toString() === userId.toString());
+
+        if (place.averageRating && place.ratings.length > 0) {
+            let totalStars = place.averageRating * place.ratings.length;
+
+            if (existingRating) {
+                totalStars = totalStars - existingRating.stars + stars;
+
+                if (stars === 0) {
+                    place.ratings = place.ratings.filter(rating => rating.userId.toString() !== userId.toString());
+                } else {
+                    existingRating.stars = stars;
+                }
+                if (place.ratings.length > 0) {
+                    place.averageRating = totalStars / place.ratings.length;
+                }
+                else
+                    place.averageRating = 0;
+
+            } else {
+                if (stars !== 0) {
+                    totalStars += stars;
+                    place.ratings.push({ userId, stars });
+                    place.averageRating = totalStars / place.ratings.length;
+                }
+            }
+
+        } else {
+            if (stars !== 0) {
+                place.ratings.push({ userId, stars });
+            }
+            place.averageRating = stars;
+        }
+
+        await place.save();
+
+        res.status(200).send({
+            message: 'Rating updated successfully.',
+            averageRating: place.averageRating
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error.');
+    }
 });
