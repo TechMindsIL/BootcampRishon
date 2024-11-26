@@ -79,7 +79,6 @@
             height: 8px;
             /* גובה גלילה */
         }
-        
 
         .places-container::-webkit-scrollbar-thumb {
             background-color: #888;
@@ -105,6 +104,39 @@
             justify-content: space-between;
             align-items: center;
         } */
+
+        #placesContainer {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            gap: 15px;
+            flex-wrap: wrap;
+            max-height: 50vh;
+            overflow-y: scroll;
+            margin-top: 10px;
+        }
+
+        #placesContainer::-webkit-scrollbar,
+        #tagsContainer::-webkit-scrollbar {
+            height: 7px;
+            width: 5px;
+        }
+
+        #placesContainer::-webkit-scrollbar-track,
+        #tagsContainer::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #placesContainer::-webkit-scrollbar-thumb,
+        #tagsContainer::-webkit-scrollbar-thumb {
+            background-color: #818b99;
+            border-radius: 10px;
+        }
+
+        #placesContainer::-webkit-scrollbar-thumb:hover,
+        #tagsContainer::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
 
 
         #addPlaceBtn {
@@ -234,43 +266,36 @@
                 }
 
                 async function displayPlaces(places) {
-                    const groupedPlaces = {};
+                    // const groupedPlaces = {};
 
-                    places.forEach(place => {
-                        //     place.tags.forEach(tag => {
-                        //         if (!groupedPlaces[tag.name]) {
-                        //             groupedPlaces[tag.name] = [];
-                        //         }
-                        //         groupedPlaces[tag.name].push(place);
-                        //     });
-                        if (place.tags.length === 0) {
-                            if (!groupedPlaces['תחנות נוספות']) {
-                                groupedPlaces['תחנות נוספות'] = [];
-                            }
-                            groupedPlaces['תחנות נוספות'].push(place);
-                        } else {
-                            place.tags.forEach(tag => {
-                                if (!groupedPlaces[tag.name]) {
-                                    groupedPlaces[tag.name] = [];
-                                }
-                                groupedPlaces[tag.name].push(place);
-                            });
-                        }
-
-                    });
+                    // places.forEach(place => {
+                    //     if (place.tags.length === 0) {
+                    //         if (!groupedPlaces['תחנות נוספות']) {
+                    //             groupedPlaces['תחנות נוספות'] = [];
+                    //         }
+                    //         groupedPlaces['תחנות נוספות'].push(place);
+                    //     } else {
+                    //         place.tags.forEach(tag => {
+                    //             if (!groupedPlaces[tag.name]) {
+                    //                 groupedPlaces[tag.name] = [];
+                    //             }
+                    //             groupedPlaces[tag.name].push(place);
+                    //         });
+                    //     }
+                    // });
 
                     const container = $('#placesContainer');
                     container.empty();
-                    const sortedTags = Object.keys(groupedPlaces).sort((a, b) => a.localeCompare(b));
-                    sortedTags.forEach(tag => {
-                    // for (const tag in groupedPlaces) {
-                        const tagHeader = $('<h5>').text(tag);
-                        container.append(tagHeader);
+                    // const sortedTags = Object.keys(groupedPlaces).sort((a, b) => a.localeCompare(b));
+                    // sortedTags.forEach(tag => {
+                    //     const tagHeader = $('<h5>').text(tag);
+                    //     container.append(tagHeader);
 
-                        const placesContainer = $('<div class="places-container"></div>');
+                    //     const placesContainer = $('<div class="places-container"></div>');
 
-                        groupedPlaces[tag].forEach(place => {
-                            const placeCard = $(`
+                    //     groupedPlaces[tag].forEach(place => {
+                    places.forEach(place => {
+                        const placeCard = $(`
                                 <div class="place-card">
                                     <h6>${place.name}</h6>
                                     <button class="edit-button btn btn-outline-dark mb-2" onclick="window.location.href= '/admin/edit-activity?id=${place._id}'">
@@ -279,10 +304,11 @@
                                 </div>
                             `);
 
-                            placesContainer.append(placeCard);
-                        });
-                        container.append(placesContainer);
-                    })
+                        container.append(placeCard);
+                        // placesContainer.append(placeCard);
+                    });
+                    // container.append(placesContainer);
+                    // })
                 }
 
             </script>
