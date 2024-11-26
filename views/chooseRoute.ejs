@@ -508,8 +508,6 @@
                     allContainer.classList = ""
                     allContainer.innerHTML = ""
 
-                    console.log("DEFAULT")
-
                     for (const category of Object.keys(categories)) {
                         const filteredData = categories[category].filter(fetchedRoutes)
 
@@ -534,16 +532,13 @@
                     });
                 }
 
-                const filterRoutes = (routes) => {
-                    console.log(currentFilters)
-                    console.log(currentSearchQuery)
+                const filterRoutes = () => {
                     if(!currentFilters.length && !currentSearchQuery.length){
                         populateDataDefault();
                         return;
                     }
-                    routes = routes || fetchedRoutes;
-                    
-                    let filteredData = routes;
+                    console.log(fetchedRoutes)
+                    let filteredData = fetchedRoutes;
 
                     if(currentFilters.length){
                         filteredData = filterByCurrentFilters(filteredData);
