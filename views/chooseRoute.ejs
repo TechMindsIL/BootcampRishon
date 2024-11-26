@@ -8,10 +8,10 @@
             <style>
                 :root {
                     --cardsInRow: 4;
-                    --tagsInRow: 6;
                     --mainPadding: 17%;
                     --cardPadding: 0.7rem;
-                    --tagPadding: 0.3rem;
+                    --filterCardsInRow: 6; 
+                    --filterCardsGap: 10px;
                 }
 
                 .mainContent {
@@ -21,7 +21,7 @@
                     margin-bottom: 60px;
                     display: flex;
                     flex-direction: column;
-                    justify-content: center;
+                    /* justify-content: center; */
                     min-height: calc(100vh - 200px);
                 }
 
@@ -149,8 +149,8 @@
                 }
 
                 .searchForm {
-                    width: 100%;
-                    height: 60px;
+                    width: 96%;
+                    height: 55px;
                 }
 
                 input[type="text"] {
@@ -180,15 +180,20 @@
                     :root {
                         --mainPadding: 15%;
                         --cardsInRow: 3;
+                        --filterCardsInRow: 5; 
+                        --filterCardsGap: 10px;
                     }
 
                     .card-title {
                         padding: 15px;
                         font-size: 1.3em;
                     }
-
-                    .searchForm {
-                        width: 60%;
+                    .caret{
+                        left: 7px !important;
+                        height: 45px !important;
+                    }
+                    .filterTitle{
+                        font-size: 1.4rem !important;
                     }
                 }
 
@@ -196,15 +201,10 @@
                     :root {
                         --mainPadding: 13%;
                         --cardPadding: 0.4rem;
-                        --tagsInRow: 5;
                     }
 
                     .card-title {
                         font-size: 1.2em;
-                    }
-
-                    .searchForm {
-                        width: 65%;
                     }
 
                     .tagCard {
@@ -214,20 +214,34 @@
                     .text-end {
                         font-size: 1.35em;
                     }
-                }
 
+                    .caret{
+                        left: 4px !important;
+                        height: 40px !important;
+                    }
+                    .filterTitle{
+                        font-size: 1.3rem !important;
+                    }
+                }
+                @media (max-width: 900px) {
+                    :root {
+                        --filterCardsInRow: 4; 
+                        --filterCardsGap: 8px;
+                    }
+                    .caret{
+                        height: 35px !important;
+                    }
+                    .filterTitle{
+                        font-size: 1.2rem !important;
+                    }
+                }
                 @media (max-width: 800px) {
                     :root {
                         --mainPadding: 11%;
-                        --tagsInRow: 4;
                     }
 
                     .card-title {
                         font-size: 1.1em;
-                    }
-
-                    .searchForm {
-                        width: 70%;
                     }
 
                     .tagCard {
@@ -237,26 +251,36 @@
                     .text-end {
                         font-size: 1.2em;
                     }
-                }
+
+                    .filterCategoryContainer{
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        gap: 0px !important;
+                    }
+                    .filterCategory{
+                        width: 70% !important;
+                    }
+                    .caret{
+                        left: 10px !important;
+                        height: 50px !important;
+                    }
+                    .filterTitle{
+                        font-size: 1.4rem !important;
+                    }
+                    .filterCategoryCard{
+                        height: 55px !important;
+                    }
+                } 
 
                 @media (max-width: 600px) {
                     :root {
                         --cardsInRow: 2;
-                        --tagPadding: 0.2rem;
-                        --tagsInRow: 3;
+                        --filterCardsInRow: 3; 
+                        --filterCardsGap: 5px;
                     }
 
                     .card-title {
                         font-size: 1.1em;
-                    }
-
-                    .searchForm {
-                        width: 100%;
-                        height: 50px;
-                    }
-
-                    .bi-filter {
-                        font-size: 2.5rem;
                     }
 
                     .bi-search {
@@ -270,13 +294,26 @@
                     .text-end {
                         font-size: 1.1em;
                     }
-                }
 
-                @media (max-width: 400px) {
-                    :root {
-                        --tagsInRow: 2.2;
+                    .filterCategory{
+                        width: 80% !important;
                     }
-
+                    .filterCategoryCard{
+                        height: 50px !important;
+                    }
+                }
+                @media (max-width: 480px) {
+                    .filterCategory{
+                        width: 85% !important;
+                    }
+                    .filterCategoryCard{
+                        height: 45px !important;
+                    }
+                        .currentFilterText{
+                            font-size: 80% !important;
+                        }
+                }
+                @media (max-width: 400px) {
                     .tagText {
                         font-size: 0.8rem !important;
                     }
@@ -285,34 +322,32 @@
                         font-size: 0.9em;
                     }
 
-                    .searchForm {
-                        height: 45px;
-                    }
-
-                    .bi-filter {
-                        font-size: 2rem;
-                    }
-
                     .bi-search {
                         font-size: 1.3rem;
+                    }
+                    .filterCategory{
+                        width: 90% !important;
+                    }
+                    .caret{
+                        left: 3px !important;
+                        height: 40px !important;
+                    }
+                    .filterTitle{
+                        font-size: 1.2rem !important;
+                    }
+                    .currentFilterText{
+                        font-size: 75% !important;
+                        line-height: 0.8 !important;
                     }
                 }
 
                 @media (max-width: 370px) {
-                    :root {
-                        --tagsInRow: 2.2;
-                    }
-
                     .tagText {
                         font-size: 0.8rem !important;
                     }
 
                     .card-title {
                         font-size: 0.75em;
-                    }
-
-                    .searchForm {
-                        height: 40px;
                     }
                 }
 
@@ -337,17 +372,12 @@
                     <h1 class="text-center">כל האימונים</h1>
                 </div>
                 <%- include('./partials/filter') %>
-
-                <!-- <div id="allTagsSection" style="display: none">
-                    <%- include('partials/allTags', { currentPage: 'register' }) %>
-                </div> -->
+                <%- include('./partials/allTags') %>
 
                 <div id="all" class="mt-3">
 
                 </div>
             </main>
-
-
 
             <script>
                 // elements & data save
@@ -390,11 +420,6 @@
 
                 // events
                 // toggleIcon.addEventListener("click", showAllTags);
-
-                const searchSumbit = (e) => {
-                    e.preventDefault(); // Prevent form submission
-                    populateBySearch();
-                };
 
                 const categories = {
                     search: {
@@ -483,6 +508,8 @@
                     allContainer.classList = ""
                     allContainer.innerHTML = ""
 
+                    console.log("DEFAULT")
+
                     for (const category of Object.keys(categories)) {
                         const filteredData = categories[category].filter(fetchedRoutes)
 
@@ -491,49 +518,39 @@
                     }
                 };
 
-                // Get search input value and filter the data
-                const populateBySearch = () => {
-                    const searchValue = document.querySelector("#inputId").value.toLowerCase();
-                    if (searchValue === "") {
-                        populateDataDefault()
-                        return;
-                    }
-
-                    allContainer.innerHTML = ""
-                    allContainer.classList = "row justify-content-s flex-row-reverse"
-                    displayTitles(false)
-
-                    const filteredData = categories.search.filter(fetchedRoutes, searchValue)
-                    if (filteredData.length) {
-                        makeCards(filteredData, allContainer)
-                        return;
-                    }
-
-                    allContainer.innerHTML = `
-            <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
-        `
-                };
-
-                const filterRoutes = (routes) => {
-                    if(!currentFilters.length){
-                        populateDataDefault();
-                        return
-                    }
-                    routes = routes || fetchedRoutes;
-                    console.log(routes)
-                    const filteredData = routes.filter(route => {
+                const filterByCurrentFilters = (data) => {
+                    return data.filter(route => {
                         const categories = [...new Set(currentFilters.map(filter => filter.category.name))];
 
                         return categories.every(categoryName => {
                             const matchingTags = route.tags.filter(tag => tag.category.name === categoryName);
 
-                            return matchingTags.some(tag =>
-                                currentFilters.some(filter =>
-                                    filter.category.name === categoryName && filter.name === tag.name
-                                )
-                            );
+                            return matchingTags.some(tag =>{
+                                return currentFilters.some(
+                                    filter => filter.category.name === categoryName && filter.name === tag.name
+                                );
+                            });
                         });
                     });
+                }
+
+                const filterRoutes = (routes) => {
+                    console.log(currentFilters)
+                    console.log(currentSearchQuery)
+                    if(!currentFilters.length && !currentSearchQuery.length){
+                        populateDataDefault();
+                        return;
+                    }
+                    routes = routes || fetchedRoutes;
+                    
+                    let filteredData = routes;
+
+                    if(currentFilters.length){
+                        filteredData = filterByCurrentFilters(filteredData);
+                    }
+                    if(currentSearchQuery.length){
+                        filteredData = categories.search.filter(filteredData, currentSearchQuery)
+                    }
 
                     allContainer.innerHTML = ""
                     allContainer.classList = "row justify-content-s flex-row-reverse"
@@ -544,8 +561,8 @@
                     }
 
                     allContainer.innerHTML = `
-            <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
-        `
+                        <h1 class="centered-text">לא נמצאו תוצאות חיפוש</h1>
+                    `
                 }
 
                 // Function to fetch data from the API

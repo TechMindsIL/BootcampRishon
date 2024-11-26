@@ -1,8 +1,4 @@
 <style>
-    :root{
-        --filterCardsInRow: 6; 
-        --filterCardsGap: 10px;
-    }
     .activeFilters,
     .filterCategoryContainer {
         display: flex;
@@ -75,6 +71,10 @@
         padding-top: 10px;
         height: 100%;
     }
+    .noPaddingHorizontal { 
+        padding-left: 0px;
+        padding-right: 0px;
+    }
     .nonAdvContent{
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -84,13 +84,13 @@
     }
 
     .scroll-container.open{
-        height: 290px;
+        height: 250px;
     }
 
     .tagCardPadding{
         height: 60px;
-        padding: 0 calc(var(--filterCardsGap)/2);
-        padding-bottom: var(--filterCardsGap);
+        padding: 0 5px;
+        padding-bottom: 10px;
     }
     .tagCard {
         cursor: pointer;
@@ -118,7 +118,7 @@
         text-align: center;
         height: 100%;
         width: 100%;
-        padding: 0px 17px;
+        padding: 0px 10px;
 
         margin: auto;
         align-content: center;
@@ -130,6 +130,11 @@
         justify-content: right;
         margin-bottom: 10px;
         overflow-x: scroll;
+        gap: 0;
+        display:none;
+    }
+    .activeFilters.showActiveFilters{
+        display: flex;
     }
     .activeFilterCard {
         display: flex;
@@ -137,22 +142,30 @@
 
         align-content: center;
 
+        width:100%;
+        height: 100%;
+
         background: rgb(225, 225, 225);
         border-radius: 10px;
-        width: calc((100% - (var(--filterCardsInRow) - 1) * var(--filterCardsGap)) / var(--filterCardsInRow));
-        height: 43px;
+
         margin-bottom: 5px;
-        box-shadow: 0 0px 6px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0px 4px rgba(0, 0, 0, 0.3);
         transition: background-color 0.2s ease;
         flex-shrink: 0;
+    }
+    .activeFilterCardPadding{
+        height: 55px;
+        padding: 6px calc(var(--filterCardsGap) / 2);
+        width: calc(100% / var(--filterCardsInRow));
+        min-width: calc(100% / var(--filterCardsInRow));
     }
     .activeFilterCard:hover {
         background: rgb(205, 205, 205);
     }
     .bi-x {
         cursor: pointer;
-        height: 100%;
-        width: 40%;
+        height: 43;
+        width: 43;
         fill: rgb(255, 0, 0);
     }
 
@@ -163,6 +176,10 @@
         padding-left: 5px;
         color: #333333;
     }
+
+    .width-adjustable{
+        width: fit-content;
+    }
 </style>
 <div class="filterCategoryContainer"></div>
 <div class="activeFilters"></div>
@@ -171,11 +188,8 @@
     const tagsURL = `${ORIGIN}/api/v1/tags`;
 
     // const tagsDivider = document.getElementById("tagsDivider");
-    const filterCategoryContainer = document.getElementsByClassName(
-        "filterCategoryContainer"
-    )[0];
-    const activeFiltersContainer =
-        document.getElementsByClassName("activeFilters")[0];
+    const filterCategoryContainer = document.getElementsByClassName("filterCategoryContainer")[0];
+    const activeFiltersContainer = document.getElementsByClassName("activeFilters")[0];
 
     const menus = {
         /*
@@ -201,6 +215,7 @@
     };
 
     let currentOpenMenu = "";
+    let currentSearchQuery = "";
     let currentFilters = [];
     let allTags = [];
 
@@ -275,20 +290,34 @@
     };
 
     const updateFilters = () => {
-        activeFiltersContainer.innerHTML = "";
+        filterRoutes()
 
+        if(!currentSearchQuery.length && !currentFilters.length){
+            activeFiltersContainer.classList.remove("showActiveFilters");
+            return;
+        }
+        activeFiltersContainer.classList.add("showActiveFilters");
+
+        activeFiltersContainer.innerHTML = currentSearchQuery.length === 0 ? "" : `
+            <div class="activeFilterCardPadding width-adjustable">
+                <div class="activeFilterCard" onclick="removeSearch()">
+                    ${xIcon()}
+                    <h5 class="tagText unselectable currentFilterText width-adjustable">כולל: ${currentSearchQuery}</h5>
+                </div>
+            </div>
+        `;
+        
         for (const tag of currentFilters) {
             activeFiltersContainer.innerHTML += `
-                <div class="activeFilterCard" onclick="useFilter('${tag._id}')">
-                    ${xIcon()}
-                    <h5 class="tagText unselectable currentFilterText">${
-                        tag.name
-                    }</h5>
+                <div class="activeFilterCardPadding">
+                    <div class="activeFilterCard" onclick="useFilter('${tag._id}')">
+                        ${xIcon()}
+                        <h5 class="tagText unselectable currentFilterText">${tag.name}</h5>
+                    </div>
                 </div>
             `;
         }
 
-        filterRoutes()
     };
 
     const useFilter = (tagID) => {
@@ -346,6 +375,7 @@
                             />
                         </div>
                     </form>
+                    <div class="col-12 mx-auto text-center" id="allTagsSection"></div>
                 `
                 continue;
             }
@@ -354,8 +384,6 @@
             filteredTags.sort((a, b) => {
                 return a.name.localeCompare(b.name);
             });
-
-            console.log(filteredTags);
 
             for (const tag of filteredTags) {
                 const safeCategoryName = tag.category.name.replace(/['"]/g, "_");
@@ -370,6 +398,20 @@
                 `;
             }
         }
+    };
+
+    const removeSearch = () => {
+        currentSearchQuery = "";
+        document.querySelector("#inputId").value = "";
+        updateFilters();
+        filterRoutes;
+    }
+
+    const searchSumbit = (e) => {
+        e.preventDefault();
+        currentSearchQuery = document.querySelector("#inputId").value.toLowerCase().trim();
+        updateFilters();
+        filterRoutes();
     };
 
     const removeDuplicateTags = (tags) => {
@@ -402,7 +444,11 @@
     const initFilter = async () => {
         makeFilterContainers();
         allTags = await fetchTags();
+        console.log(allTags)
         populateFilterContainers(allTags);
+
+        makeContainers();
+        makeTagCards(allTags);
     };
     initFilter();
 </script>

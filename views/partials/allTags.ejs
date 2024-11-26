@@ -1,22 +1,16 @@
 <style>
     #allTagsSection {
         direction: ltr;
-        display: none;
+        display: block;
         height: auto;
         overflow-y: visible;
-        padding-right: 10px;
-        opacity: 0;
-        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    }
 
-    #allTagsSection.show {
-        display: block;
-        opacity: 1;
+        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
     }
 
     .tagCategory {
         font-size: 1.5rem;
-        margin: 10px 0;
+        margin: 4px 1px 0 0 ;
         width: 100%;
         display: flex;
         text-align: right;
@@ -24,80 +18,29 @@
         align-content: right;
     }
 
-    .tagPadding {
-        padding: 0 var(--tagPadding);
-        width: calc(100% / var(--tagsInRow));
-        flex-shrink: 0;
-        height: 60px;
-        margin-bottom: 3px;
-    }
-
-    .tagCard {
-        cursor: pointer;
-        width: 100%;
-        height: 100%;
-        border-radius: 30px;
-        background: #6c757d;
-        display: flex;
-        align-content: center;
-        justify-content: center;
-    }
-
-    .tagCard.selected {
-        background: #ff8800;
-    }
-
-    .tagText {
-        text-align: center;
-        color: white;
-        padding: 10px;
-        font-size: 1rem;
-        font-weight: 400;
-        height: fit-content;
-        margin: auto;
-    }
-
     .categoryName {
         font-size: 1.7rem;
+        margin:0;
     }
 
-    .tagsDivider {
-        overflow-x: visible;
-        width: 100%;
-        margin: 30px 0;
-        height: 3px !important;
-        display: none;
-        opacity: 0;
-        color: rgba(0, 0, 0, 0.3);
-        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    }
-
-    .tagsDivider.show {
-        display: block;
-        opacity: 1;
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #efefef inset !important;
     }
 </style>
-
-<div class="col-12 mx-auto text-center" id="allTagsSection"></div>
-
-<hr class="tagsDivider" id="tagsDivider" />
-
+<body>
+</body>
 <script>
-    const allTagsSection = document.getElementById("allTagsSection");
-
-    const ORIGIN = window.location.origin;
-    const tagsURL = `${ORIGIN}/api/v1/tags`;
-    const tagsDivider = document.getElementById("tagsDivider");
-
     const tagCategories = {
         סוג: {
             id: "type",
-        },
-        אזור: {
-            id: "area",
-        },
-        שכונות: {
-            id: "hoods",
         },
         התאמות: {
             id: "adjustments",
@@ -108,9 +51,8 @@
         for (const [category, { id }] of Object.entries(tagCategories)) {
             allTagsSection.innerHTML += `
                 <div class="tagCategory">
-                    <h3 class="categoryName">${category === "שכונות" ? "שכונה" : category
-                }</h3>
-                    <div class="cardContainer" id=${id}>
+                    <h3 class="categoryName">${category === "שכונות" ? "שכונה" : category}</h3>
+                    <div class="nonAdvContent noPaddingHorizontal" id=${id}>
                     </div>
                 </div>
             `;
@@ -118,6 +60,9 @@
     };
 
     const makeTagCards = (allTags) => {
+        allTags.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
         for (const tag of allTags) {
             if (tag.category.for !== "Route") continue;
 
@@ -127,45 +72,26 @@
 
             if (!container) continue;
 
-            const div = document.createElement("div");
+            // const div = document.createElement("div");
 
-            div.classList.add("tagPadding");
-            // div.onclick = () => filterByTag(tag);
-            div.onclick = () => {
-                const card = div.querySelector(".tagCard");
-                card.classList.toggle("selected");
-                filterByTag(tag);
-            };
+            // div.classList.add("tagCardPadding");
+            // // div.onclick = () => filterByTag(tag);
+            // div.onclick = () => {
+            //     const card = div.querySelector(".tagCard");
+            //     card.classList.toggle("selected");
+            //     filterByTag(tag);
+            // };
 
-
-            div.innerHTML += `
-                <div class="tagCard">
-                    <h5 class="tagText">${tag.name}</h5>
+            const safeCategoryName = tag.category.name.replace(/['"]/g, "_");
+            const safeTagName = tag.name.replace(/['"]/g, "_");
+            
+            container.innerHTML += `
+                <div class="tagCardPadding">
+                    <div class="tagCard" id='${safeCategoryName}:${safeTagName}' onclick="useFilter('${tag._id}')">
+                        <h5 class="tagText unselectable">${tag.name}</h5>
+                    </div>
                 </div>
             `;
-            container.appendChild(div);
         }
     };
-
-    const fetchTags = async () => {
-        try {
-            const response = await fetch(tagsURL);
-
-            if (!response.ok) {
-                throw new Error("Response is not ok");
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching tags:", error);
-        }
-    };
-
-    const initTags = async () => {
-        makeContainers();
-        const allTags = await fetchTags();
-        makeTagCards(allTags);
-    };
-    initTags();
 </script>
