@@ -91,6 +91,7 @@
                     padding: 5px 5px;
                     text-align: center;
                     border: none;
+                    margin-bottom: 50px;
                 }
 
                 .fa-star {
@@ -186,6 +187,7 @@
                     justify-content: space-between;
                     gap: 100px;
                     flex-wrap: wrap;
+                    margin-bottom: 15px;
                 }
 
                 #div-average-rating {
@@ -214,6 +216,16 @@
 
                 #rate-button {
                     font-size: 20px;
+                    cursor: pointer;
+                    background-color: #f16624;
+                    border-radius: 14px;
+                    padding: 0px 5px;
+                    text-align: center;
+                    border: none;
+                }
+
+                .login-button {
+                    font-size: 16px;
                     cursor: pointer;
                     background-color: #f16624;
                     border-radius: 14px;
@@ -277,11 +289,11 @@
 
                 document.addEventListener("DOMContentLoaded", async () => {
                     try {
-                        const route = await fetchRoute(); 
+                        const route = await fetchRoute();
                         if (route) {
-                            addRouteToMap(route); 
-                            updateRatingDisplay(route); 
-                            checkAuthStatus(route); 
+                            addRouteToMap(route);
+                            updateRatingDisplay(route);
+                            checkAuthStatus(route);
                         } else {
                             console.error("Failed to fetch route data.");
                         }
@@ -529,6 +541,19 @@
                             console.log("No user is logged in.");
                             saveButton.style.display = "none";
                             document.getElementById("rating-container").style.display = "none";
+
+                            const loginButton = document.createElement("button");
+                            loginButton.id = "login-button";
+                            loginButton.className = "login-button";
+                            loginButton.textContent = "התחבר כדי לדרג";
+
+                            // הגדרת אירוע לחיצה
+                            loginButton.onclick = function () {
+                                window.location.href = "/login"; // מעביר את המשתמש לעמוד ההתחברות
+                            };
+
+                            const ratingSection = document.getElementById(`rating-section`);
+                            ratingSection.appendChild(loginButton);
                         }
                     } catch (error) {
                         console.log("Error fetching auth status:", error);
@@ -562,13 +587,13 @@
                 const averageRatingElement = document.getElementById("average-rating");
                 const rateButton = document.getElementById("rate-button");
 
-                let selectedStars = 0; 
-                let userRating = null; 
+                let selectedStars = 0;
+                let userRating = null;
 
                 const updateRatingDisplay = async (route) => {
                     if (route.averageRating > 0) {
                         document.getElementById("div-average-rating").style.display = "flex";
-                        averageRatingElement.textContent = route.averageRating; 
+                        averageRatingElement.textContent = route.averageRating;
                     }
                     else
                         document.getElementById("div-average-rating").style.display = "none";
@@ -577,16 +602,16 @@
                 const highlightStars = (count) => {
                     const stars = document.querySelectorAll(".star");
                     stars.forEach((star, index) => {
-                        star.textContent = index < count ? "★" : "☆"; 
+                        star.textContent = index < count ? "★" : "☆";
                     });
                 };
 
                 starsContainer.addEventListener("click", (event) => {
-                    const value = parseInt(event.target.dataset.value); 
-                    
+                    const value = parseInt(event.target.dataset.value);
+
                     if (!value || value === selectedStars) {
                         selectedStars = 0;
-                        highlightStars(0); 
+                        highlightStars(0);
                     } else {
                         selectedStars = value;
                         highlightStars(value);
