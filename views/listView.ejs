@@ -324,6 +324,8 @@
           padding: 0px 5px;
           text-align: center;
           border: none;
+          margin-top: 5px;
+          justify-content: flex-end;
         }
       </style>
     </head>
@@ -417,6 +419,8 @@
                   ${place.img ? `<img src="${place.img}" alt="${place.name}" class="place-image">` : ""}
                   ${place.youtube ? `<iframe src="${place.youtube}" class="place-video" frameborder="0" allowfullscreen></iframe>` : ""}
                   </div>
+
+                  
             `;
         };
 
@@ -441,12 +445,10 @@
           const lineContainer = placeDiv.querySelector('.linecontainer');
 
           if (detailsDiv.style.display === "none" || !detailsDiv.style.display) {
-            if (place.description || place.img || place.youtube) {
-              detailsDiv.style.display = "block";
-              placeDiv.classList.add('expanded');
-              const detailsHeight = detailsDiv.offsetHeight;
-              lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
-            }
+            detailsDiv.style.display = "block";
+            placeDiv.classList.add('expanded');
+            const detailsHeight = detailsDiv.offsetHeight;
+            lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
           } else {
             detailsDiv.style.display = "none";
             placeDiv.classList.remove('expanded');
@@ -471,26 +473,53 @@
 
             let selectedStars = 0;
 
+
             const changeLineHeight = () => {
-              const placeDiv = document.querySelector(`.place[data-index="${index}"]`);
-              const lineContainer = placeDiv.querySelector('.linecontainer');
-              const ratingSection = document.getElementById(`rating-section-${index}`);
+              if (!isLastPlace) {
+                const placeDiv = document.querySelector(`.place[data-index="${index}"]`);
+                const lineContainer = placeDiv.querySelector('.linecontainer');
+                const ratingSection = document.getElementById(`rating-section-${index}`);
 
-              const ratingSectionHeight = ratingSection.offsetHeight > 0 ? ratingSection.offsetHeight : 0;
-              lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${ratingSectionHeight}px)`;
-
+                const ratingSectionHeight = ratingSection.offsetHeight > 0 ? ratingSection.offsetHeight : 0;
+                lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${ratingSectionHeight}px)`;
+              }
             }
+
+            if (userId) {
+              ratingContainer.style.display = "flex";
+              const userRatingObj = place.ratings.find(rating => rating.userId === userId);
+              if (userRatingObj) {
+                selectedStars = userRatingObj.stars;
+                highlightStars(selectedStars);
+              }
+            }
+            else {
+              ratingContainer.style.display = "none";
+
+              const loginButton = document.createElement("button");
+              loginButton.id = `login-button-${index}`;
+              loginButton.className = "login-button";
+              loginButton.textContent = "התחבר כדי לדרג";
+
+              loginButton.onclick = function () {
+                window.location.href = "/login";
+              };
+
+              const ratingSection = document.getElementById(`rating-section-${index}`);
+              const detailsDiv = document.getElementById(`details-${index}`);
+              detailsDiv.parentNode.insertBefore(loginButton, detailsDiv.nextSibling);
+            }
+
+            changeLineHeight();
 
             const updateRatingDisplay = (averageRating) => {
               if (averageRating > 0) {
                 averageRatingDiv.style.display = "flex";
                 averageRatingElement.textContent = averageRating;
-                if (!isLastPlace)
-                  changeLineHeight();
+                changeLineHeight();
               } else {
                 averageRatingDiv.style.display = "none";
-                if (!isLastPlace)
-                  changeLineHeight();
+                changeLineHeight();
               }
             };
 
@@ -526,8 +555,7 @@
                   const updatedPlace = await response.json();
                   updateRatingDisplay(updatedPlace.averageRating);
                   alert("הדירוג נשמר בהצלחה!");
-                  if (!isLastPlace)
-                    changeLineHeight();
+                  changeLineHeight();
                 } else {
                   throw new Error("Failed to save rating");
                 }
@@ -538,36 +566,8 @@
             });
             updateRatingDisplay(place.averageRating);
 
-            if (userId) {
-              ratingContainer.style.display = "flex";
-              const userRatingObj = place.ratings.find(rating => rating.userId === userId);
-              if (userRatingObj) {
-                selectedStars = userRatingObj.stars;
-                highlightStars(selectedStars);
-              }
-              changeLineHeight();
-            }
-            else {
-              ratingContainer.style.display = "none";
 
-
-              const loginButton = document.createElement("button");
-              loginButton.id = "login-button";
-              loginButton.className = "login-button";
-              loginButton.textContent = "התחבר כדי לדרג";
-
-              // הגדרת אירוע לחיצה
-              loginButton.onclick = function () {
-                window.location.href = "/login"; // מעביר את המשתמש לעמוד ההתחברות
-              };
-
-              const ratingSection = document.getElementById(`rating-section-${index}`);
-              ratingSection.appendChild(loginButton);
-
-              changeLineHeight();
-            }
           })
-
 
         };
 
