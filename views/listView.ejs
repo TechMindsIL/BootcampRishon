@@ -441,10 +441,12 @@
           const lineContainer = placeDiv.querySelector('.linecontainer');
 
           if (detailsDiv.style.display === "none" || !detailsDiv.style.display) {
-            detailsDiv.style.display = "block";
-            placeDiv.classList.add('expanded');
-            const detailsHeight = detailsDiv.offsetHeight;
-            lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
+            if (place.description || place.img || place.youtube) {
+              detailsDiv.style.display = "block";
+              placeDiv.classList.add('expanded');
+              const detailsHeight = detailsDiv.offsetHeight;
+              lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
+            }
           } else {
             detailsDiv.style.display = "none";
             placeDiv.classList.remove('expanded');
@@ -483,10 +485,12 @@
               if (averageRating > 0) {
                 averageRatingDiv.style.display = "flex";
                 averageRatingElement.textContent = averageRating;
-                changeLineHeight();
+                if (!isLastPlace)
+                  changeLineHeight();
               } else {
                 averageRatingDiv.style.display = "none";
-                changeLineHeight();
+                if (!isLastPlace)
+                  changeLineHeight();
               }
             };
 
@@ -522,7 +526,8 @@
                   const updatedPlace = await response.json();
                   updateRatingDisplay(updatedPlace.averageRating);
                   alert("הדירוג נשמר בהצלחה!");
-                  changeLineHeight();
+                  if (!isLastPlace)
+                    changeLineHeight();
                 } else {
                   throw new Error("Failed to save rating");
                 }
