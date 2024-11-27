@@ -39,10 +39,10 @@
 </body>
 <script>
     const tagCategories = {
-        סוג: {
+        "סוג": {
             id: "type",
         },
-        התאמות: {
+        "התאמות": {
             id: "adjustments",
         },
     };
@@ -87,7 +87,7 @@
             
             container.innerHTML += `
                 <div class="tagCardPadding">
-                    <div class="tagCard" id='${safeCategoryName}:${safeTagName}' onclick="useFilter('${tag._id}')">
+                    <div class="tagCard" id='${safeCategoryName}:${safeTagName}' onclick="useFilter('${tag._id}', 'advanced')">
                         <h5 class="tagText unselectable">${tag.name}</h5>
                     </div>
                 </div>
