@@ -105,6 +105,21 @@
                                 </div>
                                 <div class="route-details mt-3 text-center" id="details-${route._id}" style="display: none;">
                                     <p>${route.description}</p>
+
+                                    <div class="places-list" style="direction:rtl;text-align:right;">
+                            
+                                        <h6>תחנות המסלול:</h6>
+
+                                        <ul>
+                                            ${route.places.map(place => `
+                                                <li>
+                                                    <a href="/admin/edit-activity?id=${place._id}" style=" color: black;">
+                                                        ${place.name}
+                                                    </a>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>         
                             `;
