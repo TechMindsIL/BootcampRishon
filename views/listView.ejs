@@ -315,6 +315,16 @@
           text-align: center;
           border: none;
         }
+
+        .login-button {
+          font-size: 16px;
+          cursor: pointer;
+          background-color: #f16624;
+          border-radius: 14px;
+          padding: 0px 5px;
+          text-align: center;
+          border: none;
+        }
       </style>
     </head>
 
@@ -431,10 +441,12 @@
           const lineContainer = placeDiv.querySelector('.linecontainer');
 
           if (detailsDiv.style.display === "none" || !detailsDiv.style.display) {
-            detailsDiv.style.display = "block";
-            placeDiv.classList.add('expanded');
-            const detailsHeight = detailsDiv.offsetHeight;
-            lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
+            if (place.description || place.img || place.youtube) {
+              detailsDiv.style.display = "block";
+              placeDiv.classList.add('expanded');
+              const detailsHeight = detailsDiv.offsetHeight;
+              lineContainer.style.height = `calc(var(--cardSpacing) + var(--cardHeight) - var(--pinSize) + ${detailsHeight}px)`;
+            }
           } else {
             detailsDiv.style.display = "none";
             placeDiv.classList.remove('expanded');
@@ -473,10 +485,12 @@
               if (averageRating > 0) {
                 averageRatingDiv.style.display = "flex";
                 averageRatingElement.textContent = averageRating;
-                changeLineHeight();
+                if (!isLastPlace)
+                  changeLineHeight();
               } else {
                 averageRatingDiv.style.display = "none";
-                changeLineHeight();
+                if (!isLastPlace)
+                  changeLineHeight();
               }
             };
 
@@ -512,7 +526,8 @@
                   const updatedPlace = await response.json();
                   updateRatingDisplay(updatedPlace.averageRating);
                   alert("הדירוג נשמר בהצלחה!");
-                  changeLineHeight();
+                  if (!isLastPlace)
+                    changeLineHeight();
                 } else {
                   throw new Error("Failed to save rating");
                 }
@@ -522,6 +537,7 @@
               }
             });
             updateRatingDisplay(place.averageRating);
+
             if (userId) {
               ratingContainer.style.display = "flex";
               const userRatingObj = place.ratings.find(rating => rating.userId === userId);
@@ -533,6 +549,21 @@
             }
             else {
               ratingContainer.style.display = "none";
+
+
+              const loginButton = document.createElement("button");
+              loginButton.id = "login-button";
+              loginButton.className = "login-button";
+              loginButton.textContent = "התחבר כדי לדרג";
+
+              // הגדרת אירוע לחיצה
+              loginButton.onclick = function () {
+                window.location.href = "/login"; // מעביר את המשתמש לעמוד ההתחברות
+              };
+
+              const ratingSection = document.getElementById(`rating-section-${index}`);
+              ratingSection.appendChild(loginButton);
+
               changeLineHeight();
             }
           })

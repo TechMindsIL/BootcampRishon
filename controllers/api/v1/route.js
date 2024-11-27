@@ -1,5 +1,6 @@
 const User = require('../../../models/User');
 const Route = require('../../../models/Route'); // Import the Route model
+const Neighborhood = require('../../../models/Neighborhood'); // Import the Neighborhood model
 const asyncHandler = require('../../../utils/asyncHandler'); // Adjust the path as needed
 
 // Controller function to get all Routes
@@ -25,6 +26,10 @@ exports.getAllRoutes = asyncHandler(async (req, res) => {
                     }
                 }
             ]
+        })
+        .populate({
+            path: 'neighborhood',
+            model: 'Neighborhood'
         });
 
     res.json(routes);
@@ -32,7 +37,7 @@ exports.getAllRoutes = asyncHandler(async (req, res) => {
 
 // Controller function to get a query of Routes
 exports.getRouteByQuery = asyncHandler(async (req, res) => {
-    const { distanceRange, durationRange, name, tags, isRelevant, places } = req.query;
+    const { distanceRange, durationRange, name, tags, isRelevant, places, neighborhood } = req.query;
 
     // Build the query object
     let query = {};
@@ -78,6 +83,11 @@ exports.getRouteByQuery = asyncHandler(async (req, res) => {
         query.places = { $all: places.split(',') }; // Assuming places are provided as a comma-separated string
     }
 
+    // Filter by Neighborhood
+    if (neighborhood) {
+        query.neighborhood = neighborhood; // Assuming neighborhood is passed as an ID
+    }
+
     // Fetch all Routes from the database that match the query
     const routes = await Route.find(query)
         .sort({ _id: -1 })
@@ -99,6 +109,10 @@ exports.getRouteByQuery = asyncHandler(async (req, res) => {
                     }
                 }
             ]
+        })
+        .populate({
+            path: 'neighborhood',
+            model: 'Neighborhood'
         });
 
     res.json(routes);
@@ -138,6 +152,10 @@ exports.getRouteById = asyncHandler(async (req, res) => {
                     }
                 }
             ]
+        })
+        .populate({
+            path: 'neighborhood',
+            model: 'Neighborhood'
         });
 
     res.json(route);

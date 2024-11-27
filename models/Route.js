@@ -17,9 +17,9 @@ const routeSchema = new mongoose.Schema({
         type: Number,
         default: ""
     },
-    level: {
+    goal: {
         type: String,
-        enum: ['מתחיל', 'בינוני', 'מתקדם'],
+        enum: ['בריאות', 'חיזוק', 'ירידה במשקל'],
     },
     places: {
         type: [mongoose.Schema.Types.ObjectId],
@@ -38,6 +38,10 @@ const routeSchema = new mongoose.Schema({
     averageRating: {
         type: Number,
         default: 0
+    },
+    neighborhood: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Neighborhood'
     },
     isRelevant: {
         type: Boolean,
