@@ -150,7 +150,8 @@ exports.updatePlace = asyncHandler(async (req, res) => {
 
     // set body isRelevant to true or false based on the string value
     // FormData doesn't support boolean values, so we need to convert the string to a boolean
-    req.body.isRelevant = req.body.isRelevant === 'true';
+    req.body.isRelevant = req.body.isRelevant;
+    // req.body.isRelevant = req.body.isRelevant === 'true';
 
     // check whether we receive tags as a string and if it has a length greater than 0
     // if yes, we split the string into an array to get individual ID's of each tags, and assign it 
