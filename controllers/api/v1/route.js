@@ -31,12 +31,16 @@ exports.getAllRoutes = asyncHandler(async (req, res) => {
 
 // Controller function to get a query of Routes
 exports.getRouteByQuery = asyncHandler(async (req, res) => {
-    const { distanceRange, durationRange, name, tags, isRelevant, places } = req.query;
+    const { calories, distanceRange, durationRange, name, tags, isRelevant, places } = req.query;
 
     // Build the query object
     let query = {};
 
     // Min-Max Range Filters
+    if (calories) {
+        query.calories = { $gte: Number(calories) };
+    }
+    
     if (distanceRange) {
         const minDistance = distanceRange.min;
         const maxDistance = distanceRange.max;

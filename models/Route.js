@@ -5,6 +5,10 @@ const routeSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    calories: {
+        type: Number,
+        default: 0
+    },
     description: {
         type: String,
         default: ""
