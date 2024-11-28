@@ -7,16 +7,9 @@
             text-align: center;
         }
 
-        #routesContainer {
-            margin: 30px;
-        }
-
-        .bg-light .route-actions button:hover {
-            color: white !important;
-        }
-
         #addNewRoute {
             margin: 0px auto;
+            margin-top: 10px;
             padding: 10px 20px;
             font-size: 18px;
             background-color: #f8f9fa;
@@ -33,6 +26,14 @@
             background-color: black;
             opacity: 80%;
         }
+
+        #routesContainer {
+            margin: 30px;
+        }
+
+        .bg-light .route-actions button:hover {
+            color: white !important;
+        }
     </style>
 
     <body>
@@ -40,11 +41,12 @@
             <div class="container mt-5" style="max-width: 70%; margin: auto;">
                 <h1>ניהול אימונים</h1>
 
+                <button id="addNewRoute">הוספת אימון </button>
+
                 <div id="routesContainer">
                     <!-- All the routes -->
                 </div>
 
-                <button id="addNewRoute">הוספת אימון </button>
             </div>
 
             <script>
