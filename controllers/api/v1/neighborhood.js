@@ -4,7 +4,7 @@ const asyncHandler = require('../../../utils/asyncHandler.js'); // Adjust the pa
 // Controller function to get all Neighborhood
 exports.getAllNeighborhood = asyncHandler(async (req, res) => {
     // Fetch all Neighborhood from the database
-    const neighborhood = await Neighborhood.find().sort({ _id: -1 });
+    const neighborhood = await Neighborhood.find().sort({ title: 1 });
     res.json(neighborhood);
 });
 

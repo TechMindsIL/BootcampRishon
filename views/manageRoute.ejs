@@ -260,7 +260,7 @@
                     $('#routeDuration').val(routeData.duration);
                     $('#routeGoal').val(routeData.goal);
                     $('#routeNeighborhood').val(routeData.neighborhood._id);
-                    
+
                     if (routeData.tags) {
                         routeData.tags.forEach(tagId => {
                             $(`.tag-button[data-tag-id="${tagId._id}"]`).addClass('selected');
@@ -399,7 +399,6 @@
                             throw new Error(`Error: ${response.status} ${response.statusText}`);
                         }
                         const neighborhoods = await response.json();
-                        console.log(neighborhoods);
 
                         // Select the dropdown element
                         const neighborhoodSelect = document.getElementById('routeNeighborhood');
