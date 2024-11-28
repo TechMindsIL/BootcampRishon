@@ -22,9 +22,6 @@ router.get('/register', async (req, res) => {
 });
 
 // Feature 3
-// router.get('/map', async (req, res) => {
-//     return res.render('mapScreen', { title: 'Map' });
-// });
 
 router.get('/map', async (req, res) => {
     const id = req.query.id;  
@@ -43,6 +40,9 @@ router.get('/MyWorkouts', async (req, res) => {
     return res.render('MyWorkouts', { title: 'MyWorkouts' });
 });
 
+router.get('/about', async (req, res) => {
+    return res.render('about', { title: 'About' });
+});
 
 // router.get('/customer', auth, checkRole('customer'), async (req, res) => {
 //     return res.render('customer', { title: 'Customer' });

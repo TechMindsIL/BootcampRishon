@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('partials/head') %>
+
+        <style>
+            .transparent-box {
+                background-color: rgba(255, 255, 255, 0.8);
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                width: 80%;
+                margin: 20px auto;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                font-size: 18px;
+                direction: rtl;
+            }
+
+            .container h5 {
+                text-align: center;
+                width: 100%;
+            }
+
+            .container {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-top: 50px;
+            }
+
+            .neighborhoods-list {
+                width: 65%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                direction: rtl;
+            }
+
+            .neighborhood-item {
+                padding-left: 10px;
+            }
+
+            .graph-container {
+                width: 35%;
+                justify-content: center;
+                align-items: center;
+                display: flex;
+            }
+
+            @media (min-width: 771px) {
+                .container {
+                    flex-direction: row-reverse;
+                }
+            }
+
+            @media (max-width: 770px) {
+                .neighborhoods-list {
+                    width: 100%;
+                }
+
+                .graph-container {
+                    width: 100%;
+                    max-height: 300px;
+                }
+            }
+
+            @media (max-width: 530px) {
+                .container {
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                }
+
+                .neighborhoods-list {
+                    width: 100%;
+                    grid-template-columns: 1fr;
+                }
+
+                .graph-container {
+                    width: 100%;
+                }
+            }
+        </style>
+
+</head>
+
+<body>
+    <%- include('partials/navbar', {currentPage: 'about' }) %>
+
+        <div style="text-align: center;">
+            <h1>אודותינו</h1>
+        </div>
+
+        <div class="transparent-box">
+            <p>
+                פסקה ראשונה
+            </p>
+        </div>
+
+        <div class="transparent-box">
+            <p>
+                פסקה שניה
+            </p>
+        </div>
+
+        <div class="transparent-box">
+            <p>
+                פסקה שלישית
+            </p>
+        </div>
+
+
+        <div class="container">
+            <h5 style="direction: rtl;">
+                קלוריות שנשרפו בכל שכונה לפי נתוני משתמשים: </h5>
+
+            <ul class="neighborhoods-list" id="neighborhoods-list" style="direction: rtl;"></ul>
+
+            <div class="graph-container">
+                <canvas id="neighborhoodGraph"></canvas>
+            </div>
+        </div>
+
+
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            async function fetchNeighborhood() {
+                try {
+                    const response = await fetch('/api/v1/neighborhoods');
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
+                    const neighborhoods = await response.json();
+                    console.log(neighborhoods);
+
+                    // Sort neighborhoods by caloriesBurned in descending order
+                    const sortedNeighborhoods = neighborhoods.sort((a, b) => b.caloriesBurned - a.caloriesBurned);
+
+                    // Get the container for displaying the neighborhoods list
+                    const neighborhoodsList = document.getElementById('neighborhoods-list');
+                    neighborhoodsList.innerHTML = ''; // Clear previous content if any
+
+                    // Prepare data for the chart (names and calories)
+                    const neighborhoodNames = sortedNeighborhoods.map(neighborhood => neighborhood.title);
+                    const caloriesData = sortedNeighborhoods.map(neighborhood => neighborhood.caloriesBurned);
+
+                    // Create the list of neighborhoods
+                    sortedNeighborhoods.forEach(neighborhood => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('neighborhood-item');
+                        listItem.textContent = `${neighborhood.title} - ${neighborhood.caloriesBurned} קלוריות`;
+                        neighborhoodsList.appendChild(listItem);
+                    });
+
+                    // Create the chart
+                    const ctx = document.getElementById('neighborhoodGraph').getContext('2d');
+
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: neighborhoodNames,
+                            datasets: [{
+                                data: caloriesData,
+                                backgroundColor: [
+                                    '#f7f0ae', '#f9dc5c', '#f0e24e', '#dbb42c', '#f3c56a', '#f3b559', '#f39d47', '#f28a36', '#f16624', '#ff8c1a', '#ff4e00',  // גוונים כתומים וצהובים
+                                    '#bde0fe', '#75a9e1', '#4599d9', '#3578c4',  // גווני תכלת
+                                    '#cccccc', '#b3b3b3', '#808080', '#666666'  // גווני אפור 
+                                ],
+                                borderColor: '#fff',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        boxWidth: 15,
+                                        padding: 10,
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            return tooltipItem.raw + ' קלוריות';
+                                        }
+                                    }
+                                }
+                            },
+                            cutout: 50,
+                            animation: {
+                                animateRotate: true,
+                                animateScale: true
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error fetching neighborhoods:', error);
+                }
+            }
+
+            fetchNeighborhood();
+        </script>
+</body>
