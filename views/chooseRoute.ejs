@@ -10,7 +10,7 @@
                     --cardsInRow: 4;
                     --mainPadding: 17%;
                     --cardPadding: 0.7rem;
-                    --filterCardsInRow: 6; 
+                    --filterCardsInRow: 6;
                     --filterCardsGap: 10px;
                 }
 
@@ -71,6 +71,20 @@
                     font-size: 1.5em;
                     display: inline;
                     word-wrap: normal;
+                    position: relative;
+                    z-index: 2;
+                    font-weight: bold;
+                }
+
+                .overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(255, 255, 255, 0.5);
+                    z-index: 1;
+                    border-radius: 20px;
                 }
 
                 .cardContainer {
@@ -131,7 +145,7 @@
                     align-items: center;
                     height: 100%;
                 }
-            
+
                 .bi-search {
                     font-size: 1.6em;
                 }
@@ -180,7 +194,7 @@
                     :root {
                         --mainPadding: 15%;
                         --cardsInRow: 3;
-                        --filterCardsInRow: 5; 
+                        --filterCardsInRow: 5;
                         --filterCardsGap: 10px;
                     }
 
@@ -188,11 +202,13 @@
                         padding: 15px;
                         font-size: 1.3em;
                     }
-                    .caret{
+
+                    .caret {
                         left: 7px !important;
                         height: 45px !important;
                     }
-                    .filterTitle{
+
+                    .filterTitle {
                         font-size: 1.4rem !important;
                     }
                 }
@@ -215,26 +231,31 @@
                         font-size: 1.35em;
                     }
 
-                    .caret{
+                    .caret {
                         left: 4px !important;
                         height: 40px !important;
                     }
-                    .filterTitle{
+
+                    .filterTitle {
                         font-size: 1.3rem !important;
                     }
                 }
+
                 @media (max-width: 900px) {
                     :root {
-                        --filterCardsInRow: 4; 
+                        --filterCardsInRow: 4;
                         --filterCardsGap: 8px;
                     }
-                    .caret{
+
+                    .caret {
                         height: 35px !important;
                     }
-                    .filterTitle{
+
+                    .filterTitle {
                         font-size: 1.2rem !important;
                     }
                 }
+
                 @media (max-width: 800px) {
                     :root {
                         --mainPadding: 11%;
@@ -252,30 +273,34 @@
                         font-size: 1.2em;
                     }
 
-                    .filterCategoryContainer{
+                    .filterCategoryContainer {
                         flex-direction: column !important;
                         align-items: center !important;
                         gap: 0px !important;
                     }
-                    .filterCategory{
+
+                    .filterCategory {
                         width: 70% !important;
                     }
-                    .caret{
+
+                    .caret {
                         left: 10px !important;
                         height: 50px !important;
                     }
-                    .filterTitle{
+
+                    .filterTitle {
                         font-size: 1.4rem !important;
                     }
-                    .filterCategoryCard{
+
+                    .filterCategoryCard {
                         height: 55px !important;
                     }
-                } 
+                }
 
                 @media (max-width: 600px) {
                     :root {
                         --cardsInRow: 2;
-                        --filterCardsInRow: 3; 
+                        --filterCardsInRow: 3;
                         --filterCardsGap: 5px;
                     }
 
@@ -295,24 +320,29 @@
                         font-size: 1.1em;
                     }
 
-                    .filterCategory{
+                    .filterCategory {
                         width: 80% !important;
                     }
-                    .filterCategoryCard{
+
+                    .filterCategoryCard {
                         height: 50px !important;
                     }
                 }
+
                 @media (max-width: 480px) {
-                    .filterCategory{
+                    .filterCategory {
                         width: 85% !important;
                     }
-                    .filterCategoryCard{
+
+                    .filterCategoryCard {
                         height: 45px !important;
                     }
-                        .currentFilterText{
-                            font-size: 80% !important;
-                        }
+
+                    .currentFilterText {
+                        font-size: 80% !important;
+                    }
                 }
+
                 @media (max-width: 400px) {
                     .tagText {
                         font-size: 0.8rem !important;
@@ -325,17 +355,21 @@
                     .bi-search {
                         font-size: 1.3rem;
                     }
-                    .filterCategory{
+
+                    .filterCategory {
                         width: 90% !important;
                     }
-                    .caret{
+
+                    .caret {
                         left: 3px !important;
                         height: 40px !important;
                     }
-                    .filterTitle{
+
+                    .filterTitle {
                         font-size: 1.2rem !important;
                     }
-                    .currentFilterText{
+
+                    .currentFilterText {
                         font-size: 75% !important;
                         line-height: 0.8 !important;
                     }
@@ -350,7 +384,6 @@
                         font-size: 0.75em;
                     }
                 }
-
 
                 #chipp-close-icon-container.svelte-1ho6q57 {
                     width: 60px;
@@ -372,11 +405,11 @@
                     <h1 class="text-center">כל האימונים</h1>
                 </div>
                 <%- include('./partials/filter') %>
-                <%- include('./partials/allTags') %>
+                    <%- include('./partials/allTags') %>
 
-                <div id="all" class="mt-3">
+                        <div id="all" class="mt-3">
 
-                </div>
+                        </div>
             </main>
 
             <script>
@@ -476,8 +509,9 @@
                         };
 
                         div.innerHTML = `
-                            <div class="card" style="background-image: url('${bgImage}'); background-size: cover; background-position: center;">
-                                <h5 class="card-title">${route.name}</h5>
+                            <div class="card" style="position: relative; background-image: url('${bgImage}'); background-size: cover; background-position: center;">
+                                <div class="overlay"></div>
+                                <h5 class="card-title" style="position:absolute;text-shadow: 0 0 5px #f16624;">${route.name}</h5>
                             </div>
                         `;
                         container.appendChild(div); // Add the newly created div to the DOM
@@ -533,7 +567,7 @@
                             const matching = currentFilters.filter(filter => filter.category === "advanced")
                                 .map(filter => filter.value)
                                 .filter(tag => tag.category.name === categoryName);
-                            
+
                             return matching.some(filter => {
                                 return route.tags.some(tag => tag.category.name === categoryName && tag.name === filter.name)
                             });
@@ -555,23 +589,23 @@
                 }
 
                 const filterRoutes = () => {
-                    if(!currentFilters.length && !currentSearchQuery.length){
+                    if (!currentFilters.length && !currentSearchQuery.length) {
                         populateDataDefault();
                         return;
                     }
 
                     let filteredData = fetchedRoutes;
 
-                    if(currentSearchQuery.length){
+                    if (currentSearchQuery.length) {
                         filteredData = categories.search.filter(filteredData, currentSearchQuery)
                     }
-                    if(currentFilters.length){
-                        try{
+                    if (currentFilters.length) {
+                        try {
                             filteredData = filterByCurrentFilters(filteredData);
-                        }catch{
+                        } catch {
                             console.error("Could not filter. Maybe the data is still wrong?");
                         }
-                        
+
                     }
 
                     allContainer.innerHTML = ""
