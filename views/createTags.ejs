@@ -8,7 +8,7 @@
             text-align: center;
         }
 
-        #createTagBtn {
+        #saveTagBtn {
             margin: 15px auto;
             padding: 10px 20px;
             font-size: 18px;
@@ -21,7 +21,7 @@
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        #createTagBtn:hover {
+        #saveTagBtn:hover {
             color: white;
             background-color: black;
             opacity: 80%;
@@ -31,7 +31,7 @@
     <body>
         <%- include('partials/navbar', {currentPage: 'create tags' }) %>
             <div class="container" style="width: 50%;">
-                <h1>תגית חדשה</h1>
+                <h1 id="tagTitle">תגית חדשה</h1>
 
                 <div class="form-group d-flex align-items-center mt-4">
                     <label for="tagName" class="mb-0 ms-2">שם:</label>
@@ -63,7 +63,7 @@
                     </div>
                 </div>
 
-                <button id="createTagBtn">הוסף תג</button>
+                <button id="saveTagBtn">הוסף תג</button>
             </div>
 
             <script>
@@ -72,47 +72,109 @@
                 let url;
                 $(document).ready(async function () {
                     getRedirectPath();
-
-                    $('#tagType').val(type);
-
-                    await fetchAndDisplayCategories();
                 })
 
-                function getRedirectPath() {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const fromPath = urlParams.get('from');
-                    const id = urlParams.get('id');
+                async function getRedirectPath() {
+                    if (window.location.pathname.includes('edit-tags')) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const id = urlParams.get('id');
+                        let tag = await fetchTagById(id);
+                        type = tag.category.for;
+                        $('#tagTitle').text('עריכת פרטי תגית');
+                        $('#saveTagBtn').text('שמירת שינויים');
 
-                    if (!fromPath) {
-                        console.warn('No "from" parameter found in the URL.');
-                        url = "";
-                        
-                        document.getElementById('tagType').style.display = 'none';
-                        document.getElementById('tagTypeSelect').style.display = 'block';
+                        $('#tagName').val(tag.name);
+                        $('#tagType').val(type);
 
-                        document.getElementById('tagTypeSelect').addEventListener('change',async function () {
-                            type = this.value;  
-                            await fetchAndDisplayCategories();
-                        });
+                        await fetchAndDisplayCategories();
+
+                        $('#tagCategory').val(tag.category._id);
+
+                        $('#saveTagBtn').on('click', async function () {
+                            const updateTag = {
+                                category: $("#tagCategory").val(),
+                                name: $("#tagName").val()
+                            };
+
+                            await $.ajax({
+                                url: `/api/v1/tags/${tag._id}`,
+                                method: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify(updateTag),
+                                success: function () {
+                                    window.location.href = "/admin/manage-tags";
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error(`Error updating tag: ${xhr.responseText || status}`);
+                                    alert(`Failed to update tag: ${xhr.responseText || error}`);
+                                }
+                            });
+                        })
                     }
                     else {
-                        let redirectPath = fromPath;
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const fromPath = urlParams.get('from');
+                        const id = urlParams.get('id');
 
-                        if (fromPath.includes('/admin/add-new-route')) {
-                            type = 'Route';
+                        if (!fromPath) {
+                            console.warn('No "from" parameter found in the URL.');
+                            url = "";
+
+                            document.getElementById('tagType').style.display = 'none';
+                            document.getElementById('tagTypeSelect').style.display = 'block';
+
+                            document.getElementById('tagTypeSelect').addEventListener('change', async function () {
+                                type = this.value;
+                                await fetchAndDisplayCategories();
+                            });
                         }
-                        else if (fromPath.includes('/admin/update-route')) {
-                            type = 'Route';
-                            if (id)
-                                redirectPath += `?id=${id}`;
-                        }
-                        else if (fromPath.includes('/admin/edit-activity')) {
-                            type = 'Place';
-                            if (id)
-                                redirectPath += `?id=${id}`;
+                        else {
+                            let redirectPath = fromPath;
+
+                            if (fromPath.includes('/admin/add-new-route')) {
+                                type = 'Route';
+                            }
+                            else if (fromPath.includes('/admin/update-route')) {
+                                type = 'Route';
+                                if (id)
+                                    redirectPath += `?id=${id}`;
+                            }
+                            else if (fromPath.includes('/admin/edit-activity')) {
+                                type = 'Place';
+                                if (id)
+                                    redirectPath += `?id=${id}`;
+                            }
+
+                            url = redirectPath;
                         }
 
-                        url = redirectPath;
+                        $('#tagType').val(type);
+                        await fetchAndDisplayCategories();
+
+                        $('#saveTagBtn').on('click', async function () {
+                            const newTag = {
+                                category: $("#tagCategory").val(),
+                                name: $("#tagName").val()
+                            };
+
+                            await $.ajax({
+                                url: '/api/v1/tags',
+                                method: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(newTag),
+                                success: function () {
+                                    if (url) {
+                                        window.location.href = url;
+                                    }
+                                    else
+                                        window.location.href = "/admin";
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error(`Error adding tag: ${xhr.responseText || status}`);
+                                    alert(`Failed to add tag: ${xhr.responseText || error}`);
+                                }
+                            });
+                        })
                     }
                 }
 
@@ -136,31 +198,18 @@
                     });
                 }
 
-                $('#createTagBtn').on('click', async function () {
-                    const newTag = {
-                        category: $("#tagCategory").val(),
-                        name: $("#tagName").val()
-                    };
-
-                    await $.ajax({
-                        url: '/api/v1/tags',
-                        method: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify(newTag),
-                        success: function () {
-                            if (url) {
-                                window.location.href = url;
-                            }
-                            else
-                                window.location.href = "/admin";
-                        },
-                        error: function (xhr, status, error) {
-                            console.error(`Error adding tag: ${xhr.responseText || status}`);
-                            alert(`Failed to add tag: ${xhr.responseText || error}`);
+                async function fetchTagById(tagId) {
+                    try {
+                        const response = await fetch(`/api/v1/tags/${tagId}`);
+                        if (!response.ok) {
+                            throw new Error(`Error: ${response.status} ${response.statusText}`);
                         }
-                    });
-                })
+                        return await response.json();
 
+                    } catch (error) {
+                        console.error('Error fetching tag:', error);
+                    }
+                }
             </script>
     </body>
 
