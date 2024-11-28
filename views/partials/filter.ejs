@@ -137,6 +137,7 @@
         display: flex;
     }
     .activeFilterCard {
+        cursor: pointer;
         display: flex;
         flex-direction: row;
 
@@ -186,6 +187,7 @@
 <script>
     const ORIGIN = window.location.origin;
     const tagsURL = `${ORIGIN}/api/v1/tags`;
+    const hoodsURL = `${ORIGIN}/api/v1/neighborhoods`;
 
     // const tagsDivider = document.getElementById("tagsDivider");
     const filterCategoryContainer = document.getElementsByClassName("filterCategoryContainer")[0];
@@ -194,30 +196,90 @@
     const menus = {
         /*
         id: {
-            text: display text
-            filter: function to filter the tags
+            text: text to display;
+            getValues: function to get all the values, eg. all the tags;
+            values: where to store all the values after they are fetched;
+            sortFunc: sort function for the values array (so it will be sorted);
+            getCategory: function to get category of given value, eg. for tags its the tag's category;
+            equals: function to check if 2 values are equal;
+            identify (optional): get a string identification for the value (if there is no _id property);
+            getById (optional): function to get the value object from given id;
         }
         */
-        hood: {
+        neighborhood: {
             text: "שכונה",
-            filterFunction: (allTags) =>
-                allTags.filter((tag) => tag.category.name === "שכונות"),
+            getValues: async () => fetchData(hoodsURL),
+            values: [],
+            sortFunc: (values) => {
+                values.sort((a, b) => {
+                    return a.title.localeCompare(b.title);
+                });
+                return values;
+            },
+            getCategory: (tag) => {
+                return "neighborhood";
+            },
+            getName: (tag) => {
+                return tag.title;
+            },
+            equals: (tag1, tag2) => {
+                return tag1._id === tag2._id;
+            },
+            getById: (tagID) => {
+                return menus.neighborhood.values.find((tag) => tag._id === tagID);
+            },
         },
-        diff: {
-            text: "רמת קושי",
-            filterFunction: (allTags) =>
-                allTags.filter((tag) => tag.category.name === "אזור"),
+        goal: {
+            text: "מטרה",
+            getValues: async () => ['בריאות', 'חיזוק', 'ירידה במשקל'],
+            values: [],
+            sortFunc: (values) => {
+                values.sort((a, b) => {
+                    return a.localeCompare(b);
+                });
+                return values;
+            },
+            getCategory: (tag) => {
+                return "goal";
+            },
+            getName: (tag) => {
+                return tag;
+            },
+            equals: (tag1, tag2) => {
+                return tag1 === tag2;
+            },
+            identify: (goal) => {
+                return goal
+            }
         },
-        adv: {
-            // special handling.
+        advanced: {
             text: "חיפוש מתקדם",
+            getValues: async () => removeDuplicateTags(await fetchData(tagsURL)),
+            values: [],
+            sortFunc: (values) => {
+                values.sort((a, b) => {
+                    return a.name.localeCompare(b.name);
+                });
+                return values;
+            },
+            getCategory: (tag) => {
+                return tag.category.name;
+            },
+            getName: (tag) => {
+                return tag.name;
+            },
+            getById: (tagID) => {
+                return menus.advanced.values.find((tag) => tag._id === tagID);
+            },
+            equals: (tag1, tag2) => {
+                return tag1._id === tag2._id;
+            },
         },
     };
 
     let currentOpenMenu = "";
     let currentSearchQuery = "";
     let currentFilters = [];
-    let allTags = [];
 
     const arrow = () => {
         return `
@@ -236,6 +298,43 @@
         `;
     };
 
+    const useFilter = (id, category) => {
+        const value = menus[category].getById?.(id) || id;
+
+        const safeCategoryName = menus[category].getCategory(value).replace(/['"]/g, "_");
+
+        const safeName =  menus[category].getName(value).replace(/['"]/g, "_");
+
+        const card = document.getElementById(`${safeCategoryName}:${safeName}`);
+
+        const isPresent = currentFilters.findIndex((filter) => filter.category === category && menus[category].equals(value, filter.value));
+
+        if (isPresent > -1) {
+            currentFilters.splice(isPresent, 1);
+        } else {
+            currentFilters.push({category: category, value: value});
+        }
+        card.classList.toggle("selected");
+
+        // Sort currentFilters by category name first, then by tag name
+        currentFilters.sort((a, b) => {
+            const categoryComparison = a.category.localeCompare(b.category);
+
+            if (categoryComparison !== 0) return categoryComparison;
+
+            const cat = a.category
+            if(cat === "advanced"){
+                const tagCategoryComparison = a.value.category.name.localeCompare(b.value.category.name);
+
+                if (tagCategoryComparison !== 0) return categoryComparison;
+            }
+
+            return menus[a.category].getName(a.value).localeCompare(menus[b.category].getName(b.value));
+        });
+
+        updateFilters();
+    }
+    
     const makeFilterContainers = () => {
         for (const [menuId, menu] of Object.entries(menus)) {
             filterCategoryContainer.innerHTML += `
@@ -245,7 +344,7 @@
                         <h1 class="filterTitle unselectable">${menu.text}</h1>
                     </div>
                     <div class="scroll-container" id="${menuId}-content-container">
-                        <div id="${menuId}-content" class="${menuId === "adv" ? "advContent" : "nonAdvContent"}">
+                        <div id="${menuId}-content" class="${menuId === "advanced" ? "advContent" : "nonAdvContent"}">
                         </div>
                     </div>
                 </div>
@@ -306,13 +405,13 @@
                 </div>
             </div>
         `;
-        
+
         for (const tag of currentFilters) {
             activeFiltersContainer.innerHTML += `
                 <div class="activeFilterCardPadding">
-                    <div class="activeFilterCard" onclick="useFilter('${tag._id}')">
+                    <div class="activeFilterCard" onclick="useFilter('${menus[tag.category].identify?.(tag.value) || tag.value._id}', '${tag.category}')">
                         ${xIcon()}
-                        <h5 class="tagText unselectable currentFilterText">${tag.name}</h5>
+                        <h5 class="tagText unselectable currentFilterText">${menus[tag.category].getName(tag.value)}</h5>
                     </div>
                 </div>
             `;
@@ -320,44 +419,11 @@
 
     };
 
-    const useFilter = (tagID) => {
-        const tag = allTags.filter((tag) => tag._id === tagID)[0];
-
-        const safeCategoryName = tag.category.name.replace(/['"]/g, "_");
-        const safeTagName = tag.name.replace(/['"]/g, "_");
-
-        const card = document.getElementById(`${safeCategoryName}:${safeTagName   }`);
-
-        const tagIndex = currentFilters.findIndex(
-            (filter) => filter._id === tagID
-        );
-        if (tagIndex > -1) {
-            currentFilters.splice(tagIndex, 1);
-            card.classList.remove("selected");
-        } else {
-            currentFilters.push(tag);
-            card.classList.add("selected");
-        }
-
-        // Sort currentFilters by category name first, then by tag name
-        currentFilters.sort((a, b) => {
-            if (a.category.name < b.category.name) return -1;
-            if (a.category.name > b.category.name) return 1;
-
-            if (a.name < b.name) return -1;
-            if (a.name > b.name) return 1;
-
-            return 0;
-        });
-
-        updateFilters();
-    };
-
     const populateFilterContainers = (tags) => {
         for (const [menuId, menu] of Object.entries(menus)) {
             const container = document.getElementById(`${menuId}-content`);
 
-            if (menuId === "adv") {
+            if (menuId === "advanced") {
                 container.innerHTML += `
                     <form
                         onsubmit="searchSumbit(event)"
@@ -380,19 +446,16 @@
                 continue;
             }
 
-            const filteredTags = menu.filterFunction(tags);
-            filteredTags.sort((a, b) => {
-                return a.name.localeCompare(b.name);
-            });
+            const filteredTags = menu.values;
 
             for (const tag of filteredTags) {
-                const safeCategoryName = tag.category.name.replace(/['"]/g, "_");
-                const safeTagName = tag.name.replace(/['"]/g, "_");
+                const safeCategoryName = menu.getCategory(tag).replace(/['"]/g, "_");
+                const safeTagName = menu.getName(tag).replace(/['"]/g, "_");
 
                 container.innerHTML += `
                     <div class="tagCardPadding">
-                        <div class="tagCard" id='${safeCategoryName}:${safeTagName}' onclick="useFilter('${tag._id}')">
-                            <h5 class="tagText unselectable">${tag.name}</h5>
+                        <div class="tagCard" id='${safeCategoryName}:${safeTagName}' onclick="useFilter('${menu.identify?.(tag) || tag._id}', '${menuId}')">
+                            <h5 class="tagText unselectable">${menu.getName(tag)}</h5>
                         </div>
                     </div>
                 `;
@@ -426,29 +489,34 @@
         });
     };
 
-    const fetchTags = async () => {
+    const fetchData = async (url) => {
         try {
-            const response = await fetch(tagsURL);
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error("Response is not ok");
             }
 
             const data = await response.json();
-            return removeDuplicateTags(data);
+            return data;
         } catch (error) {
             console.error("Error fetching tags:", error);
         }
     };
 
     const initFilter = async () => {
-        makeFilterContainers();
-        allTags = await fetchTags();
+        const promises = Object.entries(menus).map(async ([id, menu]) => {
+            menus[id].values = menu.sortFunc(await menu.getValues());
+        });
+        
+        await Promise.all(promises);
 
-        populateFilterContainers(allTags);
+        makeFilterContainers();
+
+        populateFilterContainers();
 
         makeContainers();
-        makeTagCards(allTags);
+        makeTagCards(menus.advanced.values);
     };
     initFilter();
 </script>

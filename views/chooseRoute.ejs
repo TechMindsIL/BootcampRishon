@@ -517,19 +517,41 @@
                 };
 
                 const filterByCurrentFilters = (data) => {
-                    return data.filter(route => {
-                        const categories = [...new Set(currentFilters.map(filter => filter.category.name))];
+                    const properties = [
+                        ...new Set(currentFilters.filter(filter => filter.category !== "advanced")
+                            .map(filter => filter.category)
+                        )
+                    ];
+                    const filterTagCategories = [
+                        ...new Set(currentFilters.filter(filter => filter.category === "advanced")
+                            .map(filter => filter.value.category.name)
+                        )
+                    ];
 
-                        return categories.every(categoryName => {
-                            const matchingTags = route.tags.filter(tag => tag.category.name === categoryName);
-
-                            return matchingTags.some(tag =>{
-                                return currentFilters.some(
-                                    filter => filter.category.name === categoryName && filter.name === tag.name
-                                );
+                    const tagFilter = data.filter(route => {
+                        return filterTagCategories.every(categoryName => {
+                            const matching = currentFilters.filter(filter => filter.category === "advanced")
+                                .map(filter => filter.value)
+                                .filter(tag => tag.category.name === categoryName);
+                            
+                            return matching.some(filter => {
+                                return route.tags.some(tag => tag.category.name === categoryName && tag.name === filter.name)
                             });
                         });
                     });
+
+                    const fullFilter = tagFilter.filter(route => {
+                        return properties.every(propertyName => {
+                            const matching = currentFilters.filter(filter => filter.category === propertyName)
+                                .map(filter => filter.value);
+
+                            return matching.some(property => {
+                                return menus[propertyName].equals(property, route[propertyName])
+                            });
+                        });
+                    });
+
+                    return fullFilter;
                 }
 
                 const filterRoutes = () => {
@@ -537,14 +559,19 @@
                         populateDataDefault();
                         return;
                     }
-                    console.log(fetchedRoutes)
+
                     let filteredData = fetchedRoutes;
 
-                    if(currentFilters.length){
-                        filteredData = filterByCurrentFilters(filteredData);
-                    }
                     if(currentSearchQuery.length){
                         filteredData = categories.search.filter(filteredData, currentSearchQuery)
+                    }
+                    if(currentFilters.length){
+                        try{
+                            filteredData = filterByCurrentFilters(filteredData);
+                        }catch{
+                            console.error("Could not filter. Maybe the data is still wrong?");
+                        }
+                        
                     }
 
                     allContainer.innerHTML = ""
