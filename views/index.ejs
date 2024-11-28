@@ -219,6 +219,7 @@
                     align-items: center;
                     flex-wrap: wrap;
                     gap: 5px;
+                    direction: ltr;
                 }
 
                 /* Style for each logo */
@@ -227,6 +228,15 @@
                     max-height: 60px;
                     flex: 1 1 14%;
                     object-fit: contain;
+                }
+
+                .logos-div {
+                    margin-top: 30px;
+                }
+            
+                .logos-row {
+                    display: inline-block;
+                    margin-top: 10px;
                 }
 
                 /* Media Queries for responsiveness */
@@ -245,7 +255,15 @@
                     .footer-logo {
                         max-height: 40px;
                     }
+
                 }
+
+                @media screen and (max-width: 350px) {
+                    .construction-text {
+                        display: block;
+                    }
+                }
+
             </style>
     </head>
 
@@ -290,9 +308,31 @@
                     <img src="/images/RishonLogos/לוגו מנהל קהילה.png" alt="לוגו מנהל קהילה" class="footer-logo">
                     <img src="/images/RishonLogos/לוגו קרן ראשון.png" alt="לוגו קרן ראשון" class="footer-logo">
                     <img src="/images/RishonLogos/לוגו תקשוב עירוני.png" alt="לוגו תקשוב עירוני" class="footer-logo">
-                    <img src="/images/RishonLogos/עירייה.jpg" alt="עירייה" class="footer-logo">
-                    <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
+                    <img src="/images/RishonLogos/עירייה.png" alt="עירייה" class="footer-logo">
+                    <!-- <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo"> -->
                 </div>
+
+                <div class="logos-div">
+                    <span class="construction-text">
+                        האתר נבנה ע"י
+                    </span>
+                    <div class="logos-row">
+                        <a href="http://www.rishonstartup.co.il/" target="_blank" style="text-decoration: none;"
+                            class="logo-link">
+                            <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
+                        </a>
+
+                        <span style="margin-left: 10px;" class="and-text">
+                            ו-
+                        </span>
+
+                        <a href="https://www.alicecode.org/" target="_blank" style="text-decoration: none;"
+                            class="logo-link">
+                            <img src="images/RishonLogos/AliceCode.png" alt="alice code" class="footer-logo">
+                        </a>
+                    </div>
+                </div>
+
             </footer>
 
 
