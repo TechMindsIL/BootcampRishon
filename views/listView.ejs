@@ -397,7 +397,14 @@
                     ${!isLastPlace ? line(index) : ""} 
                 </div>
 
-                <div id="rating-section-${index}" class="rating-section">
+                
+
+                <div class="details" id="details-${index}" style="display: none;">
+                  ${place.description ? `<p><strong>תיאור:</strong> ${place.description}</p>` : ""}
+                  ${place.img ? `<img src="${place.img}" alt="${place.name}" class="place-image">` : ""}
+                  ${place.youtube ? `<iframe src="${place.youtube}" class="place-video" frameborder="0" allowfullscreen></iframe>` : ""}
+                  
+                  <div id="rating-section-${index}" class="rating-section">
                   <div id="div-average-rating-${index}" class="div-average-rating" style="display: none;">
                     <span id="average-rating-${index}">0</span>
                     <label for="average-rating"><strong>:דירוג משתמשים</strong></label>
@@ -413,13 +420,7 @@
                     </div>
                   </div>
                 </div>
-
-                <div class="details" id="details-${index}" style="display: none;">
-                  ${place.description ? `<p><strong>תיאור:</strong> ${place.description}</p>` : ""}
-                  ${place.img ? `<img src="${place.img}" alt="${place.name}" class="place-image">` : ""}
-                  ${place.youtube ? `<iframe src="${place.youtube}" class="place-video" frameborder="0" allowfullscreen></iframe>` : ""}
                   </div>
-
                   
             `;
         };
@@ -506,8 +507,9 @@
               };
 
               const ratingSection = document.getElementById(`rating-section-${index}`);
-              const detailsDiv = document.getElementById(`details-${index}`);
-              detailsDiv.parentNode.insertBefore(loginButton, detailsDiv.nextSibling);
+              ratingSection.appendChild(loginButton);
+              // const detailsDiv = document.getElementById(`details-${index}`);
+              // detailsDiv.parentNode.insertBefore(loginButton, detailsDiv.nextSibling);
             }
 
             changeLineHeight();
