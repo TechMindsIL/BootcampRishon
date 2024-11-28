@@ -223,7 +223,11 @@
                 return tag.title;
             },
             equals: (tag1, tag2) => {
-                return tag1._id === tag2._id;
+                try{
+                    return tag1._id === tag2._id;
+                }catch{
+                    return false
+                }
             },
             getById: (tagID) => {
                 return menus.neighborhood.values.find((tag) => tag._id === tagID);
@@ -246,7 +250,11 @@
                 return tag;
             },
             equals: (tag1, tag2) => {
-                return tag1 === tag2;
+                try{
+                    return tag1 === tag2;
+                }catch{
+                    return false
+                }
             },
             identify: (goal) => {
                 return goal
@@ -272,7 +280,11 @@
                 return menus.advanced.values.find((tag) => tag._id === tagID);
             },
             equals: (tag1, tag2) => {
-                return tag1._id === tag2._id;
+                try{
+                    return tag1._id === tag2._id;
+                }catch{
+                    return false
+                }
             },
         },
     };
