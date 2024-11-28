@@ -152,8 +152,8 @@
         }
 
         const elementsToUpdate = [
-          { id: "SavedRoutes", href: isLoggedIn ? "/MyWorkouts" : "/register" },
-          { id: "profile", href: isLoggedIn ? "/welcome" : "/register" },
+          { id: "SavedRoutes", href: isLoggedIn ? "/MyWorkouts" : "/login" },
+          { id: "profile", href: isLoggedIn ? "/welcome" : "/login" },
         ];
 
         elementsToUpdate.forEach((element) => {
@@ -186,7 +186,7 @@
         </a>
         <a
           id="SavedRoutes"
-          href="/register"
+          href="/login"
           class="nav__link text-white"
           aria-label="Saved Routes"
         >
