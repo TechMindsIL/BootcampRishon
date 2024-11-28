@@ -405,23 +405,22 @@
                   ${place.youtube ? `<iframe src="${place.youtube}" class="place-video" frameborder="0" allowfullscreen></iframe>` : ""}
                   
                   <div id="rating-section-${index}" class="rating-section">
-                  <div id="div-average-rating-${index}" class="div-average-rating" style="display: none;">
-                    <span id="average-rating-${index}">0</span>
-                    <label for="average-rating"><strong>:דירוג משתמשים</strong></label>
-                  </div>
-                  <div id="rating-container-${index}" class="rating-container" style="display: none;">
-                    <button id="rate-button-${index}" class="rate-button">דירוג</button>
-                    <div id="stars-container-${index}" class="stars-container">
-                        <span class="star" data-value="1">☆</span>
-                        <span class="star" data-value="2">☆</span>
-                        <span class="star" data-value="3">☆</span>
-                        <span class="star" data-value="4">☆</span>
-                        <span class="star" data-value="5">☆</span>
+                    <div id="div-average-rating-${index}" class="div-average-rating" style="display: none;">
+                      <span id="average-rating-${index}">0</span>
+                      <label for="average-rating"><strong>:דירוג משתמשים</strong></label>
                     </div>
+                    <div id="rating-container-${index}" class="rating-container" style="display: none;">
+                      <button id="rate-button-${index}" class="rate-button">דירוג</button>
+                      <div id="stars-container-${index}" class="stars-container">
+                          <span class="star" data-value="1">☆</span>
+                          <span class="star" data-value="2">☆</span>
+                          <span class="star" data-value="3">☆</span>
+                          <span class="star" data-value="4">☆</span>
+                          <span class="star" data-value="5">☆</span>
+                      </div>
                   </div>
                 </div>
-                  </div>
-                  
+              </div>    
             `;
         };
 
