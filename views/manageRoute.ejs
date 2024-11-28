@@ -185,8 +185,8 @@
                     const formTitle = $('#form-title');
                     const routeForm = $('#routeForm');
 
-                    buildCategoryTagsObject();
-                    fetchNeighborhood();
+                    await buildCategoryTagsObject();
+                    await fetchNeighborhood();
 
                     const urlParams = new URLSearchParams(window.location.search);
                     const routeId = urlParams.get('id');
@@ -259,8 +259,8 @@
                     $('#routeDistance').val(routeData.distance);
                     $('#routeDuration').val(routeData.duration);
                     $('#routeGoal').val(routeData.goal);
-                    $('#routeNeighborhood').val(routeData.neighborhood);
-
+                    $('#routeNeighborhood').val(routeData.neighborhood._id);
+                    
                     if (routeData.tags) {
                         routeData.tags.forEach(tagId => {
                             $(`.tag-button[data-tag-id="${tagId._id}"]`).addClass('selected');
@@ -285,7 +285,7 @@
                         $('#routeDistance').val(route.distance);
                         $('#routeDuration').val(route.duration);
                         $('#routeGoal').val(route.goal);
-                        $('#routeNeighborhood').val(route.neighborhood);
+                        $('#routeNeighborhood').val(route.neighborhood._id);
 
 
                         if (route.places)
@@ -411,6 +411,7 @@
                         neighborhoods.forEach(neighborhood => {
                             const option = document.createElement('option');
                             option.value = neighborhood._id; // Use the ID as the value
+                            console.log("val", neighborhood._id);
                             option.textContent = neighborhood.title; // Display the name as the label
                             neighborhoodSelect.appendChild(option);
                         });
