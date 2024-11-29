@@ -29,7 +29,14 @@ router.use((err, req, res, next) => {
     if (req.method === 'GET' && req.path === '/') {
         console.error("Error fetching users");
     } else if (req.method === 'POST' && req.path === '/') {
-        console.error("Error creating a user");
+        if (err.code === 11000 && err.keyPattern && err.keyPattern.email === 1) {
+            console.error("Error creating a user: Email already exists");
+            res.status(400).json({ error: 'Email already exists' });
+        } else {
+            console.error("Error creating a user");
+            console.error(err, res);
+            res.status(500).json({ error: 'An internal server error occurred' });
+        }
     } else if (req.method === 'GET' && req.path.startsWith('/:id')) {
         console.error("Error fetching a user");
     } else if (req.method === 'PUT' && req.path.startsWith('/:id')) {
@@ -38,8 +45,8 @@ router.use((err, req, res, next) => {
         console.error("Error deleting a user");
     } else {
         console.error("User error: ", err.message);
+        res.status(500).json({ error: 'An internal server error occurred' });
     }
-    res.status(500).json({ error: 'An internal server error occurred' });
 });
 
 module.exports = router;

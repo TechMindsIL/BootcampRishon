@@ -1,12 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<head>
+    <%- include('partials/head') %>
+        <link rel="stylesheet" href="/css/register.css">
+        <!-- <link rel="ejs" href="/views/login.ejs"> -->
+        <style>
+            body {
+                background-image: src('ריאשון.png');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+        </style>
+</head>
 
 <body>
-    <%- include('./partials/navbar', {currentPage: 'register'}) %>
-    <div class="container">
-        <h1>Register page</h1>
-    </div>
+    <%- include('partials/navbar', {currentPage: 'register' }) %>
+
+        <div class="cardplace">
+            <form class="card">
+                <h1 class="nicetomeetyou">!נעים להכיר</h1>
+                <label>שם</label>
+                <input type="text" class="UserName" required><br>
+                <label>דוא"ל</label>
+                <input type="email" class="Email" required><br>
+                <label>סיסמה</label>
+                <input type="password" class="password" required><br>
+
+                <button onclick="SendData()" type="submit" class="SubmitButton" required>הרשמה</button>
+                
+                <p style="margin-top: 15px;">כבר נרשמת?<a href="/login"> התחברות</a></p>
+            </form>
+        </div>
+        <script>
+            async function SendData() {
+                event.preventDefault();
+                const userName = document.querySelector('.UserName').value;
+                const email = document.querySelector('.Email').value;
+                const password = document.querySelector('.password').value;
+
+                const PROTOCOL = window.location.protocol;
+                const URL = `/api/v1/auth/register`;
+
+                try {
+                    const response = await fetch(URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name: userName,
+                            email: email,
+                            role: 'user',
+                            password: password,
+                            savedRoutes: [],
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        if (response.status === 400) {
+                            throw new Error('Email already exists');
+                            window.location.reload();
+                        } else {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                    }
+                    else {
+                        window.location.href = '/login';
+                    }
+
+                    const data = await response.json();
+                    console.log(data);
+                } catch (error) {
+                    console.error('Error:', error.message);
+                    alert(error.message);
+                }
+            }
+        </script>
 </body>
-</html>

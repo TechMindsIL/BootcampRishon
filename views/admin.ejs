@@ -1,12 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
+    <style>
+        body {
+            text-align: center;
+        }
 
-<body>
-    <%- include('./partials/navbar', {currentPage: 'admin'}) %>
-    <div class="container">
-        <h1>Admin page</h1>
-    </div>
-</body>
+        #addNewRoute {
+            margin: 0px auto;
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f8f9fa;
+            border: 1px solid black;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #addNewRoute:hover {
+            color: white;
+            background-color: black;
+            opacity: 80%;
+        }
+
+        #routesContainer {
+            margin: 30px;
+        }
+
+        .bg-light .route-actions button:hover {
+            color: white !important;
+        }
+    </style>
+
+    <body>
+        <%- include('partials/navbar', {currentPage: 'admin' }) %>
+            <div class="container mt-5" style="max-width: 70%; margin: auto;">
+                <h1>ניהול אימונים</h1>
+
+                <button id="addNewRoute">הוספת אימון </button>
+
+                <div id="routesContainer">
+                    <!-- All the routes -->
+                </div>
+
+            </div>
+
+            <script>
+                $(document).ready(async function () {
+                    await fetchRoutes();
+                    $('#addNewRoute').on('click', function () {
+                        window.location.href = '/admin/add-new-route';
+                    });
+                });
+
+                async function fetchRoutes() {
+                    try {
+                        const response = await fetch('/api/v1/routes');
+                        if (!response.ok) {
+                            throw new Error(`Error: ${response.status} ${response.statusText}`);
+                        }
+                        const routesData = await response.json();
+                        console.log(routesData);
+                        showRoutes(routesData);
+                    } catch (error) {
+                        console.error('Error fetching routes:', error);
+                        alert('אירעה שגיאה בעת שליפת המסלולים. אנא נסה שוב מאוחר יותר.');
+                    }
+                }
+
+                function showRoutes(routes) {
+                    const container = $('#routesContainer');
+                    container.empty();
+
+                    routes.forEach(route => {
+                        const areaTag = route.tags.find(tag => tag.category.name === 'אזור');
+                        const areaName = areaTag ? areaTag.name : 'ראשון לציון';
+
+                        const placesCount = route.places.length;
+                        const backgroundColorClass = route.isRelevant ? 'bg-light' : 'bg-secondary';
+
+                        const routeCard = `
+                            <div class="route-card card p-3 mb-3 mx-auto ${backgroundColorClass}" style="border: 1px solid #ddd; width: 60%;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center" style="flex-grow: 1;">
+                                        <button class="btn btn-link toggle-btn p-0" data-route-id="${route._id}" style="font-size: 24px; text-decoration: none; color:black;">▼</button>
+                                         <div class="text-center w-100">
+                                            <h5 class="mb-1">${route.name}</h5>
+                                            <p class="mb-0">${areaName} | ${placesCount} תחנות</p>
+                                        </div>
+                                    </div>
+                                    <div class="route-actions text-right d-flex flex-column align-items-center">
+                                        <button class="btn btn-outline-primary mb-2" onclick="window.location.href='/admin/update-route?id=${route._id}'">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="updateRouteStatus('${route._id}')">
+                                            ${route.isRelevant
+                                ? `<i class="fas fa-trash"></i>`
+                                : `<i class="fas fa-undo"></i>`
+                            }
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="route-details mt-3 text-center" id="details-${route._id}" style="display: none;">
+                                    <p>${route.description}</p>
+
+                                    <div class="places-list" style="direction:rtl;text-align:right;">
+                            
+                                        <h6>תחנות המסלול:</h6>
+
+                                        <ul>
+                                            ${route.places.map(place => `
+                                                <li>
+                                                    <a href="/admin/edit-activity?id=${place._id}" style=" color: black;">
+                                                        ${place.name}
+                                                    </a>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>         
+                            `;
+                        container.append(routeCard);
+
+                        const toggleBtn = $(`button[data-route-id="${route._id}"]`);
+                        toggleBtn.on('click', function () {
+                            const detailsRow = $(`#details-${route._id}`);
+                            const isExpanded = detailsRow.is(':visible');
+                            detailsRow.toggle();
+                            toggleBtn.text
+                                (isExpanded ? '▼' : '▲');
+                        });
+                    });
+                }
+
+                async function getRouteById(routeId) {
+                    try {
+                        const response = await fetch(`/api/v1/routes/${routeId}`);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return await response.json();
+                    } catch (error) {
+                        console.error('Error fetching route:', error);
+                        alert('אירעה שגיאה. אנא נסה שוב מאוחר יותר.');
+                    }
+                }
+
+                async function updateRouteStatus(routeId) {
+                    try {
+                        let route = await getRouteById(routeId);
+
+                        if (route) {
+                            const updatedRoute = {
+                                name: route.name,
+                                description: route.description,
+                                distance: route.distance,
+                                duration: route.duration,
+                                goal: route.goal,
+                                places: route.places,
+                                tags: route.tags,
+                                isRelevant: !route.isRelevant
+                            };
+
+                            $.ajax({
+                                url: `/api/v1/routes/${routeId}`,
+                                method: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify(updatedRoute),
+                                success: function () {
+                                    fetchRoutes();
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('Error updating route:', error);
+                                    alert(`Error updating the status of the route: ${xhr.responseText || status}`);
+                                }
+                            });
+                        } else {
+                            console.error('Route not found or error fetching.');
+                            alert('Route not found or error fetching.');
+                        }
+                    } catch (error) {
+                        console.error('An error occurred:', error);
+                        alert('An error occurred while fetching route data.');
+                    }
+                }
+            </script>
+    </body>
+
 </html>

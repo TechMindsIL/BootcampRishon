@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head') %>
+
+    <style>
+        .container {
+            direction: rtl;
+        }
+
+        .btn-group-toggle .btn.active {
+            background-color: black !important;
+            color: #fff;
+        }
+
+        #nextButton {
+            margin: 15px auto;
+            display: block;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f8f9fa;
+            border: 1px solid black;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #nextButton:hover {
+            color: white;
+            background-color: black;
+            opacity: 80%;
+        }
+
+        .text-danger {
+            color: red;
+            margin-left: 5px;
+        }
+
+        .tags-list {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        /* .tag-button {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .tag-button.selected {
+            background-color: black;
+            color: white;
+        } */
+
+        .add-tag-button,
+        .tag-button {
+            margin: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .add-tag-button.selected,
+        .tag-button.selected {
+            background-color: black;
+            color: white;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .lengthIdentifier {
+            position: absolute;
+            top: calc(100% - 23px);
+            height: 60px;
+            font-size: 100%;
+            text-align: left;
+            width: 99%;
+            color: #858585
+        }
+
+
+        .select-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .select-container>div {
+            flex: 1 1 45%;
+            max-width: 45%;
+        }
+
+        @media (max-width: 768px) {
+            .select-container>div {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+
+    <body>
+        <%- include('partials/navbar', {currentPage: 'Manage Route' }) %>
+
+            <div class="container mt-5" style="max-width: 70%; margin: auto;">
+                <h1 id="form-title" class="text-center">הוסף / ערוך אימון</h1>
+                <form id="routeForm">
+                    <div class="form-group">
+                        <label for="routeName">שם האימון <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="routeName" name="name" placeholder="הכנס שם אימון"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="routeDescription">תיאור </label>
+                        <textarea class="form-control" id="routeDescription" name="description" rows="3" MaxLength="200"
+                            placeholder="הכנס תיאור"></textarea>
+                        <h3 class="lengthIdentifier"><span id="descriptionLength"></span>/200</h3>
+                    </div>
+
+                    <label for="routeDistance">מרחק </label>
+                    <div class="mb-3 input-group" style="direction: ltr;">
+                        <span class="input-group-text">ק"מ</span>
+                        <input type="number" id="routeDistance" class="form-control" placeholder="הזן מרחק" min="0"
+                            step="0.1" aria-label="הזן מרחק" style="direction: rtl;">
+                    </div>
+
+                    <label for="routeDuration">זמן</label>
+                    <div class="mb-3 input-group" style="direction: ltr;">
+                        <span class="input-group-text">דקות</span>
+                        <input type="number" id="routeDuration" class="form-control" placeholder="הזן זמן" min="0"
+                            aria-label="הזן זמן" style="direction: rtl;">
+                    </div>
+
+                    <div class="select-container">
+                        <div>
+                            <label for="routeGoal">מטרת האימון</label>
+                            <div class="mb-3 input-group" style="direction: ltr;">
+                                <select id="routeGoal" class="form-select half-width" aria-label="בחר את מטרת האימון"
+                                    style="direction: rtl;">
+                                    <option value="" disabled selected>בחר את מטרת האימון</option>
+                                    <option value="בריאות">בריאות</option>
+                                    <option value="חיזוק">חיזוק</option>
+                                    <option value="ירידה במשקל">ירידה במשקל</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="routeNeighborhood">שכונה</label>
+                            <div class="mb-3 input-group" style="direction: ltr;">
+                                <select id="routeNeighborhood" class="form-select half-width" aria-label="שכונה"
+                                    style="direction: rtl;">
+                                    <!-- All Neighborhood -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="routeTags">תגיות</label>
+
+                        <button type="button" id="addTagButton" class="-add-tag-button btn btn-outline-dark mx-1"
+                            style="font-size: 12px; padding: 2px 5px;">
+                            תגית חדשה
+                        </button>
+
+                        <div id="routeTags" placeholder="הכנס תגיות">
+                            <!-- All Tags -->
+                        </div>
+                    </div>
+                    <button type="submit" id="nextButton">הבא</button>
+                </form>
+            </div>
+
+
+            <script>
+                const descriptionText = document.getElementById("routeDescription")
+                const descriptionLength = document.getElementById("descriptionLength")
+
+                $(document).ready(async function () {
+                    const formTitle = $('#form-title');
+                    const routeForm = $('#routeForm');
+
+                    await buildCategoryTagsObject();
+                    await fetchNeighborhood();
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const routeId = urlParams.get('id');
+
+                    if (routeId) {
+                        formTitle.text('ערוך אימון');
+                        await fetchRouteData(routeId);
+
+                        $('#addTagButton').on('click', function () {
+                            const currentPath = window.location.pathname;
+
+                            if (!currentPath) {
+                                console.error('Current path is not defined.');
+                                return;
+                            }
+
+                            const from = encodeURIComponent(currentPath);
+                            const redirectPath = `/admin/create-tags?from=${from}&id=${routeId}`;
+                            console.log(redirectPath)
+                            window.location.href = redirectPath;
+                        });
+
+                        routeForm.on('submit', function (e) {
+                            e.preventDefault();
+                            updateRoute(routeId);
+                        });
+                    } else {
+                        formTitle.text('הוסף אימון חדש');
+                        const newRouteData = JSON.parse(sessionStorage.getItem('newRouteData'));
+                        if (newRouteData)
+                            fetchNewRouteData(newRouteData);
+
+                        $('#addTagButton').on('click', function () {
+                            const newRoute = {
+                                name: $('#routeName').val(),
+                                description: $('#routeDescription').val(),
+                                distance: $('#routeDistance').val(),
+                                duration: $('#routeDuration').val(),
+                                goal: $('#routeGoal').val(),
+                                neighborhood: $('#routeNeighborhood').val(),
+                                tags: getSelectedTags()
+                            };
+                            sessionStorage.setItem('newRouteData', JSON.stringify(newRoute));
+
+                            const currentPath = window.location.pathname;
+
+                            if (!currentPath) {
+                                console.error('Current path is not defined.');
+                                return;
+                            }
+
+                            const from = encodeURIComponent(currentPath);
+                            const redirectPath = `/admin/create-tags?from=${from}`;
+                            console.log(redirectPath)
+                            window.location.href = redirectPath;
+                        });
+
+                        routeForm.on('submit', function (e) {
+                            e.preventDefault();
+                            addNewRoute();
+                        });
+                    }
+                });
+
+                function fetchNewRouteData(routeData) {
+                    $('#routeName').val(routeData.name);
+                    $('#routeDescription').val(routeData.description);
+                    $('#descriptionLength').val(routeData.description.length);
+
+                    $('#routeDistance').val(routeData.distance);
+                    $('#routeDuration').val(routeData.duration);
+                    $('#routeGoal').val(routeData.goal);
+                    $('#routeNeighborhood').val(routeData.neighborhood._id);
+
+                    if (routeData.tags) {
+                        routeData.tags.forEach(tagId => {
+                            $(`.tag-button[data-tag-id="${tagId._id}"]`).addClass('selected');
+                        });
+                    }
+                }
+
+                let places = [];
+
+                async function fetchRouteData(routeId) {
+                    try {
+                        const response = await fetch(`/api/v1/routes/${routeId}`);
+                        if (!response.ok) {
+                            throw new Error(`Error fetching route. Status: ${response.status}`);
+                        }
+                        const route = await response.json();
+
+                        $('#routeName').val(route.name);
+                        $('#routeDescription').val(route.description);
+                        $('#descriptionLength').val(route.description.length);
+
+                        $('#routeDistance').val(route.distance);
+                        $('#routeDuration').val(route.duration);
+                        $('#routeGoal').val(route.goal);
+                        $('#routeNeighborhood').val(route.neighborhood._id);
+
+
+                        if (route.places)
+                            places = route.places;
+
+                        if (route.tags) {
+                            route.tags.forEach(tagId => {
+                                $(`.tag-button[data-tag-id="${tagId._id}"]`).addClass('selected');
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error fetching route:', error);
+                        alert('There was an error fetching the route data. Please try again later.');
+                    }
+                }
+
+                function getSelectedTags() {
+                    let selectedTags = [];
+                    $('.tag-button.selected').each(function () {
+                        const tagId = $(this).data('tag-id');
+                        selectedTags.push(tagId);
+                    });
+                    return selectedTags;
+                }
+
+                // Function to update a route
+                function updateRoute(routeId) {
+                    const updatedRoute = {
+                        _id: routeId,
+                        name: $('#routeName').val(),
+                        description: $('#routeDescription').val(),
+                        distance: $('#routeDistance').val(),
+                        duration: $('#routeDuration').val(),
+                        goal: $('#routeGoal').val(),
+                        neighborhood: $('#routeNeighborhood').val(),
+                        places: places || [],
+                        tags: getSelectedTags(),
+                        isRelevant: true
+                    };
+
+                    sessionStorage.setItem('routeData', JSON.stringify(updatedRoute));
+                    window.location.href = '/admin/update-route/places';
+                }
+
+                // Function to add a new route
+                function addNewRoute() {
+                    const newRoute = {
+                        name: $('#routeName').val(),
+                        description: $('#routeDescription').val(),
+                        distance: $('#routeDistance').val(),
+                        duration: $('#routeDuration').val(),
+                        goal: $('#routeGoal').val(),
+                        neighborhood: $('#routeNeighborhood').val(),
+                        places: [],
+                        tags: getSelectedTags(),
+                        isRelevant: true
+                    };
+
+                    sessionStorage.setItem('routeData', JSON.stringify(newRoute));
+                    sessionStorage.removeItem('newRouteData');
+
+                    window.location.href = '/admin/add-new-route/places';
+                }
+
+                async function buildCategoryTagsObject() {
+                    const response = await fetch('/api/v1/categories/search?type=Route')
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch categories. Status: ${responseCategories.status}`);
+                    }
+
+                    const categories = await response.json();
+
+                    for (const category of categories) {
+                        try {
+                            const responseTags = await fetch(`/api/v1/tags/category/${category._id}`)
+                            if (!responseTags.ok) {
+                                throw new Error(`Failed to fetch tags for category: ${category.name}. Status: ${responseTags.status}`);
+                            }
+
+                            const tags = await responseTags.json();
+
+                            const categoryHtml = `
+                            <div class="category-section">
+                                <h5>${category.name}</h5>
+                                <div class="tags-list">
+                                    ${tags.map(tag => `
+                                        <button type="button" class="tag-button btn btn-outline-dark mx-1" data-tag-id="${tag._id}">
+                                            ${tag.name}
+                                        </button>`).join('')}
+                                </div>
+                            </div>
+                        `;
+
+                            $('#routeTags').append(categoryHtml);
+                        }
+
+                        catch (error) {
+                            console.error(`Error fetching tags for category ${category.name}:`, error);
+                            alert(`Error loading tags for category: ${category.name}. Please try again later.`);
+                        }
+                    }
+
+                    descriptionLength.textContent = descriptionText.value.length
+                }
+
+
+                async function fetchNeighborhood() {
+                    try {
+                        const response = await fetch('/api/v1/neighborhoods');
+                        if (!response.ok) {
+                            throw new Error(`Error: ${response.status} ${response.statusText}`);
+                        }
+                        const neighborhoods = await response.json();
+
+                        // Select the dropdown element
+                        const neighborhoodSelect = document.getElementById('routeNeighborhood');
+
+                        // Clear any existing options (optional)
+                        neighborhoodSelect.innerHTML = '<option value="" disabled selected>שכונה</option>';
+
+                        // Create options for each neighborhood
+                        neighborhoods.forEach(neighborhood => {
+                            const option = document.createElement('option');
+                            option.value = neighborhood._id; // Use the ID as the value
+                            console.log("val", neighborhood._id);
+                            option.textContent = neighborhood.title; // Display the name as the label
+                            neighborhoodSelect.appendChild(option);
+                        });
+                    } catch (error) {
+                        console.error('Error fetching neighborhoods:', error);
+                    }
+                }
+
+                $(document).on('click', '.tag-button', function () {
+                    $(this).toggleClass('selected');
+                });
+
+                descriptionText.addEventListener('input', (text) => {
+                    descriptionLength.textContent = descriptionText.value.length
+                });
+            </script>
+
+    </body>
+
+</html>

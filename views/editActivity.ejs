@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head') %>
+    <style>
+        .container {
+            direction: rtl;
+        }
+
+        .tags-list {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        /* 
+        .tag-button {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .tag-button.selected {
+            background-color: black;
+            color: white;
+        } */
+
+        .add-tag-button,
+        .tag-button {
+            margin: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .add-tag-button.selected,
+        .tag-button.selected {
+            background-color: black;
+            color: white;
+        }
+
+        #saveActivityBtn {
+            margin: 15px auto;
+            display: block;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f8f9fa;
+            border: 1px solid black;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #saveActivityBtn:hover {
+            color: white;
+            background-color: black;
+            opacity: 80%;
+        }
+
+        .text-danger {
+            color: red;
+            margin-left: 5px;
+        }
+    </style>
+
+    <body>
+        <%- include('partials/navbar', {currentPage: 'Edit Activity' }) %>
+            <div class="container" style="width: 70%;">
+                <h1 class="text-center">עריכת פרטי תחנה</h1>
+
+                <form id="editActivityForm">
+                    <!-- Name Field -->
+                    <div class="mb-3">
+                        <label for="activityName" class="form-label">שם תחנה:</label>
+                        <input type="text" id="activityName" class="form-control" placeholder="הזן שם תחנה" required>
+                    </div>
+
+                    <!-- Description Field -->
+                    <div class="mb-3">
+                        <label for="activityDescription" class="form-label">תיאור:</label>
+                        <textarea id="activityDescription" class="form-control" placeholder="הזן תיאור"
+                            rows="3"></textarea>
+                    </div>
+
+                    <!-- Image URL Field -->
+                    <!-- <div class="mb-3">
+                        <label for="activityImg" class="form-label">קישור לתמונה:</label>
+                        <input type="url" id="activityImg" class="form-control"
+                            placeholder="https://example.com/image.jpg">
+                    </div> -->
+
+                    <!-- Image File Input -->
+                    <div class="input-group mb-3">
+                        <label for="img" class="form-label ms-3">בחירת תמונה חדשה</label>
+                        <input type="file" name="img" id="img" class="form-control" placeholder="Choose"
+                            accept="image/*">
+                    </div>
+
+                    <!-- YouTube URL Field -->
+                    <div class="mb-3">
+                        <label for="activityYT" class="form-label">קישור לסרטון YouTube:</label>
+                        <input type="url" id="activityYT" class="form-control"
+                            placeholder="https://youtube.com/watch?v=example">
+                    </div>
+
+                    <!-- Coordinates -->
+                    <div class="mb-3">
+                        <label for="coordinates" class="form-label">מיקום: <span class="text-danger">*</span></label>
+                        <div class="input-group" style="direction: ltr;">
+                            <input type="number" id="activityLatitude" class="form-control" placeholder="קו רוחב"
+                                step="any" required style="direction: rtl;">
+                            <input type="number" id="activityLongitude" class="form-control" placeholder="קו אורך"
+                                step="any" required style="direction: rtl;">
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="form-group">
+                        <label for="activityTags" class="mb-2">תגיות:</label>
+
+                        <button type="button" id="addTagButton" class="-add-tag-button btn btn-outline-dark mx-1"
+                            style="font-size: 12px; padding: 2px 5px;">
+                            תגית חדשה
+                        </button>
+
+                        <div id="activityTags" placeholder="הכנס תגיות">
+                            <!-- All Tags -->
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="saveActivityBtn">שמירה</button>
+                </form>
+
+            </div>
+
+            <script>
+                $(document).ready(async function () {
+                    // הצגת התגיות
+                    await buildCategoryTagsObject();
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const activityId = urlParams.get('id');
+
+                    if (activityId) {
+                        const newRouteData = JSON.parse(sessionStorage.getItem('newActivityData'));
+                        if (!newRouteData) {
+                            fetchRouteData(activityId);
+                        } else {
+                            setData(newRouteData);
+                        }
+
+
+                        $('#addTagButton').on('click', function () {
+                            const currentPath = window.location.pathname; // משוך את הנתיב הנוכחי
+
+                            const updatedActivity = {
+                                name: $('#activityName').val(),
+                                description: $('#activityDescription').val(),
+                                // img: $('#activityImg').val(),
+                                youtube: $('#activityYT').val(),
+                                coordinates: {
+                                    longitude: $('#activityLongitude').val(),
+                                    latitude: $('#activityLatitude').val(),
+                                },
+                                tags: getSelectedTags(),
+                                isRelevant: true
+                            };
+
+                            sessionStorage.setItem('newActivityData', JSON.stringify(updatedActivity));
+
+                            // בדוק אם currentPath ריק
+                            if (!currentPath) {
+                                console.error('Current path is not defined.');
+                                return; // עצור את הפעולה אם הנתיב לא מוגדר
+                            }
+
+                            const from = encodeURIComponent(currentPath);
+                            const redirectPath = `/admin/create-tags?from=${from}&id=${activityId}`;
+                            console.log(redirectPath)
+                            window.location.href = redirectPath; // העבר לעמוד create-tags
+                        });
+
+                        $("#editActivityForm").on('submit', function (e) {
+                            e.preventDefault();
+                            sessionStorage.removeItem("newActivityData")
+                            updateActivity(activityId);
+                        });
+                    }
+
+                });
+
+                const setData = (activity) => {
+                    $('#activityName').val(activity.name);
+                    $('#activityDescription').val(activity.description);
+                    // $('#activityImg').val(activity.img);
+                    $('#activityYT').val(activity.youtube);
+                    $('#activityLongitude').val(activity.coordinates.longitude);
+                    $('#activityLatitude').val(activity.coordinates.latitude);
+                }
+
+                function fetchRouteData(activityId) {
+                    fetch(`/api/v1/places/${activityId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log(data)
+                            const activity = data;
+                            setData(activity)
+
+
+                            if (activity.tags) {
+                                activity.tags.forEach(tagId => {
+                                    $(`.tag-button[data-tag-id="${tagId._id}"]`).addClass('selected');
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('There was a problem with the fetch operation:', error);
+                        });
+                }
+
+                async function buildCategoryTagsObject() {
+                    const response = await fetch('/api/v1/categories/search?type=Place')
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch categories. Status: ${response.status}`);
+                    }
+
+                    const categories = await response.json();
+
+                    for (const category of categories) {
+                        try {
+                            const responseTags = await fetch(`/api/v1/tags/category/${category._id}`)
+                            if (!responseTags.ok) {
+                                throw new Error(`Failed to fetch tags for category: ${category.name}. Status: ${responseTags.status}`);
+                            }
+
+                            const tags = await responseTags.json();
+
+                            const categoryHtml = `
+                            <div class="category-section">
+                                <h5>${category.name}</h5>
+                                <div class="tags-list">
+                                    ${tags.map(tag => `
+                                        <button type="button" class="tag-button btn btn-outline-dark mx-1" data-tag-id="${tag._id}">
+                                            ${tag.name}
+                                        </button>`).join('')}
+                                </div>
+                            </div>
+                        `;
+
+                            $('#activityTags').append(categoryHtml);
+                        }
+
+                        catch (error) {
+                            console.error(`Error fetching tags for category ${category.name}:`, error);
+                            alert(`Error loading tags for category: ${category.name}. Please try again later.`);
+                        }
+                    }
+                }
+
+                $(document).on('click', '.tag-button', function () {
+                    $(this).toggleClass('selected');
+                });
+
+                function getSelectedTags() {
+                    let selectedTags = [];
+                    $('.tag-button.selected').each(function () {
+                        const tagId = $(this).data('tag-id');
+                        selectedTags.push(tagId);
+                    });
+                    return selectedTags;
+                }
+
+                // Function to update a route
+                function updateActivity(activityId) {
+                    let fd = new FormData();
+
+                    // check if we have an image file
+                    // if so, append it to the form data
+                    if ($('#img')[0].files[0]) {
+                        fd.append('img', $('#img')[0].files[0]);
+
+                        // else, preserve the current image url
+                    }
+                    //  else {
+                    //     fd.append('img', $('#activityImg').val());
+                    // }
+
+                    // append place name to form-data
+                    fd.append('name', $('#activityName').val());
+
+                    // append place description to form-data
+                    fd.append('description', $('#activityDescription').val());
+
+                    // append place youtube url to form-data
+                    fd.append('youtube', $('#activityYT').val());
+
+                    // append place coordinates to form-data
+                    fd.append('coordinates', [$('#activityLongitude').val(), $('#activityLatitude').val()].join(','));
+
+                    // append place tags to form-data
+                    fd.append('tags', getSelectedTags());
+
+                    // append place isRelevant to form-data
+                    fd.append('isRelevant', true);
+
+
+
+                    // const updatedActivity = {
+                    //     name: $('#activityName').val(),
+                    //     description: $('#activityDescription').val(),
+                    //     img: $('#activityImg').val(),
+                    //     youtube: $('#activityYT').val(),
+                    //     coordinates: {
+                    //         longitude: $('#activityLongitude').val(),
+                    //         latitude: $('#activityLatitude').val(),
+                    //     },
+                    //     tags: getSelectedTags(),
+                    //     isRelevant: true
+                    // };
+
+                    $.ajax({
+                        url: `/api/v1/places/${activityId}`,
+                        method: 'PUT',
+                        contentType: false,
+                        processData: false,
+                        data: fd,
+                        success: function () {
+                            window.location.href = '/admin/manage-activities';
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(`Error updating activity: ${xhr.responseText || status}`);
+                            alert(`Failed to update activity: ${xhr.responseText || error}`);
+                        }
+                    });
+                }
+
+            </script>
+    </body>
+
+</html>

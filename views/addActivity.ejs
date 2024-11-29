@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head') %>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        .container {
+            direction: rtl;
+            text-align: center;
+        }
+
+        #map {
+            height: 400px;
+            /* width: 70%; */
+            margin-top: 20px;
+        }
+
+
+        #addNewPlace {
+            margin: 15px auto;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f8f9fa;
+            border: 1px solid black;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #addNewPlace:hover {
+            color: white;
+            background-color: black;
+            opacity: 80%;
+        }
+
+        .text-danger {
+            color: red;
+            margin-left: 5px;
+        }
+    </style>
+
+    <body>
+        <%- include('partials/navbar', {currentPage: 'Add an activity' }) %>
+            <div class="container" style="width: 70%;">
+                <h1>הוספת תחנה</h1>
+
+                <!-- Search Input -->
+                <div class="input-group mb-3" style="direction: ltr;">
+                    <span class="input-group-text" id="search-addon">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="placeSearchInput" class="form-control" placeholder="חיפוש"
+                        aria-label="חפש מקום" aria-describedby="search-addon" style="direction: rtl;">
+                    <ul id="searchResults" class="list-group"
+                        style="display:none; max-height: 200px; overflow-y: auto;"></ul>
+                </div>
+
+
+                <!-- Coordinates Input -->
+                <div class="form-group d-flex align-items-center">
+                    <label for="coordinatesInput" class="mb-0 ms-2">מיקום: <span class="text-danger">*</span></label>
+                    <input type="text" id="coordinatesInput" class="form-control flex-grow-1" placeholder="קואורדינטות"
+                        required>
+                </div>
+
+                <!-- Map -->
+                <div id="map"></div>
+
+
+                <button id="addNewPlace">הוספת תחנה</button>
+            </div>
+
+
+            <!-- JS of Leaflet -->
+            <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+            <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+            <script>
+                // Display the map
+                const map = L.map('map').setView([31.95966273043602, 34.80208048694831], 13); // קואורדינטות של ראשון לציון
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                }).addTo(map);
+
+                let currentMarker; // Store the current marker
+
+                // Handle manual coordinates input
+                $('#coordinatesInput').on('change', function () {
+                    const coords = $('#coordinatesInput').val().split(',');
+                    if (coords.length === 2) {
+                        const lat = parseFloat(coords[0]);
+                        const lng = parseFloat(coords[1]);
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            setMarker(lat, lng);
+
+                            findClosestPlace(lat, lng);
+
+                        } else {
+                            alert("אנא הזן קואורדינטות תקינות.");
+                        }
+                    } else if (coords !== "") {
+                        alert("אנא הזן קואורדינטות בפורמט תקין.");
+                    }
+                });
+
+                // Handle map click 
+                map.on('click', function (e) {
+                    const coords = e.latlng;
+                    $('#coordinatesInput').val(`${coords.lat}, ${coords.lng}`);
+                    setMarker(coords.lat, coords.lng);
+
+                    findClosestPlace(coords.lat, coords.lng);
+                });
+
+                // Set the marker on the map
+                function setMarker(lat, lng) {
+                    // Remove the previous marker if it exists
+                    if (currentMarker) {
+                        map.removeLayer(currentMarker);
+                    }
+                    // Create a new marker and add it to the map
+                    currentMarker = L.marker([lat, lng]).addTo(map);
+                    map.setView([lat, lng], 13);
+                }
+
+                $('#placeSearchInput').on('input', function () {
+                    const query = $(this).val();
+                    const resultsList = $('#searchResults');
+
+                    // Reset results list and hide it if query is empty
+                    resultsList.empty();
+                    if (!query) {
+                        resultsList.hide();
+                        return;
+                    }
+
+                    // Fetch matching places from Nominatim
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length > 0) {
+                                resultsList.show();
+                                data.forEach(place => {
+                                    const listItem = $('<li></li>')
+                                        .addClass('list-group-item list-group-item-action')
+                                        .text(place.display_name)
+                                        .attr('data-lat', place.lat)
+                                        .attr('data-lon', place.lon);
+
+                                    // When user clicks on a result, fill the input with the place name and trigger the next step
+                                    listItem.on('click', function () {
+                                        selectPlace(place.display_name, place.lat, place.lon);
+                                    });
+
+                                    resultsList.append(listItem);
+                                });
+                            } else {
+                                resultsList.hide(); // Hide if no results found
+                            }
+                        })
+                        .catch(error => console.error('Error fetching search results:', error));
+                });
+
+                function selectPlace(name, lat, lon) {
+                    const placeSearchInput = $('#placeSearchInput');
+                    const resultsList = $('#searchResults');
+                    const coordinatesInput = $('#coordinatesInput');
+
+                    placeSearchInput.val(name);
+                    resultsList.hide();
+
+                    coordinatesInput.val(`${lat}, ${lon}`);
+
+                    setMarker(lat, lon);
+                    console.log(`Selected place: ${name} (Lat: ${lat}, Lon: ${lon})`);
+                }
+
+                // פונקציה לחיפוש מקום בקואורדינטות הספציפיות
+                function findClosestPlace(lat, lng) {
+                    // URL של Nominatim לצורך reverse geocoding
+                    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+
+                    const placeSearchInput = $('#placeSearchInput');
+
+                    return fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            // בדיקה אם קיים שם מקום מדויק בקואורדינטות
+                            if (data && data.address) {
+                                placeSearchInput.val(data.display_name);
+                            } else {
+                                // אם לא קיים מקום בקואורדינטות המדויקות, נבצע חיפוש באזור הקרוב
+                                return findNearbyPlace(lat, lng);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching location:', error);
+                            return "תחנה חדשה"; // במקרה של שגיאה
+                        });
+                }
+
+                //  פונקציה לחיפוש מקום קרוב בקואורדינטות הספציפיות אם אין מקום מדויק
+                function findNearbyPlace(lat, lng) {
+                    // ביצוע חיפוש לפי אזור (חיפוש בקירוב)
+                    const nearbyUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${lat},${lng}&limit=1`;
+                    const placeSearchInput = $('#placeSearchInput');
+
+                    return fetch(nearbyUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length > 0) {
+                                placeSearchInput.value(data[0].display_name);
+
+                            } else {
+                                placeSearchInput.value("תחנה חדשה");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error finding nearby location:', error);
+                            return "תחנה חדשה";
+                        });
+                }
+
+                $('#addNewPlace').on('click', function () {
+                    const coords = $('#coordinatesInput').val().split(',');
+
+                    if (coords.length === 2) {
+                        const lat = parseFloat(coords[0]);
+                        const lng = parseFloat(coords[1]);
+                        const place = {
+                            name: $("#placeSearchInput").val(),
+                            description: "",
+                            img: "",
+                            youtube: "",
+                            coordinates: {
+                                longitude: lng,
+                                latitude: lat
+                            },
+                            tags: [],
+                            ratings: [],
+                            averageRating: 0,
+                            isRelevant: true
+                        }
+                        // AJAX
+                        $.ajax({
+                            url: '/api/v1/places',
+                            method: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(place),
+                            success: function (response) {
+                                console.log('Place added successfully:', response);
+                                window.location.href = `/admin/edit-activity?id=${response._id}`;
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(`Error adding place: ${xhr.responseText || status}`);
+                                alert(`Failed to add place: ${xhr.responseText || error}`);
+                            }
+
+
+                        });
+                    }
+                    else {
+                        alert("קואורדינטות לא תקינות")
+
+                    }
+
+                });
+
+            </script>
+    </body>
+
+</html>

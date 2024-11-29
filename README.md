@@ -41,6 +41,7 @@ This project uses the following tools and libraries:
 
 ## .env Configuration
 
+Copy `.env_example` and change the new file's name to `.env`. This will be your local configuration file.
 The `.env` file is used to store environment variables that configure the application. Here are some common variables you might need to set:
 
 - `MONGODB_URL`: The connection string for your MongoDB database. Example: `MONGODB_URL=mongodb://localhost:27017/mydatabase`

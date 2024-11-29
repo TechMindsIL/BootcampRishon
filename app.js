@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session'); // Import express-session
 const MongoStore = require('connect-mongo'); // Import connect-mongo
 const mongoose = require('mongoose');
+const passport = require('passport');
+const User = require('./models/User');
 
 // Initialize Express application
 const app = express();
@@ -46,8 +48,37 @@ db.once('open', () => console.log('DB connection is open'));
 db.set("useCreateIndex", true);
 console.log(process.env.MONGOURL);
 
+app.use(passport.initialize());
+
+app.use(passport.session());
+
+passport.serializeUser(function (user, done) {
+    done(null, user._id);
+});
+
+// passport.deserializeUser(function (id, done) {
+//     User.findById(id, function (err, user) {
+//         done(err, user);
+//     });
+// });
+
+passport.deserializeUser(async function (id, done) {
+    try {
+        const user = await User.findById(id);  // השתמש ב-async/await במקום callback
+        done(null, user);
+    } catch (err) {
+        done(err);
+    }
+});
+
+passport.use(User.createStrategy());
+
+// import upload route, define it as a static route that serves files from the 'uploads' directory
+app.use('/uploads', express.static('uploads'));
+
 // Import and use routes
 app.use('/', require('./routes/index'));
+app.use('/admin', require('./routes/indexAdmin'));
 app.use('/templates', require('./routes/templates'));
 app.use('/api/v1/routes', require('./routes/api/v1/route'));
 app.use('/api/v1/auth', require('./routes/api/v1/auth'));
@@ -56,6 +87,7 @@ app.use('/api/v1/tags', require('./routes/api/v1/tag'));
 app.use('/api/v1/places', require('./routes/api/v1/place'));
 app.use('/api/v1/categories', require('./routes/api/v1/category'));
 app.use('/api/v1/savedRoutes', require('./routes/api/v1/savedRoutes'));
+app.use('/api/v1/neighborhoods', require('./routes/api/v1/neighborhood'));
 
 app.use((req, res, next) => {
     res.status(404).json({ error: 'Not Found' });

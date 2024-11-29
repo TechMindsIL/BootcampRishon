@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- <title>Responsive Navigation Bar</title> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(to right bottom,
+          #75a9e1,
+          #69abe0,
+          #e0a476,
+          #f0cb94,
+          #f9d2a0);
+      background-repeat: no-repeat;
+      z-index: -1;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      background-color: rgb(240, 240, 240);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .topmenu {
+      background-color: transparent;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background-image: linear-gradient(120deg,
+          rgba(255, 255, 255, 0.486),
+          rgba(240, 120, 8, 0.3));
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .username {
+      color: #2d2d3a;
+      font-size: 1.7em;
+      padding-top: 6px;
+      font-weight: 700;
+      font-family: Poppins;
+    }
+
+    .logo {
+      height: 50px;
+      margin-right: 20px;
+    }
+
+    .navbar {
+      background-color: transparent;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background-image: linear-gradient(120deg,
+          rgba(255, 255, 255, 0.486),
+          rgba(240, 120, 8, 0.3));
+      width: 100%;
+      height: auto;
+      z-index: 1000;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav__link {
+      display: flex;
+      align-items: center;
+
+      text-decoration: none;
+      font-family: Poppins;
+      font-size: 2.5em;
+      font-weight: 500;
+      transition: color 0.3s;
+
+      padding: 5px;
+    }
+
+    .nav__link i {
+      color: #000000;
+    }
+
+    .nav__link i:hover {
+      color: #c95c04 !important;
+      text-decoration: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 10px;
+      }
+
+      .nav__link {
+        font-size: 2.5em;
+      }
+
+      .username {
+        font-size: 1.5em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 0 5px;
+      }
+
+      .logo {
+        height: 35px;
+      }
+
+      .username {
+        font-size: 1.4em;
+      }
+
+      .nav__link {
+        font-size: 2em;
+      }
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      const response = await fetch("/api/v1/auth/");
+      const isLoggedIn = response.ok;
+
+      const usernameElement = document.getElementsByClassName("username")[0];
+
+      if (isLoggedIn) {
+        const userData = await response.json();
+        if (userData.name) {
+          usernameElement.innerHTML = `Hello, ${userData.name}`;
+        }
+      }
+
+      const elementsToUpdate = [
+        { id: "SavedRoutes", href: isLoggedIn ? "/MyWorkouts" : "/login" },
+        { id: "profile", href: isLoggedIn ? "/welcome" : "/login" },
+      ];
+
+      elementsToUpdate.forEach((element) => {
+        const elementToUpdate = document.getElementById(element.id);
+        if (elementToUpdate) {
+          elementToUpdate.setAttribute("href", element.href);
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div class="topmenu">
+    <h2 class="username">Hello, Guest</h2>
+    <img src="https://i.postimg.cc/cLx3kVnz/Rishon-Fit.png" class="logo" alt="logo" />
+  </div>
+  <footer class="navbar navbar-expand fixed-bottom h-6">
+    <div class="container">
+      <a id="chooseRoutes" href="/chooseRoute" class="nav__link text-white" aria-label="Search">
+        <i class="fas fa-search"></i>
+      </a>
+      <a id="SavedRoutes" href="/login" class="nav__link text-white" aria-label="Saved Routes">
+        <i class="fas fa-thin fa-person-running"></i>
+      </a>
+      <a id="profile" href="/" class="nav__link text-white" aria-label="Account">
+        <i class="fas fa-user-circle"></i>
+      </a>
+    </div>
+  </footer>
+</body>
+
+</html>

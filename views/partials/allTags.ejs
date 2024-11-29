@@ -1,0 +1,97 @@
+<style>
+    #allTagsSection {
+        direction: ltr;
+        display: block;
+        height: auto;
+        overflow-y: visible;
+
+        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+
+    .tagCategory {
+        font-size: 1.5rem;
+        margin: 4px 1px 0 0 ;
+        width: 100%;
+        display: flex;
+        text-align: right;
+        flex-direction: column;
+        align-content: right;
+    }
+
+    .categoryName {
+        font-size: 1.7rem;
+        margin:0;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #efefef inset !important;
+    }
+</style>
+<body>
+</body>
+<script>
+    const tagCategories = {
+        "סוג": {
+            id: "type",
+        },
+        "התאמות": {
+            id: "adjustments",
+        },
+    };
+
+    const makeContainers = () => {
+        for (const [category, { id }] of Object.entries(tagCategories)) {
+            allTagsSection.innerHTML += `
+                <div class="tagCategory">
+                    <h3 class="categoryName">${category === "שכונות" ? "שכונה" : category}</h3>
+                    <div class="nonAdvContent noPaddingHorizontal" id=${id}>
+                    </div>
+                </div>
+            `;
+        }
+    };
+
+    const makeTagCards = (allTags) => {
+        allTags.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
+        for (const tag of allTags) {
+            if (tag.category.for !== "Route") continue;
+
+            const container = document.getElementById(
+                tagCategories[tag.category.name]?.id
+            );
+
+            if (!container) continue;
+
+            // const div = document.createElement("div");
+
+            // div.classList.add("tagCardPadding");
+            // // div.onclick = () => filterByTag(tag);
+            // div.onclick = () => {
+            //     const card = div.querySelector(".tagCard");
+            //     card.classList.toggle("selected");
+            //     filterByTag(tag);
+            // };
+
+            const safeCategoryName = tag.category.name.replace(/['"]/g, "_");
+            const safeTagName = tag.name.replace(/['"]/g, "_");
+            
+            container.innerHTML += `
+                <div class="tagCardPadding">
+                    <div class="tagCard" id='${safeCategoryName}:${safeTagName}' onclick="useFilter('${tag._id}', 'advanced')">
+                        <h5 class="tagText unselectable">${tag.name}</h5>
+                    </div>
+                </div>
+            `;
+        }
+    };
+</script>

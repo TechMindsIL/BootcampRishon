@@ -1,145 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
+<%- include('partials/head') %> <%- include('partials/insidenavbar') %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Map Screen</title>
+        <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Map Screen</title>
 
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+            <!-- CSS of Leaflet -->
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+            <!-- CSS of Leaflet Routing Machine -->
+            <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 
-    <!-- CSS of Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <!-- CSS of Leaflet Routing Machine -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+            <style>
+                body {
+                    padding: 0;
+                    margin: 0;
+                    /* margin-top: 12%; */
+                    /* margin-bottom: 5%; */
+                    margin-top: 100px;
+                }
 
-    <style>
-        body {
-            text-align: center;
-        }
+                .leaflet-touch .leaflet-control-layers,
+                .leaflet-touch .leaflet-bar,
+                .leaflet-touch .leaflet-control-layers,
+                .leaflet-touch .leaflet-bar {
+                    display: none !important;
+                    /* הסתר את המיכל של הוראות ההגעה */
+                }
 
-        #map {
-            height: 500px;
-            width: 70%;
-            margin: 0 auto;
-        }
+                .leaflet-routing-container {
+                    display: none !important;
+                    /* הסתר את המיכל של הוראות ההגעה */
+                }
 
-        .icons {
-            width: 35%;
-            margin: 8px;
-        }
+                .leaflet-routing-container * {
+                    display: none !important;
+                    /* הסתר את המיכל של הוראו�� ההגעה */
+                }
 
-        i {
-            font-size: 24px;
-            margin: 0 4px;
-            cursor: pointer;
-        }
-
-        #toggleListView {
-            margin: 15px;
-            padding: 15px 30px;
-            font-size: 18px;
-            background-color: gray;
-            color: black;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #toggleListView:hover {
-            color: white;
-            background-color: black;
-            opacity: 80%;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- header -->
-
-    <h1>שם האימון </h1>
-
-    <div class="icons" style="align-self: flex-end;">
-        <i class="fa fa-share-alt" aria-hidden="true"></i>
-        <i class="far fa-star" aria-hidden="true"></i>
-    </div>
-
-    <div id="map"></div>
-    <button id="toggleListView">הצגה ברשימה</button>
-
-    <!-- footer -->
-
-    <!-- JS of Leaflet -->
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-    <!-- JS of Leaflet Routing Machine -->
-    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-
-    <script>
-        // יצירת אובייקט המפה ומיקוד לראשון לציון
-        var map = L.map('map').setView([31.95966273043602, 34.80208048694831], 12); // קואורדינטות של ראשון לציון
-
-        // הגדרת שכבת המפה מ-OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+                body {
+                    text-align: center;
+                }
 
 
-        async function fetchRoute() {
-            try {
-                const response = await fetch(`http://localhost:8080/api/v1/routes/670668d770dec8da9fd0dc6d`);  // כאן תכניסי את כתובת ה-API הנכונה
-                const routeData = await response.json();  // קבלת נתוני המסלול בפורמט JSON
-                return routeData;
-            } catch (error) {
-                console.error("Error fetching route:", error);
-            }
-        }
+                #map {
+                    height: 450px;
+                    width: 100%;
+                    margin: 0 auto;
+                }
 
-        async function addRouteToMap() {
-            // שליפת נתוני המסלול מה-API
-            const route = await fetchRoute();
 
-            if (!route || !route.places || route.places.length < 2) {
-                console.error("Invalid route data");
-                return;
-            }
+                .icons {
+                    width: 100%;
+                    text-align: left;
+                }
 
-            // קבלת קואורדינטות נקודות התחלה וסיום מתוך המסלול
-            const startCoordinates = [31.95966273043602, 34.80208048694831];  // החליפי לפי הנתונים מהמסלול
-            const endCoordinates = [31.995121254317752, 34.75107383504302];  // החליפי לפי הנתונים מהמסלול
+                .mapicons {
+                    width: 100%;
+                }
 
-            // הוספת נקודת התחלה במפה
-            var startMarker = L.marker(startCoordinates).addTo(map)
-                .bindPopup(route.places[0].name);
+                i {
+                    font-size: 24px;
+                    margin: 0 4px;
+                    cursor: pointer;
+                }
 
-            // הוספת נקודת סיום במפה
-            var endMarker = L.marker(endCoordinates).addTo(map)
-                .bindPopup(route.places[route.places.length - 1].name);
+                .textInside {
+                    width: 90%;
+                    height: auto;
+                    text-align: center;
+                    font-size: 1.4em;
+                    font-weight: 500;
+                    margin: 0;
+                    color: white;
+                }
 
-            // הוספת מסלול באמצעות Leaflet Routing Machine
-            L.Routing.control({
-                waypoints: [
-                    L.latLng(startCoordinates),  // נקודת התחלה
-                    L.latLng(endCoordinates)  // נקודת סיום 
-                ],
-                routeWhileDragging: false,
-                createMarker: function (i, waypoint, n) {
-                    return null;  // מחזיר null כדי שלא יתווסף סימן (marker)
-                },
-                show: false,
-                draggableWaypoints: false  // לא לאפשר לגרור נקודות
-            }).addTo(map);
-        }
+                .button:hover {
+                    background-color: hsl(19, 88%, 45%);
+                    color: white;
+                }
 
-        // קריאה לפונקציה להוספת המסלול למפה
-        addRouteToMap();  // יש להחליף את ה-ID של המסלול לפי הצורך
+                .button {
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                    width: 200px;
+                    height: 60px;
+                    background-color: #f16624;
+                    border-radius: 20px;
+                    padding: 5px 5px;
+                    text-align: center;
+                    border: none;
+                    margin-bottom: 50px;
+                }
 
-        // הוספת סימון (marker) ב-Rishon StartUp
-        // var marker = L.marker([31.995121254317752, 34.75107383504302]).addTo(map)
-        //     .bindPopup('Rishon StartUp');
-        // .openPopup();
-    </script>
-</body>
+                .fa-star {
+                    color: #f16624;
+                }
+
+                .fa-star:hover {
+                    color: hsl(19, 88%, 42%);
+                }
+
+                .fullScreen {
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    min-height: 100vh !important;
+                    width: 100vw !important;
+                    z-index: 1001;
+                }
+
+                .expandButton {
+                    cursor: pointer;
+                    position: absolute;
+
+                    left: 25px;
+                    top: 25px;
+
+                    z-index: 1002;
+                    background: white;
+                    width: 40px;
+                    height: 40px;
+
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    border-radius: 7px;
+
+                    border: 2px solid rgba(0, 0, 0, 0.4);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    transition: transform 0.2s ease;
+                }
+
+                .expandButton:hover {
+                    background: rgb(210, 210, 210);
+                    transform: scale(1.07);
+                }
+
+                .fullscreenIcon {
+                    font-size: 1.5rem;
+                    transition: transform 0.2s ease;
+                }
+
+                /* @media (max-width:660px) {
+                    body {
+                        margin-top: 20%;
+                        margin-bottom: 8%;
+                    }
+                } */
+
+                /* @media (max-width:500px) {
+                    body {
+                        margin-bottom: 15%;
+                    }
+                } */
+
+                /* @media (max-width:400px) {
+                    body {
+                        margin-top: 25%;
+                    }
+                } */
+
+                @media (max-width:885px) {
+                    #rating-section {
+                        gap: 50px !important;
+                    }
+                }
+
+                @media (max-width:655px) {
+                    #rating-section {
+                        gap: 15px !important;
+                    }
+                }
+
+                @media (max-width:535px) {
+                    #rating-section {
+                        gap: 5px !important;
+                    }
+                }
+
+                #rating-section {
+                    display: flex;
+                    flex-direction: row-reverse;
+                    justify-content: space-between;
+                    gap: 100px;
+                    flex-wrap: wrap;
+                    margin-bottom: 15px;
+                }
+
+                #div-average-rating {
+                    font-size: 18px;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                #rating-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                #stars-container {
+                    display: flex;
+                    gap: 5px;
+                }
+
+                .star {
+                    font-size: 30px;
+                    cursor: pointer;
+                }
+
+                #rate-button {
+                    font-size: 20px;
+                    cursor: pointer;
+                    background-color: #f16624;
+                    border-radius: 14px;
+                    padding: 0px 5px;
+                    text-align: center;
+                    border: none;
+                }
+
+                .login-button {
+                    font-size: 16px;
+                    cursor: pointer;
+                    background-color: #f16624;
+                    border-radius: 14px;
+                    padding: 0px 5px;
+                    text-align: center;
+                    border: none;
+                }
+            </style>
+        </head>
+
+        <body>
+            <div class="fullWidth center">
+                <div class="center">
+                    <h1 id="name" class="nametxt">שם האימון</h1>
+                    <%- include('partials/listInfo')%>
+
+                        <div id="rating-section">
+                            <div id="div-average-rating" style="display: none;">
+                                <span id="average-rating">0</span>
+                                <label for="average-rating"><strong>:דירוג משתמשים</strong></label>
+                            </div>
+                            <div id="rating-container" style="display: none;">
+                                <button id="rate-button">דירוג</button>
+                                <div id="stars-container">
+                                    <span class="star" data-value="1">☆</span>
+                                    <span class="star" data-value="2">☆</span>
+                                    <span class="star" data-value="3">☆</span>
+                                    <span class="star" data-value="4">☆</span>
+                                    <span class="star" data-value="5">☆</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mapicons">
+                            <div class="icons" style="align-self: flex-end">
+                                <!-- <i class="fa fa-share-alt" id="share" aria-hidden="true"></i> -->
+                                <i id="toggleSave" class="far fa-star" aria-hidden="true"></i>
+                            </div>
+
+                            <div id="map" class="">
+                                <div class="expandButton" onclick="expandMap()">
+                                    <i class="fa-solid fa-expand fullscreenIcon"></i>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <button id="toggleListView" class="button center">
+                            <h1 class="textInside">הצגה ברשימה</h1>
+                        </button>
+                </div>
+            </div>
+
+            <!-- JS of Leaflet -->
+            <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+            <!-- JS of Leaflet Routing Machine -->
+            <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+            <script>
+
+                document.addEventListener("DOMContentLoaded", async () => {
+                    try {
+                        const route = await fetchRoute();
+                        if (route) {
+                            addRouteToMap(route);
+                            updateRatingDisplay(route);
+                            checkAuthStatus(route);
+                        } else {
+                            console.error("Failed to fetch route data.");
+                        }
+
+                    } catch (error) {
+                        console.error("Error during initialization:", error);
+                    }
+                });
+
+                const nameText = document.getElementById("name");
+                const mapContainer = document.getElementById("map");
+                const fullscreenIcon = document.getElementsByClassName("fullscreenIcon")[0];
+
+                const getCenter = (coords) => {
+                    if (!coords.length) return null;
+
+                    let totalLat = 0;
+                    let totalLng = 0;
+
+                    for (coord of coords) {
+                        totalLat += coord[0];
+                        totalLng += coord[1];
+                    }
+
+                    const centerLat = totalLat / coords.length;
+                    const centerLng = totalLng / coords.length;
+
+                    return [centerLat, centerLng];
+                };
+
+                // Initialize the map object
+                const map = L.map("map", { zoomSnap: 0.5 });
+
+                // Setting map layer from OpenStreetMap
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    attribution:
+                        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                }).addTo(map);
+
+                const icons = {
+                    "התחלת מסלול אופניים": "biking.png",
+                    "מסלול אופניים": "biking.png",
+                    "סיום מסלול אופניים": "biking.png",
+                    "סיום מסלול הליכה.ריצה": "running.png",
+                    "התחלת מסלול הליכה.ריצה": "running.png",
+                    "אולם ספורט": "field.png",
+                    "נקודת מפגש קבוצת הליכה": "walking.png",
+                    "מגרש טניס": "tennis.png",
+                    "שולחן פינג פונג": "pingpong.png",
+                    "מגרש כדורגל": "football.png",
+                    "מגרש כדורסל": "basketball.png",
+                    "מתקני כושר": "dumbbell.png",
+                    "אימון כוח": "dumbbell.png",
+                    default: "locationMark.png",
+                };
+
+                const getIcon = (tags) => {
+                    console.log(tags);
+                    for (tag of tags) {
+                        if (tag.category.name !== "סוג מתקן") {
+                            continue;
+                        }
+                        console.log(icons[tag.name]);
+                        console.log(tag);
+                        return icons[tag.name] ? icons[tag.name] : icons["default"];
+                    }
+                    console.log("DEFAULT");
+                    return icons["default"];
+                };
+
+                // Fetching the route data from the API
+                const addRouteToMap = async (route) => {
+                    //    const route = await fetchRoute();
+
+                    if (!route || !route.places || route.places.length === 0) {
+                        console.error("Invalid route data");
+                        return;
+                    }
+
+                    nameText.textContent = route.name;
+
+                    const waypoints = []; // Create an array to hold all the coordinates
+                    const coordsFinal = [];
+                    const distances = []; // Create an array to store the distances between waypoints
+
+                    // Loop through each place to add markers and collect waypoints
+                    for (let i = 0; i < route.places.length; i++) {
+                        const place = route.places[i];
+                        const coordinates = [
+                            place.coordinates.latitude,
+                            place.coordinates.longitude,
+                        ]; // [latitude, longitude]
+                        L.marker(coordinates, {
+                            icon: L.icon({
+                                iconUrl: `/images/icons/${getIcon(place.tags)}`,
+                                iconSize: [42, 42],
+                            }),
+                        })
+                            .addTo(map)
+                            .bindPopup(place.name); // Create a marker for each place
+                        waypoints.push(L.latLng(coordinates)); // Add coordinates to the waypoints array
+                        coordsFinal.push(coordinates);
+
+                        // Calculate the distance to the next waypoint (except for the last waypoint)
+                        if (i < route.places.length - 1) {
+                            const nextPlace = route.places[i + 1];
+                            const nextCoordinates = [
+                                nextPlace.coordinates.latitude,
+                                nextPlace.coordinates.longitude,
+                            ];
+                            const distance = L.latLng(coordinates).distanceTo(
+                                L.latLng(nextCoordinates)
+                            );
+                            distances.push(distance);
+                        }
+                    }
+
+                    // Store the distances in session storage
+                    sessionStorage.setItem("distances", JSON.stringify(distances));
+
+                    const center = getCenter(coordsFinal);
+                    map.setView(center, 12);
+
+                    // Add a single routing control for all the waypoints
+                    L.Routing.control({
+                        waypoints: waypoints,
+                        routeWhileDragging: false,
+                        serviceUrl: "https://routing.openstreetmap.de/routed-bike/route/v1",
+                        createMarker: function () {
+                            return null; // Prevent adding additional markers for waypoints
+                        },
+                        // show: false,
+                        draggableWaypoints: false,
+                        fitSelectedRoutes: true,
+                        lineOptions: {
+                            addWaypoints: false,
+                            styles: [{ color: "#f16624", weight: 3 }],
+                        },
+                    }).addTo(map);
+                };
+
+                // Event listener for the button to redirect to list view
+                document
+                    .getElementById("toggleListView")
+                    .addEventListener("click", () => {
+                        window.location.href = `/list?id=${ID}`; // Redirects to the list page
+                    });
+
+                const saveButton = document.getElementById("toggleSave");
+
+                const routeSaved = (routes, routeId) => {
+                    for (let i = 0; i < routes.length; i++) {
+                        if (routes[i]._id === routeId) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+                const getRoutes = async () => {
+                    try {
+                        const response = await fetch(SAVE_URL);
+                        const data = await response.json();
+                        return data;
+                    } catch (err) {
+                        throw new Error(err);
+                        return [];
+                    }
+                };
+                const saveRoute = async (routeId) => {
+                    try {
+                        const response = await fetch(`${SAVE_URL}${routeId}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || "Failed to save route");
+                        }
+                        const savedRoutes = await response.json();
+                        console.log("Route saved successfully:", savedRoutes);
+                    } catch (error) {
+                        console.error("Error saving route:", error);
+                    }
+                };
+                const deleteRoute = async (routeId) => {
+                    try {
+                        const response = await fetch(`${SAVE_URL}${routeId}`, {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || "Failed to delete route");
+                        }
+                        const updatedSavedRoutes = await response.json();
+                        console.log("Route deleted successfully:", updatedSavedRoutes);
+                    } catch (error) {
+                        console.error("Error deleting route:", error);
+                    }
+                };
+
+                const checkAuthStatus = async (route) => {
+                    try {
+                        const response = await fetch("/api/v1/auth/");
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log("User authenticated:", data);
+
+                            document.getElementById("rating-container").style.display = "flex";
+
+                            const userRatingObj = route.ratings.find(rating => rating.userId === data._id);
+                            if (userRatingObj) {
+                                userRating = userRatingObj.stars;
+                                highlightStars(userRating);
+                            }
+
+                            getRoutes().then((savedArr) => {
+                                let saved = routeSaved(savedArr, ID);
+                                saveButton.addEventListener("click", async () => {
+                                    if (saved) {
+                                        deleteRoute(ID);
+                                        saveButton.classList.remove("fa");
+                                        saveButton.classList.add("far");
+                                    } else {
+                                        saveRoute(ID);
+                                        saveButton.classList.remove("far");
+                                        saveButton.classList.add("fa");
+                                    }
+                                    saved = !saved;
+                                });
+                                if (!saved) {
+                                    saveButton.classList.remove("fa");
+                                    saveButton.classList.add("far");
+                                } else {
+                                    saveButton.classList.remove("far");
+                                    saveButton.classList.add("fa");
+                                }
+                            });
+                        } else if (response.status === 401) {
+                            console.log("No user is logged in.");
+                            saveButton.style.display = "none";
+                            document.getElementById("rating-container").style.display = "none";
+
+                            const loginButton = document.createElement("button");
+                            loginButton.id = "login-button";
+                            loginButton.className = "login-button";
+                            loginButton.textContent = "התחבר כדי לדרג";
+
+                            // הגדרת אירוע לחיצה
+                            loginButton.onclick = function () {
+                                window.location.href = "/login"; // מעביר את המשתמש לעמוד ההתחברות
+                            };
+
+                            const ratingSection = document.getElementById(`rating-section`);
+                            ratingSection.appendChild(loginButton);
+                        }
+                    } catch (error) {
+                        console.log("Error fetching auth status:", error);
+                        saveButton.style.display = "none";
+                    }
+                }
+
+                map.on("load", () => {
+                    const routingContainer = document.querySelector(
+                        ".leaflet-routing-container"
+                    );
+                    if (routingContainer) {
+                        routingContainer.style.display = "none";
+                    }
+                });
+
+                const expandMap = () => {
+                    if (mapContainer.classList.contains("fullScreen")) {
+                        mapContainer.classList.remove("fullScreen")
+                        fullscreenIcon.classList.remove("fa-compress")
+                        fullscreenIcon.classList.add("fa-expand")
+                    } else {
+                        mapContainer.classList.add("fullScreen")
+                        fullscreenIcon.classList.add("fa-compress")
+                        fullscreenIcon.classList.remove("fa-expand")
+                    }
+                    map.invalidateSize();
+                }
+
+                const starsContainer = document.getElementById("stars-container");
+                const averageRatingElement = document.getElementById("average-rating");
+                const rateButton = document.getElementById("rate-button");
+
+                let selectedStars = 0;
+                let userRating = null;
+
+                const updateRatingDisplay = async (route) => {
+                    if (route.averageRating > 0) {
+                        document.getElementById("div-average-rating").style.display = "flex";
+                        averageRatingElement.textContent = route.averageRating;
+                    }
+                    else
+                        document.getElementById("div-average-rating").style.display = "none";
+                };
+
+                const highlightStars = (count) => {
+                    const stars = document.querySelectorAll(".star");
+                    stars.forEach((star, index) => {
+                        star.textContent = index < count ? "★" : "☆";
+                    });
+                };
+
+                starsContainer.addEventListener("click", (event) => {
+                    const value = parseInt(event.target.dataset.value);
+
+                    if (!value || value === selectedStars) {
+                        selectedStars = 0;
+                        highlightStars(0);
+                    } else {
+                        selectedStars = value;
+                        highlightStars(value);
+                    }
+                });
+
+                rateButton.addEventListener("click", async () => {
+                    console.log(selectedStars);
+                    try {
+                        const response = await fetch(`/api/v1/routes/rate/${ID}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ stars: selectedStars }),
+                        });
+
+                        if (response.ok) {
+                            const updatedRoute = await response.json();
+                            updateRatingDisplay(updatedRoute); // עדכון תצוגה לאחר דירוג
+                            alert("הדירוג נשמר בהצלחה!");
+                        } else {
+                            throw new Error("Failed to save rating");
+                        }
+                    } catch (error) {
+                        console.error("Error submitting rating:", error);
+                        alert("שגיאה בשמירת הדירוג");
+                    }
+                });
+            </script>
+        </body>
 
 </html>

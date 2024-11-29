@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head') %>
+    <style>
+        .container {
+            direction: rtl;
+            text-align: center;
+        }
+
+        #createTagBtn {
+            margin: 15px auto;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f8f9fa;
+            border: 1px solid black;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #createTagBtn:hover {
+            color: white;
+            background-color: black;
+            opacity: 80%;
+        }
+    </style>
+
+    <body>
+        <%- include('partials/navbar', {currentPage: 'create tags' }) %>
+            <div class="container" style="width: 50%;">
+                <h1>תגית חדשה</h1>
+
+                <div class="form-group d-flex align-items-center mt-4">
+                    <label for="tagName" class="mb-0 ms-2">שם:</label>
+                    <div>
+                        <input type="text" id="tagName" class="form-control flex-grow-1" placeholder="הזן שם" required>
+                    </div>
+                </div>
+
+                <div class="form-group d-flex align-items-center mt-4">
+                    <label for="tagType" class="mb-0 ms-2">סוג:</label>
+                    <div>
+                        <input type="text" id="tagType" class="form-control flex-grow-1" disabled>
+
+                        <select id="tagTypeSelect" class="form-control flex-grow-1" style="display: none;">
+                            <option value="" selected disabled>בחר סוג</option>
+                            <option value="Route">Route</option>
+                            <option value="Place">Place</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group d-flex align-items-center mt-4">
+                    <label for="tagCategory" class="mb-0 ms-2">קטגוריה:</label>
+                    <div>
+                        <select id="tagCategory" class="form-select flex-grow-1">
+                            <option value="">בחר קטגוריה</option>
+                            <!-- All Categories -->
+                        </select>
+                    </div>
+                </div>
+
+                <button id="createTagBtn">הוסף תג</button>
+            </div>
+
+            <script>
+
+                let type;
+                let url;
+                $(document).ready(async function () {
+                    getRedirectPath();
+
+                    $('#tagType').val(type);
+
+                    await fetchAndDisplayCategories();
+                })
+
+                function getRedirectPath() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const fromPath = urlParams.get('from');
+                    const id = urlParams.get('id');
+
+                    if (!fromPath) {
+                        console.warn('No "from" parameter found in the URL.');
+                        url = "";
+                        
+                        document.getElementById('tagType').style.display = 'none';
+                        document.getElementById('tagTypeSelect').style.display = 'block';
+
+                        document.getElementById('tagTypeSelect').addEventListener('change',async function () {
+                            type = this.value;  
+                            await fetchAndDisplayCategories();
+                        });
+                    }
+                    else {
+                        let redirectPath = fromPath;
+
+                        if (fromPath.includes('/admin/add-new-route')) {
+                            type = 'Route';
+                        }
+                        else if (fromPath.includes('/admin/update-route')) {
+                            type = 'Route';
+                            if (id)
+                                redirectPath += `?id=${id}`;
+                        }
+                        else if (fromPath.includes('/admin/edit-activity')) {
+                            type = 'Place';
+                            if (id)
+                                redirectPath += `?id=${id}`;
+                        }
+
+                        url = redirectPath;
+                    }
+                }
+
+                async function fetchAndDisplayCategories() {
+                    const response = await fetch(`/api/v1/categories/search?type=${type}`)
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch categories. Status: ${responseCategories.status}`);
+                    }
+
+                    const categories = await response.json();
+
+                    const tagCategorySelect = $('#tagCategory');
+
+                    tagCategorySelect.empty().append('<option value="">בחר קטגוריה</option>');
+
+                    categories.forEach(category => {
+                        const option = $('<option></option>')
+                            .val(category._id)
+                            .text(category.name);
+                        tagCategorySelect.append(option);
+                    });
+                }
+
+                $('#createTagBtn').on('click', async function () {
+                    const newTag = {
+                        category: $("#tagCategory").val(),
+                        name: $("#tagName").val()
+                    };
+
+                    await $.ajax({
+                        url: '/api/v1/tags',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(newTag),
+                        success: function () {
+                            if (url) {
+                                window.location.href = url;
+                            }
+                            else
+                                window.location.href = "/admin";
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(`Error adding tag: ${xhr.responseText || status}`);
+                            alert(`Failed to add tag: ${xhr.responseText || error}`);
+                        }
+                    });
+                })
+
+            </script>
+    </body>
+
+</html>

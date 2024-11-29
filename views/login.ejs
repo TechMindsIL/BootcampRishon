@@ -1,12 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<%- include('./partials/head') %>
-
+<%- include('partials/head') %>
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/register.css">
+</head>
 <body>
-    <%- include('./partials/navbar', {currentPage: 'login'}) %>
-    <div class="container">
-        <h1>Login page</h1>
+    <%- include('partials/navbar', { currentPage: 'login' }) %>
+    <div class="cardplace" id="main">
+        <div id="message" class="message"></div>
+        <form id="loginForm" action="/api/v1/auth/login" method="POST" class="card">
+            <div class = "WelcomeText">
+                התחברות
+            </div>
+            <label for="email">דוא"ל</label>
+            <input type="email" class="Email" name="email" id="email" placeholder="example@example.com" required>
+            <label for="password">סיסמה</label>
+            <input type="password" class="password" name="password" id="password" placeholder="Enter your password" required>
+            
+            <button type="submit" class = SubmitButton >כניסה</button>
+            
+            <p style="margin-top: 15px;">אין חשבון?<a href="/register"> הרשמה</a></p>
+        </form>
     </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent form submission
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Login failed:', errorData.error);
+                    alert("חשבון זה לא נמצא, נסו שוב");
+                    return;
+                }
+                const data = await response.json();
+                console.log('Login successful:', data);
+                alert("התחברת בהצלחה");
+                window.location.href="/welcome";
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        });
+    </script>
 </body>
 </html>

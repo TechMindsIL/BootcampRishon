@@ -1,0 +1,152 @@
+body {
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('.png'); /* תיקון כאן */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+.cardplace {
+    display: grid;
+    place-items: center;
+    height: 50vh;
+}
+
+.card {
+    border: solid 2px #FFA500;
+    padding: 20px;
+    margin: 0;
+    border-radius: 50px;
+    width: 90%;
+    max-width: 500px;
+    height: auto;
+    text-align: center;
+    background-color: white;
+    align-items: center;
+    box-shadow: 0px 4px 10px rgba(255, 165, 0, 0.2);
+}
+
+.logo {
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+.WelcomeText {
+    font-family: sans-serif;
+    margin-top: -20px;
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 20px 0;
+    color: #000000;
+    border-bottom: 3px solid #FFA500;
+    border-radius: 8px;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+.UserName, .password, .Email {
+    border: solid 1px #FFA500;
+    border-radius: 50px;
+    background-color: #FFF5E6;
+    color: #333;
+    margin: 10px 0;
+    padding: 15px;
+    font-size: 1em;
+    width: 90%;
+    max-width: 380px;
+}
+
+label {
+    font-size: 1em;
+    color: #333;
+    text-align: right;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.SubmitButton {
+    background-color: #FFA500;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px;
+    font-size: 1em;
+    width: 150px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.x {
+    border: solid 2px #FFA500;
+    background-color: white;
+    color: #FFA500;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 35px;
+}
+
+.x:hover {
+    background-color: #FFA500;
+    color: white;
+}
+
+.SubmitButton:hover {
+    background-color: #FF8C00;
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .card {
+        width: 100%;
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    .SubmitButton {
+        width: 100%;
+        max-width: 200px;
+        font-size: 1.2em;
+    }
+
+    .UserName, .password, .Email {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .WelcomeText {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    .WelcomeText {
+        font-size: 1.5em;
+    }
+
+    .SubmitButton {
+        font-size: 1em;
+        width: 100%;
+    }
+
+    .UserName, .password, .Email {
+        font-size: 0.9em;
+        width: 100%;
+    }
+
+    label {
+        font-size: 0.9em;
+    }
+}

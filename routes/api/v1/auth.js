@@ -1,18 +1,18 @@
 const express = require('express');
-const authController = require('../../../controllers/api/v1/auth'); // Import the auth controller
-const auth = require('../../../middleware/auth'); // Import the auth middleware
-const SecurityMiddleware = require('../../../middleware/securityMiddleware'); // Import the security middleware
+const authController = require('../../../controllers/api/v1/auth');
+const auth = require('../../../middleware/auth');
+const SecurityMiddleware = require('../../../middleware/securityMiddleware');
 const router = express.Router();
 
 // Auth routes
-router.post('/register', SecurityMiddleware.secure(), authController.register);
-router.post('/login', SecurityMiddleware.secure(), authController.login);
+router.post('/register', authController.register); // Allow registration without security check
+router.post('/login', authController.login); // Allow login without security check
 router.post('/logout', SecurityMiddleware.secure(), authController.logout);
 
 // Get user profile
 router.get('/', auth, authController.profile);
 
-// update name, password and email
+// Update name, password, and email
 router.put('/', SecurityMiddleware.secure(), auth, authController.update);
 
 // Handles any auth errors

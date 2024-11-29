@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head') %>
+
+    <style>
+        .container {
+            direction: rtl;
+        }
+
+        .station-name {
+            border: 1px solid #ccc;
+        }
+
+        .list-group-item {
+            border: none;
+            margin-bottom: 10px;
+        }
+
+        .list-group-item .fa-map-marker-alt {
+            margin-left: 8px;
+        }
+
+        #stationResults {
+            width: 100%;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+        }
+
+        #stationResults .station-result {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            background-color: white;
+        }
+
+        #stationResults .station-result:hover {
+            background-color: #f8f9fa;
+            /* Light grey on hover to indicate it's clickable */
+        }
+
+        #stationSearchInput {
+            cursor: pointer;
+        }
+
+        #saveRouteBtn {
+            margin: 15px auto;
+            display: block;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f8f9fa;
+            border: 1px solid black;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #saveRouteBtn:hover {
+            color: white;
+            background-color: black;
+            opacity: 80%;
+        }
+
+    </style>
+
+    <body>
+        <%- include('partials/navbar', {currentPage: 'Manage Route / Places' }) %>
+
+            <div class="container mt-5" style="max-width: 50%; margin: auto;">
+                <h1 class="text-center"> עדכון תחנות</h1>
+
+                <div class="form-group d-flex align-items-center mt-4">
+                    <label for="routeName" class="mb-0 ms-2">שם המסלול:</label>
+                    <div>
+                        <input type="text" id="routeName" class="form-control flex-grow-1" disabled>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label>תחנות:</label>
+                    <div id="stationList" class="list-group">
+                        <!-- All Places -->
+                    </div>
+
+                    <div class="list-group-item d-flex  text-secondary align-items-center mt-2">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <button id="addStationBtn" class="btn btn-outline-secondary me-4" aria-label="Add Station">
+                            הוספת תחנה
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group" id="stationSelect" style="display: none;">
+                    <input type="text" id="stationSearchInput" class="form-control mt-2" placeholder="הזן שם תחנה...">
+
+                    <div id="stationResults" class="list-group mt-2" style="display: none;">
+                        <!-- Filtered stations will be dynamically added here -->
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button id="saveRouteBtn">שמירה</button>
+                </div>
+            </div>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+            <script>
+                $(document).ready(function () {
+                    fetchStations();
+
+                    $('#addStationBtn').click(function () {
+                        $('#stationSelect').toggle();
+                    });
+
+                    const routeData = JSON.parse(sessionStorage.getItem('routeData'));
+
+                    if (routeData) {
+                        $('#routeName').val(routeData.name);
+                        console.log(routeData.name)
+
+                        const places = routeData.places || [];
+                        const placesList = $('#stationList');
+
+                        if (places.length > 0) {
+                            places.forEach(place => {
+                                const listItem = `
+                                    <div class="list-group-item d-flex  align-items-center" data-station-id="${place._id}">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span class="d-flex align-items-center me-4">
+                                            <span class="station-name d-flex align-items-center bg-light p-2 rounded">
+                                                ${place.name}
+                                                <button type="button" class="btn btn-outline-dark delete-btn me-4" aria-label="Remove station">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </span>
+                                        </span>
+                                    </div>                        
+                                `;
+                                placesList.append(listItem);
+                            });
+                        }
+
+                    }
+
+                    var stationList = document.getElementById('stationList');
+                    var sortable = Sortable.create(stationList, {
+                        animation: 150
+                    });
+                });
+
+                let allStations = [];
+
+                function fetchStations() {
+                    fetch('/api/v1/places/')
+                        .then(response => response.json())
+                        .then(data => {
+                            allStations = data;
+                        })
+                        .catch(error => console.error('Error fetching stations:', error));
+                }
+
+                $('#stationSearchInput').on('input', function () {
+                    const searchValue = $(this).val().toLowerCase();
+                    const filteredStations = allStations.filter(station => station.name.toLowerCase().startsWith(searchValue));
+
+                    const stationResults = $('#stationResults');
+                    stationResults.empty();
+
+                    if (filteredStations.length > 0) {
+                        stationResults.show();
+
+                        filteredStations.forEach(station => {
+                            stationResults.append(`
+                <li class="list-group-item station-result" data-station-id="${station._id}">
+                    ${station.name}
+                </li>
+            `);
+                        });
+                    } else {
+                        stationResults.hide();
+                    }
+                });
+
+
+                $(document).on('click', '.station-result', function () {
+                    const selectedStationId = $(this).data('station-id');
+                    const selectedStationName = $(this).text();
+
+                    $('#stationList').append(`
+                                <div class="list-group-item d-flex  align-items-center" data-station-id="${selectedStationId}">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span class="d-flex align-items-center  me-4">
+                                        <span class="station-name d-flex align-items-center bg-light p-2 rounded">
+                                            ${selectedStationName}
+                                            <button type="button" class="btn btn-outline-dark delete-btn me-4" aria-label="Remove station">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </span>
+                                    </span>
+                                </div> 
+                             `);
+
+                    $('#stationResults').hide();
+                    $('#stationSearchInput').val('');
+                });
+
+
+                $('#stationList').on('click', '.delete-btn', function () {
+                    $(this).closest('div').remove();
+                });
+
+                $('#saveRouteBtn').on('click', async function () {
+                    const routeData = JSON.parse(sessionStorage.getItem('routeData'));
+
+                    const route = {
+                        ...routeData,
+                        places: []
+                    };
+
+                    $('#stationList .list-group-item').each(function () {
+                        const stationName = $(this).data('station-id');
+                        route.places.push(stationName);
+                    });
+
+                    const currentPath = window.location.pathname;
+
+                    if (currentPath.includes('/admin/update-route/places')) {
+                        await updateRoute(route);
+                    } else if (currentPath.includes('/admin/add-new-route/places')) {
+                        await addRoute(route);
+                    }
+                })
+
+
+                // Function to add a new route
+                async function addRoute(route) {
+                    $.ajax({
+                        url: '/api/v1/routes',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(route),
+                        success: function () {
+                            window.location.href = '/admin';
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(`Error adding route: ${xhr.responseText || status}`);
+                            alert(`Failed to add route: ${xhr.responseText || error}`);
+                        }
+                    });
+                }
+
+                // Function to update a route
+                async function updateRoute(route) {
+
+                    $.ajax({
+                        url: `/api/v1/routes/${route._id}`,
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(route),
+                        success: function () {
+                            window.location.href = '/admin';
+                            console.log(route)
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(`Error updating route: ${xhr.responseText || status}`);
+                            alert(`Failed to update route: ${xhr.responseText || error}`);
+                        }
+                    });
+                }
+            </script>
+    </body>
+
+</html>
