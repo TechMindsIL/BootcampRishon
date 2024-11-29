@@ -37,8 +37,17 @@ router.get('/edit-activity', async (req, res) => {
 });
 
 // Feature 8
+router.get('/manage-tags', async (req, res) => {
+    return res.render('manageTags', { title: 'Manage Tags' });
+});
+
 router.get('/create-tags', async (req, res) => {
     return res.render('createTags', { title: 'Create Tags' });
 });
+
+router.get('/edit-tags', async (req, res) => {
+    return res.render('createTags', { title: 'Edit Tag' });
+});
+
 
 module.exports = router;

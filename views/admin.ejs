@@ -1,22 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
     <style>
         body {
             text-align: center;
         }
 
-        #routesContainer {
-            margin: 30px;
-        }
-
-        .bg-light .route-actions button:hover {
-            color: white !important;
-        }
-
         #addNewRoute {
             margin: 0px auto;
+            margin-top: 10px;
             padding: 10px 20px;
             font-size: 18px;
             background-color: #f8f9fa;
@@ -33,18 +26,27 @@
             background-color: black;
             opacity: 80%;
         }
+
+        #routesContainer {
+            margin: 30px;
+        }
+
+        .bg-light .route-actions button:hover {
+            color: white !important;
+        }
     </style>
 
     <body>
-        <%- include('./partials/navbar', {currentPage: 'admin' }) %>
+        <%- include('partials/navbar', {currentPage: 'admin' }) %>
             <div class="container mt-5" style="max-width: 70%; margin: auto;">
                 <h1>ניהול אימונים</h1>
+
+                <button id="addNewRoute">הוספת אימון </button>
 
                 <div id="routesContainer">
                     <!-- All the routes -->
                 </div>
 
-                <button id="addNewRoute">הוספת אימון </button>
             </div>
 
             <script>
@@ -105,6 +107,21 @@
                                 </div>
                                 <div class="route-details mt-3 text-center" id="details-${route._id}" style="display: none;">
                                     <p>${route.description}</p>
+
+                                    <div class="places-list" style="direction:rtl;text-align:right;">
+                            
+                                        <h6>תחנות המסלול:</h6>
+
+                                        <ul>
+                                            ${route.places.map(place => `
+                                                <li>
+                                                    <a href="/admin/edit-activity?id=${place._id}" style=" color: black;">
+                                                        ${place.name}
+                                                    </a>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>         
                             `;
@@ -141,9 +158,11 @@
                         if (route) {
                             const updatedRoute = {
                                 name: route.name,
+                                calories: route.calories,
                                 description: route.description,
                                 distance: route.distance,
                                 duration: route.duration,
+                                goal: route.goal,
                                 places: route.places,
                                 tags: route.tags,
                                 isRelevant: !route.isRelevant

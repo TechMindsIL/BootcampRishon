@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
     <style>
         .container {
             direction: rtl;
@@ -67,7 +67,7 @@
     </style>
 
     <body>
-        <%- include('./partials/navbar', {currentPage: 'Edit Activity' }) %>
+        <%- include('partials/navbar', {currentPage: 'Edit Activity' }) %>
             <div class="container" style="width: 70%;">
                 <h1 class="text-center">עריכת פרטי תחנה</h1>
 
@@ -86,11 +86,11 @@
                     </div>
 
                     <!-- Image URL Field -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="activityImg" class="form-label">קישור לתמונה:</label>
                         <input type="url" id="activityImg" class="form-control"
                             placeholder="https://example.com/image.jpg">
-                    </div>
+                    </div> -->
 
                     <!-- Image File Input -->
                     <div class="input-group mb-3">
@@ -147,12 +147,12 @@
 
                     if (activityId) {
                         const newRouteData = JSON.parse(sessionStorage.getItem('newActivityData'));
-                        if (!newRouteData){ 
+                        if (!newRouteData) {
                             fetchRouteData(activityId);
-                        }else{
+                        } else {
                             setData(newRouteData);
-                        }    
-                        
+                        }
+
 
                         $('#addTagButton').on('click', function () {
                             const currentPath = window.location.pathname; // משוך את הנתיב הנוכחי
@@ -160,7 +160,7 @@
                             const updatedActivity = {
                                 name: $('#activityName').val(),
                                 description: $('#activityDescription').val(),
-                                img: $('#activityImg').val(),
+                                // img: $('#activityImg').val(),
                                 youtube: $('#activityYT').val(),
                                 coordinates: {
                                     longitude: $('#activityLongitude').val(),
@@ -169,7 +169,7 @@
                                 tags: getSelectedTags(),
                                 isRelevant: true
                             };
-                            
+
                             sessionStorage.setItem('newActivityData', JSON.stringify(updatedActivity));
 
                             // בדוק אם currentPath ריק
@@ -185,7 +185,7 @@
                         });
 
                         $("#editActivityForm").on('submit', function (e) {
-                            e.preventDefault(); 
+                            e.preventDefault();
                             sessionStorage.removeItem("newActivityData")
                             updateActivity(activityId);
                         });
@@ -196,7 +196,7 @@
                 const setData = (activity) => {
                     $('#activityName').val(activity.name);
                     $('#activityDescription').val(activity.description);
-                    $('#activityImg').val(activity.img);
+                    // $('#activityImg').val(activity.img);
                     $('#activityYT').val(activity.youtube);
                     $('#activityLongitude').val(activity.coordinates.longitude);
                     $('#activityLatitude').val(activity.coordinates.latitude);
@@ -214,7 +214,7 @@
                             console.log(data)
                             const activity = data;
                             setData(activity)
-                            
+
 
                             if (activity.tags) {
                                 activity.tags.forEach(tagId => {
@@ -289,9 +289,10 @@
                         fd.append('img', $('#img')[0].files[0]);
 
                         // else, preserve the current image url
-                    } else {
-                        fd.append('img', $('#activityImg').val());
                     }
+                    //  else {
+                    //     fd.append('img', $('#activityImg').val());
+                    // }
 
                     // append place name to form-data
                     fd.append('name', $('#activityName').val());

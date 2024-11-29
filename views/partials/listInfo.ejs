@@ -1,0 +1,212 @@
+<style>
+    .info-block {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin: 10px auto;
+        direction: rtl;
+    }
+    
+    .description {
+        margin-top: 10px;
+        /* display: inline; */
+        text-align: right;
+    }
+    
+    .description-container {
+        width: 100%;
+        margin: 10px auto;
+        margin-top: 0;
+    }
+    
+    .center {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+    }
+    .fullWidth {
+        width:100% !important;
+        /* height: 100vh !important; */
+    }
+
+    @media screen and (max-width: 1200px){
+        #map{
+            height: 350px
+        }
+    }
+    @media screen and (max-width: 1000px){
+        #map{
+            height: 320px
+        }
+        .expandButton{
+            left: 20px;
+            top: 20px;  
+
+            width: 35px;
+            height: 35px;
+        }
+        .fullscreenIcon{
+            font-size: 1.4rem;
+        }
+    }
+    @media screen and (max-width: 800px) {
+        #map {
+            height: 275px
+        }
+        .center{
+            width: 60%
+        }
+        .expandButton{
+            left: 15px;
+            top: 15px;  
+
+            width: 32px;
+            height: 32px;
+        }
+        .fullscreenIcon{
+            font-size: 1.2rem;
+        }
+    }
+    @media screen and (max-width: 600px) {
+        #map {
+            height: 275px
+        }
+        .center{
+            width: 65%
+        }
+    }
+    
+    @media screen and (max-width: 440px) {
+        #map {
+            height: 240px
+        }
+        .center{
+            width: 70%
+        }
+        .expandButton{
+            left: 10px;
+            top: 10px;  
+
+            width: 28px;
+            height: 28px;
+        }
+        .fullscreenIcon{
+            font-size: 1rem;
+        }
+    }
+    
+    @media screen and (max-width: 360px) {
+        #map {
+            height: 220px
+        }
+        .center{
+            width: 75%
+        }
+    }
+</style>
+
+<div>
+    <div class="info-block">
+        <span id="distance" class="info-item"></span>
+        <span id="duration" class="info-item"></span>
+        <span id="area" class="info-item"></span>
+        <span id="type" class="info-item"></span>
+    </div>
+    <div class="description-container">
+        <p id="description" class="description"></p>
+    </div>
+</div>
+
+
+<script>
+    const time = document.getElementById("duration");
+    const distance = document.getElementById("distance");
+    const description = document.getElementById("description");
+    const area = document.getElementById("area");
+    const type = document.getElementById("type");
+    
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    
+    const ID = urlParams.get("id");
+    
+    const ORIGIN = window.location.origin;
+    
+    const SAVE_URL = `${ORIGIN}/api/v1/savedRoutes/`;
+    const URL = `${ORIGIN}/api/v1/routes/${ID}`;
+    
+    const fetchRoute = async () => {
+        try {
+            const response = await fetch(URL);
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            throw new Error(err);
+            return {};
+        }
+    };
+    
+    const setRouteDescription = async () => {
+    const route = await fetchRoute();
+    if (!route || !route.places || route.places.length === 0) {
+        console.error("Invalid route data");
+        return;
+    }
+
+    let infoHTML = '';
+
+    if (route.duration) {
+        infoHTML += `<span><strong>משך:</strong> ${route.duration} דקות</span>`;
+    }
+
+    if (route.distance) {
+        if (infoHTML) {
+            infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
+        }
+        infoHTML += `<span><strong>מרחק:</strong> ${route.distance} קילומטרים</span>`;
+    }
+
+    if (route.tags) {
+        let areaFound = false;
+        for (const tag of route.tags) {
+            if (tag.category.name === "אזור") {
+                if (infoHTML) {
+                    infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
+                }
+                infoHTML += `<span><strong>אזור:</strong> ${tag.name}</span>`;
+                areaFound = true;
+                break;
+            }
+        }
+    }
+
+    if (route.tags) {
+        let typeFound = false;
+        for (const tag of route.tags) {
+            if (tag.category.name === "סוג") {
+                if (infoHTML) {
+                    infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
+                }
+                infoHTML += `<span><strong>סוג:</strong> ${tag.name}</span>`;
+                typeFound = true;
+                break;
+            }
+        }
+    }
+
+    if (infoHTML) {
+        document.querySelector('.info-block').innerHTML = infoHTML;
+    }
+
+    if (route.description) {
+        description.textContent = route.description;
+    } else {
+        description.textContent = ''; 
+    }
+};
+
+setRouteDescription();
+</script>

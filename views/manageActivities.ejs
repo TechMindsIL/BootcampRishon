@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
     <style>
         .container {
             direction: rtl;
@@ -10,102 +10,6 @@
         h1 {
             margin: 0 auto;
         }
-
-        #tagsContainer {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 10px;
-        }
-
-        .tag-button {
-            margin: 5px;
-            background-color: #f8f9fa;
-        }
-
-        .tag-button.selected {
-            background-color: black;
-            color: white;
-        }
-
-        /* מיכל אופקי לתחנות */
-        .places-container {
-            display: flex;
-            overflow-x: auto;
-            padding: 10px;
-            gap: 15px;
-            /* ריווח בין התחנות */
-        }
-
-        /* עיצוב התחנה */
-        .place-card {
-            width: 200px;
-            /* רוחב קטן יותר */
-            height: 120px;
-            /* גובה גדול יותר */
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        /* כותרת התחנה */
-        .place-card h6 {
-            font-size: 16px;
-            /* שם התחנה קטן יותר */
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-
-
-        /* כפתור עריכה בצד ימין למטה */
-        .place-card .edit-button {
-            align-self: flex-end;
-            margin-top: auto;
-        }
-
-        .place-card .edit-button:hover {
-            color: white;
-            background-color: black;
-        }
-
-        /* גלילה אופקית */
-        .places-container::-webkit-scrollbar {
-            height: 8px;
-            /* גובה גלילה */
-        }
-        
-
-        .places-container::-webkit-scrollbar-thumb {
-            background-color: #888;
-            /* צבע ידית גלילה */
-            border-radius: 10px;
-        }
-
-        .places-container::-webkit-scrollbar-thumb:hover {
-            background-color: #555;
-            /* צבע ידית גלילה כשנוגעים */
-        }
-
-        /* #placesContainer {
-            padding: 20px;
-        } */
-
-        /* .place-card {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        } */
-
 
         #addPlaceBtn {
             margin: 15px auto;
@@ -126,19 +30,132 @@
             background-color: black;
             opacity: 80%;
         }
+
+        #tagsContainer {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px;
+        }
+
+        .tag-button {
+            margin: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .tag-button.selected {
+            background-color: black;
+            color: white;
+        }
+
+        .places-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px;
+            gap: 15px;
+        }
+
+        .place-card {
+            width: 200px;
+            /* height: 120px; */
+            height: auto;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .place-card h6 {
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .places-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .places-container::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 10px;
+        }
+
+        .places-container::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+
+        /* #placesContainer {
+            padding: 20px;
+        } */
+
+        /* .place-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        } */
+
+        #placesContainer {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            gap: 15px;
+            flex-wrap: wrap;
+            /* max-height: 50vh; */
+            /* overflow-y: scroll; */
+            margin-top: 10px;
+        }
+
+        #placesContainer::-webkit-scrollbar,
+        #tagsContainer::-webkit-scrollbar {
+            height: 7px;
+            width: 5px;
+        }
+
+        #placesContainer::-webkit-scrollbar-track,
+        #tagsContainer::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #placesContainer::-webkit-scrollbar-thumb,
+        #tagsContainer::-webkit-scrollbar-thumb {
+            background-color: #818b99;
+            border-radius: 10px;
+        }
+
+        #placesContainer::-webkit-scrollbar-thumb:hover,
+        #tagsContainer::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .bg-light .place-actions button:hover {
+            color: white !important;
+        }
+
     </style>
 
     <body>
-        <%- include('./partials/navbar', {currentPage: 'Manage Activities' }) %>
+        <%- include('partials/navbar', {currentPage: 'Manage Activities' }) %>
             <div class="container" style="max-width: 70%;">
+
                 <h1 class="text-center">כל התחנות</h1>
+
+                <button id="addPlaceBtn" onclick="window.location.href='/admin/add-new-activity'"> הוספת תחנה</button>
 
                 <div class="input-group mb-3" style="direction: ltr;">
                     <span class="input-group-text" id="search-addon">
                         <i class="fas fa-search"></i> <!-- אייקון חיפוש -->
                     </span>
-                    <input type="text" id="searchInput" class="form-control" placeholder="חפש מקום..."
-                        aria-label="חפש מקום" aria-describedby="search-addon" style="direction: rtl;">
+                    <input type="text" id="searchInput" class="form-control" placeholder="חפש תחנה..."
+                        aria-label="חפש תחנה" aria-describedby="search-addon" style="direction: rtl;">
                 </div>
 
 
@@ -149,8 +166,6 @@
                 <div id="placesContainer">
                     <!-- הצגת התחנות -->
                 </div>
-
-                <button id="addPlaceBtn" onclick="window.location.href='/admin/add-new-activity'"> הוספת תחנה</button>
 
             </div>
 
@@ -234,55 +249,117 @@
                 }
 
                 async function displayPlaces(places) {
-                    const groupedPlaces = {};
+                    // const groupedPlaces = {};
 
-                    places.forEach(place => {
-                        //     place.tags.forEach(tag => {
-                        //         if (!groupedPlaces[tag.name]) {
-                        //             groupedPlaces[tag.name] = [];
-                        //         }
-                        //         groupedPlaces[tag.name].push(place);
-                        //     });
-                        if (place.tags.length === 0) {
-                            if (!groupedPlaces['תחנות נוספות']) {
-                                groupedPlaces['תחנות נוספות'] = [];
-                            }
-                            groupedPlaces['תחנות נוספות'].push(place);
-                        } else {
-                            place.tags.forEach(tag => {
-                                if (!groupedPlaces[tag.name]) {
-                                    groupedPlaces[tag.name] = [];
-                                }
-                                groupedPlaces[tag.name].push(place);
-                            });
-                        }
-
-                    });
+                    // places.forEach(place => {
+                    //     if (place.tags.length === 0) {
+                    //         if (!groupedPlaces['תחנות נוספות']) {
+                    //             groupedPlaces['תחנות נוספות'] = [];
+                    //         }
+                    //         groupedPlaces['תחנות נוספות'].push(place);
+                    //     } else {
+                    //         place.tags.forEach(tag => {
+                    //             if (!groupedPlaces[tag.name]) {
+                    //                 groupedPlaces[tag.name] = [];
+                    //             }
+                    //             groupedPlaces[tag.name].push(place);
+                    //         });
+                    //     }
+                    // });
 
                     const container = $('#placesContainer');
                     container.empty();
-                    const sortedTags = Object.keys(groupedPlaces).sort((a, b) => a.localeCompare(b));
-                    sortedTags.forEach(tag => {
-                    // for (const tag in groupedPlaces) {
-                        const tagHeader = $('<h5>').text(tag);
-                        container.append(tagHeader);
+                    // const sortedTags = Object.keys(groupedPlaces).sort((a, b) => a.localeCompare(b));
+                    // sortedTags.forEach(tag => {
+                    //     const tagHeader = $('<h5>').text(tag);
+                    //     container.append(tagHeader);
 
-                        const placesContainer = $('<div class="places-container"></div>');
+                    //     const placesContainer = $('<div class="places-container"></div>');
 
-                        groupedPlaces[tag].forEach(place => {
-                            const placeCard = $(`
-                                <div class="place-card">
+                    //     groupedPlaces[tag].forEach(place => {
+                    places.forEach(place => {
+                        const backgroundColorClass = place.isRelevant ? 'bg-light' : 'bg-secondary';
+
+                        const placeCard = $(`
+                                <div class="place-card ${backgroundColorClass}">
                                     <h6>${place.name}</h6>
-                                    <button class="edit-button btn btn-outline-dark mb-2" onclick="window.location.href= '/admin/edit-activity?id=${place._id}'">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
+                                    <div class="place-actions text-right d-flex justify-content-between align-items-center">
+                                        <button class=" btn btn-outline-dark" onclick="window.location.href= '/admin/edit-activity?id=${place._id}'">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="updatePlaceStatus('${place._id}')">
+                                        ${place.isRelevant
+                                            ? `<i class="fas fa-trash"></i>`
+                                            : `<i class="fas fa-undo"></i>`
+                                            }
+                                        </button>
+                                    </div>
                                 </div>
                             `);
 
-                            placesContainer.append(placeCard);
-                        });
-                        container.append(placesContainer);
-                    })
+                        container.append(placeCard);
+                        // placesContainer.append(placeCard);
+                    });
+                    // container.append(placesContainer);
+                    // })
+                }
+
+                async function getPlaceById(placeId) {
+                    try {
+                        const response = await fetch(`/api/v1/places/${placeId}`);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return await response.json();
+                    } catch (error) {
+                        console.error('Error fetching place:', error);
+                        alert('אירעה שגיאה. אנא נסה שוב מאוחר יותר.');
+                    }
+                }
+
+                async function updatePlaceStatus(placeId) {
+                    console.log("jjjjjjjjjjjjj");
+                    try {
+                        let place = await getPlaceById(placeId);
+                        console.log("hhhhhhhhhhhhhhh");
+                        if (place) {
+                            const updatedPlace = {
+                                name: place.name,
+                                description: place.description,
+                                img: place.img,
+                                youtube: place.youtube,
+                                coordinates: {
+                                    longitude: place.longitude,
+                                    latitude: place.latitude
+                                },
+                                tags: place.tags,
+                                ratings: place.ratings,
+                                averageRating: place.averageRating,
+                                isRelevant: !place.isRelevant
+                            };
+                            console.log(updatedPlace)
+                            $.ajax({
+                                url: `/api/v1/places/${placeId}`,
+                                method: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify(updatedPlace),
+                                success: function () {
+                                    fetchAndFilterPlaces();
+                                    console.log("fghjkhvcxcv");
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('Error updating place:', error);
+                                    alert(`Error updating the status of the place: ${xhr.responseText || status}`);
+                                }
+                            });
+                        } else {
+                            console.error('Place not found or error fetching.');
+                            alert('Place not found or error fetching.');
+                        }
+                    } catch (error) {
+                        console.error('An error occurred:', error);
+                        alert('An error occurred while fetching place data.');
+                    }
                 }
 
             </script>

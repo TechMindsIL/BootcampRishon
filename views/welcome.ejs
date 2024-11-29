@@ -1,60 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Welcome</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <style>
-      .cardplace {
-        background-color: white;
-        border-radius: 15px;
-        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        margin: 100px auto;
-        text-align: center;
-        padding: 20px;
+
+<head>
+  <title>Welcome</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <style>
+    .cardplace {
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      margin: 100px auto;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .profileImg {
+      border-radius: 50%;
+      width: 200px;
+      height: 200px;
+      border: 4px solid #ffa500;
+    }
+
+    .button {
+      background-color: #ffa500;
+      color: white;
+      padding: 12px 30px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #ff8c00;
+    }
+
+    /* Footer Container */
+    .footer {
+      width: 80%;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 15px;
+      margin-top: -50px;
+      margin-bottom: 100px;
+    }
+
+    /* Logos container */
+    .logos-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    /* Style for each logo */
+    .footer-logo {
+      height: auto;
+      max-height: 60px;
+      flex: 1 1 14%;
+      object-fit: contain;
+    }
+
+    .logos-div {
+      margin-top: 30px;
+      direction: rtl;
+    }
+
+    .logos-row {
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    /* Media Queries for responsiveness */
+    @media screen and (max-width: 768px) {
+      .footer-logo {
+        flex: 1 1 30%;
+        max-height: 50px;
       }
-      .profileImg {
-        border-radius: 50%;
-        width: 200px;
-        height: 200px;
-        border: 4px solid #ffa500;
+
+      .logos-container .footer-logo:nth-child(-n+3) {
+        margin-bottom: 20px;
       }
-      .button {
-        background-color: #ffa500;
-        color: white;
-        padding: 12px 30px;
-        font-size: 1.2em;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        margin-top: 20px;
-        transition: background-color 0.3s ease;
+    }
+
+    @media screen and (max-width: 480px) {
+      .footer-logo {
+        max-height: 40px;
       }
-      .button:hover {
-        background-color: #ff8c00;
+    }
+
+    @media screen and (max-width: 350px) {
+      .construction-text {
+        display: block;
       }
-    </style>
-  </head>
-  <body>
-    <%- include('./partials/insidenavbar') %>
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('partials/insidenavbar') %>
     <div class="cardplace">
       <h1 id="userDisplay">ברוך הבא</h1>
-      <img
-        class="profileImg"
-        src="https://i.ibb.co/qR7YGVn/200802067.png"
-        alt="Profile"
-      />
+      <img class="profileImg" src="https://i.ibb.co/qR7YGVn/200802067.png" alt="Profile" />
       <button type="button" class="button" onclick="nextPage()">
         בוא נצא להתאמן!
       </button>
     </div>
+
+    <!-- Logos -->
+    <footer class="footer">
+      <div class="logos-container">
+        <img src="/images/RishonLogos/אגף הנוער והצעירים.png" alt="אגף הנוער והצעירים" class="footer-logo">
+        <img src="/images/RishonLogos/לוגו מנהל קהילה.png" alt="לוגו מנהל קהילה" class="footer-logo">
+        <img src="/images/RishonLogos/לוגו קרן ראשון.png" alt="לוגו קרן ראשון" class="footer-logo">
+        <img src="/images/RishonLogos/לוגו תקשוב עירוני.png" alt="לוגו תקשוב עירוני" class="footer-logo">
+        <img src="/images/RishonLogos/עירייה.png" alt="עירייה" class="footer-logo">
+        <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
+      </div>
+
+      <div class="logos-div">
+        <span class="construction-text">
+          האתר נבנה ע"י
+        </span>
+        <div class="logos-row">
+          <a href="http://www.rishonstartup.co.il/" target="_blank" style="text-decoration: none;">
+            <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
+          </a>
+
+          <span style="margin-left: 10px;">
+            ו-
+          </span>
+
+          <a href="https://www.alicecode.org/" target="_blank" style="text-decoration: none;">
+            <img src="images/RishonLogos/AliceCode.png" alt="alice code" class="footer-logo">
+          </a>
+        </div>
+      </div>
+    </footer>
 
     <script>
       function nextPage() {
@@ -71,5 +163,6 @@
         displayName();
       }
     </script>
-  </body>
+</body>
+
 </html>

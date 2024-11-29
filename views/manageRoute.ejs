@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./partials/head') %>
+<%- include('partials/head') %>
 
     <style>
         .container {
@@ -69,22 +69,43 @@
             background-color: black;
             color: white;
         }
-        .form-group{
-            position:relative;
+
+        .form-group {
+            position: relative;
         }
-        .lengthIdentifier{
+
+        .lengthIdentifier {
             position: absolute;
-            top:calc(100% - 23px);
+            top: calc(100% - 23px);
             height: 60px;
             font-size: 100%;
             text-align: left;
             width: 99%;
             color: #858585
         }
+
+
+        .select-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .select-container>div {
+            flex: 1 1 45%;
+            max-width: 45%;
+        }
+
+        @media (max-width: 768px) {
+            .select-container>div {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+        }
     </style>
 
     <body>
-        <%- include('./partials/navbar', {currentPage: 'Manage Route' }) %>
+        <%- include('partials/navbar', {currentPage: 'Manage Route' }) %>
 
             <div class="container mt-5" style="max-width: 70%; margin: auto;">
                 <h1 id="form-title" class="text-center">הוסף / ערוך אימון</h1>
@@ -115,6 +136,37 @@
                             aria-label="הזן זמן" style="direction: rtl;">
                     </div>
 
+                    <label for="routeCalories">קלוריות</label>
+                    <div class="mb-3 input-group" style="direction: ltr;">
+                        <span class="input-group-text">קלוריות</span>
+                        <input type="number" id="routeCalories" class="form-control" placeholder="הזן קלוריות" min="0"
+                            aria-label="הזן קלוריות" style="direction: rtl;">
+                    </div>
+
+                    <div class="select-container">
+                        <div>
+                            <label for="routeGoal">מטרת האימון</label>
+                            <div class="mb-3 input-group" style="direction: ltr;">
+                                <select id="routeGoal" class="form-select half-width" aria-label="בחר את מטרת האימון"
+                                    style="direction: rtl;">
+                                    <option value="" disabled selected>בחר את מטרת האימון</option>
+                                    <option value="בריאות">בריאות</option>
+                                    <option value="חיזוק">חיזוק</option>
+                                    <option value="ירידה במשקל">ירידה במשקל</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="routeNeighborhood">שכונה</label>
+                            <div class="mb-3 input-group" style="direction: ltr;">
+                                <select id="routeNeighborhood" class="form-select half-width" aria-label="שכונה"
+                                    style="direction: rtl;">
+                                    <!-- All Neighborhood -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="routeTags">תגיות</label>
 
@@ -140,7 +192,8 @@
                     const formTitle = $('#form-title');
                     const routeForm = $('#routeForm');
 
-                    buildCategoryTagsObject();
+                    await buildCategoryTagsObject();
+                    await fetchNeighborhood();
 
                     const urlParams = new URLSearchParams(window.location.search);
                     const routeId = urlParams.get('id');
@@ -176,9 +229,12 @@
                         $('#addTagButton').on('click', function () {
                             const newRoute = {
                                 name: $('#routeName').val(),
+                                calories: $('#routeCalories').val(),
                                 description: $('#routeDescription').val(),
                                 distance: $('#routeDistance').val(),
                                 duration: $('#routeDuration').val(),
+                                goal: $('#routeGoal').val(),
+                                neighborhood: $('#routeNeighborhood').val(),
                                 tags: getSelectedTags()
                             };
                             sessionStorage.setItem('newRouteData', JSON.stringify(newRoute));
@@ -208,8 +264,11 @@
                     $('#routeDescription').val(routeData.description);
                     $('#descriptionLength').val(routeData.description.length);
 
+                    $('#routeCalories').val(routeData.calories);
                     $('#routeDistance').val(routeData.distance);
                     $('#routeDuration').val(routeData.duration);
+                    $('#routeGoal').val(routeData.goal);
+                    $('#routeNeighborhood').val(routeData.neighborhood._id);
 
                     if (routeData.tags) {
                         routeData.tags.forEach(tagId => {
@@ -232,8 +291,12 @@
                         $('#routeDescription').val(route.description);
                         $('#descriptionLength').val(route.description.length);
 
+                        $('#routeCalories').val(route.calories);
                         $('#routeDistance').val(route.distance);
                         $('#routeDuration').val(route.duration);
+                        $('#routeGoal').val(route.goal);
+                        $('#routeNeighborhood').val(route.neighborhood._id);
+
 
                         if (route.places)
                             places = route.places;
@@ -263,9 +326,12 @@
                     const updatedRoute = {
                         _id: routeId,
                         name: $('#routeName').val(),
+                        calories: $('#routeCalories').val(),
                         description: $('#routeDescription').val(),
                         distance: $('#routeDistance').val(),
                         duration: $('#routeDuration').val(),
+                        goal: $('#routeGoal').val(),
+                        neighborhood: $('#routeNeighborhood').val(),
                         places: places || [],
                         tags: getSelectedTags(),
                         isRelevant: true
@@ -279,9 +345,12 @@
                 function addNewRoute() {
                     const newRoute = {
                         name: $('#routeName').val(),
+                        calories: $('#routeCalories').val(),
                         description: $('#routeDescription').val(),
                         distance: $('#routeDistance').val(),
                         duration: $('#routeDuration').val(),
+                        goal: $('#routeGoal').val(),
+                        neighborhood: $('#routeNeighborhood').val(),
                         places: [],
                         tags: getSelectedTags(),
                         isRelevant: true
@@ -332,6 +401,34 @@
                     }
 
                     descriptionLength.textContent = descriptionText.value.length
+                }
+
+
+                async function fetchNeighborhood() {
+                    try {
+                        const response = await fetch('/api/v1/neighborhoods');
+                        if (!response.ok) {
+                            throw new Error(`Error: ${response.status} ${response.statusText}`);
+                        }
+                        const neighborhoods = await response.json();
+
+                        // Select the dropdown element
+                        const neighborhoodSelect = document.getElementById('routeNeighborhood');
+
+                        // Clear any existing options (optional)
+                        neighborhoodSelect.innerHTML = '<option value="" disabled selected>שכונה</option>';
+
+                        // Create options for each neighborhood
+                        neighborhoods.forEach(neighborhood => {
+                            const option = document.createElement('option');
+                            option.value = neighborhood._id; // Use the ID as the value
+                            console.log("val", neighborhood._id);
+                            option.textContent = neighborhood.title; // Display the name as the label
+                            neighborhoodSelect.appendChild(option);
+                        });
+                    } catch (error) {
+                        console.error('Error fetching neighborhoods:', error);
+                    }
                 }
 
                 $(document).on('click', '.tag-button', function () {

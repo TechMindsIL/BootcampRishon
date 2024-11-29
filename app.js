@@ -56,10 +56,19 @@ passport.serializeUser(function (user, done) {
     done(null, user._id);
 });
 
-passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-        done(err, user);
-    });
+// passport.deserializeUser(function (id, done) {
+//     User.findById(id, function (err, user) {
+//         done(err, user);
+//     });
+// });
+
+passport.deserializeUser(async function (id, done) {
+    try {
+        const user = await User.findById(id);  // השתמש ב-async/await במקום callback
+        done(null, user);
+    } catch (err) {
+        done(err);
+    }
 });
 
 passport.use(User.createStrategy());
@@ -78,6 +87,7 @@ app.use('/api/v1/tags', require('./routes/api/v1/tag'));
 app.use('/api/v1/places', require('./routes/api/v1/place'));
 app.use('/api/v1/categories', require('./routes/api/v1/category'));
 app.use('/api/v1/savedRoutes', require('./routes/api/v1/savedRoutes'));
+app.use('/api/v1/neighborhoods', require('./routes/api/v1/neighborhood'));
 
 app.use((req, res, next) => {
     res.status(404).json({ error: 'Not Found' });
