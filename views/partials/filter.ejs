@@ -133,6 +133,10 @@
         gap: 0;
         display:none;
     }
+    #activeGoals{
+        margin-bottom: 0;
+        padding: 0;
+    }
     .activeFilters.showActiveFilters{
         display: flex;
     }
@@ -154,6 +158,12 @@
         transition: background-color 0.2s ease;
         flex-shrink: 0;
     }
+
+    .goalsCardPadding{ /* If by any point we change the goal cards to a different width */
+        width: calc(100% / var(--filterCardsInRow)) !important; 
+        min-width: calc(100% / var(--filterCardsInRow)) !important;
+    }
+
     .activeFilterCardPadding{
         height: 55px;
         padding: 6px calc(var(--filterCardsGap) / 2);
@@ -183,7 +193,9 @@
     }
 </style>
 <div class="filterCategoryContainer"></div>
-<div class="activeFilters"></div>
+
+<div class="activeFilters" id="activeGoals"></div>
+<div class="activeFilters" id="activeFilters"></div>
 <script>
     const ORIGIN = window.location.origin;
     const tagsURL = `${ORIGIN}/api/v1/tags`;
@@ -191,7 +203,8 @@
 
     // const tagsDivider = document.getElementById("tagsDivider");
     const filterCategoryContainer = document.getElementsByClassName("filterCategoryContainer")[0];
-    const activeFiltersContainer = document.getElementsByClassName("activeFilters")[0];
+    const activeFiltersContainer = document.getElementById("activeFilters");
+    const activeGoalsContainer = document.getElementById("activeGoals");
 
     const menus = {
         /*
@@ -403,12 +416,19 @@
     const updateFilters = () => {
         filterRoutes()
 
-        if(!currentSearchQuery.length && !currentFilters.length){
-            activeFiltersContainer.classList.remove("showActiveFilters");
-            return;
-        }
-        activeFiltersContainer.classList.add("showActiveFilters");
+        const allFilters = currentFilters.filter(filter => filter.catgory !== "goal");
+        const goalFilters = currentFilters.filter(filter => filter.category === "goal");
 
+        activeFiltersContainer.classList.add("showActiveFilters");
+        activeGoalsContainer.classList.add("showActiveFilters");
+
+        if(!currentSearchQuery.length && !allFilters.length){
+            activeFiltersContainer.classList.remove("showActiveFilters");
+        }
+        if(!goalFilters.length){
+            activeGoalsContainer.classList.remove("showActiveFilters");
+        }
+        activeGoalsContainer.innerHTML = "";
         activeFiltersContainer.innerHTML = currentSearchQuery.length === 0 ? "" : `
             <div class="activeFilterCardPadding width-adjustable">
                 <div class="activeFilterCard" onclick="removeSearch()">
@@ -419,8 +439,9 @@
         `;
 
         for (const tag of currentFilters) {
-            activeFiltersContainer.innerHTML += `
-                <div class="activeFilterCardPadding">
+            const container = tag.category === "goal" ? activeGoalsContainer : activeFiltersContainer;
+            container.innerHTML += `
+                <div class="activeFilterCardPadding ${tag.category === "goal" ? "goalsCardPadding" : ""}">
                     <div class="activeFilterCard" onclick="useFilter('${menus[tag.category].identify?.(tag.value) || tag.value._id}', '${tag.category}')">
                         ${xIcon()}
                         <h5 class="tagText unselectable currentFilterText">${menus[tag.category].getName(tag.value)}</h5>
