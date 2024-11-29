@@ -136,6 +136,13 @@
                             aria-label="הזן זמן" style="direction: rtl;">
                     </div>
 
+                    <label for="routeCalories">קלוריות</label>
+                    <div class="mb-3 input-group" style="direction: ltr;">
+                        <span class="input-group-text">קלוריות</span>
+                        <input type="number" id="routeCalories" class="form-control" placeholder="הזן קלוריות" min="0"
+                            aria-label="הזן קלוריות" style="direction: rtl;">
+                    </div>
+
                     <div class="select-container">
                         <div>
                             <label for="routeGoal">מטרת האימון</label>
@@ -222,6 +229,7 @@
                         $('#addTagButton').on('click', function () {
                             const newRoute = {
                                 name: $('#routeName').val(),
+                                calories: $('#routeCalories').val(),
                                 description: $('#routeDescription').val(),
                                 distance: $('#routeDistance').val(),
                                 duration: $('#routeDuration').val(),
@@ -256,6 +264,7 @@
                     $('#routeDescription').val(routeData.description);
                     $('#descriptionLength').val(routeData.description.length);
 
+                    $('#routeCalories').val(routeData.calories);
                     $('#routeDistance').val(routeData.distance);
                     $('#routeDuration').val(routeData.duration);
                     $('#routeGoal').val(routeData.goal);
@@ -282,6 +291,7 @@
                         $('#routeDescription').val(route.description);
                         $('#descriptionLength').val(route.description.length);
 
+                        $('#routeCalories').val(route.calories);
                         $('#routeDistance').val(route.distance);
                         $('#routeDuration').val(route.duration);
                         $('#routeGoal').val(route.goal);
@@ -316,6 +326,7 @@
                     const updatedRoute = {
                         _id: routeId,
                         name: $('#routeName').val(),
+                        calories: $('#routeCalories').val(),
                         description: $('#routeDescription').val(),
                         distance: $('#routeDistance').val(),
                         duration: $('#routeDuration').val(),
@@ -334,6 +345,7 @@
                 function addNewRoute() {
                     const newRoute = {
                         name: $('#routeName').val(),
+                        calories: $('#routeCalories').val(),
                         description: $('#routeDescription').val(),
                         distance: $('#routeDistance').val(),
                         duration: $('#routeDuration').val(),
