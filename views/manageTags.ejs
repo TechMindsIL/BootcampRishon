@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head') %>
+    <style>
+        .container {
+            direction: rtl;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 0 auto;
+        }
+
+        #addTagBtn {
+            margin: 15px auto;
+            display: block;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f8f9fa;
+            border: 5px solid black;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #addTagBtn:hover {
+            color: white;
+            background-color: black;
+            opacity: 80%;
+        }
+
+
+        #tagsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 10px;
+        }
+
+        .category-for-container {
+            margin-top: 20px;
+            padding-bottom: 10px;
+        }
+
+        .category-container {
+            margin-top: 10px;
+        }
+
+        .category-for-title {
+            font-weight: bold;
+            text-align: right;
+            text-decoration: underline;
+            text-decoration-color: #f16624;
+            padding-bottom: 10px;
+        }
+
+        .tags-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag-card {
+            width: 150px;
+            height: auto;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tag-card h6 {
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+
+        .tag-actions {
+            margin-top: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tag-actions button {
+            font-size: 12px;
+        }
+
+        .bg-light .tag-actions button:hover {
+            color: white !important;
+        }
+
+        .bg-light .tag-actions button:hover {
+            color: white !important;
+        }
+    </style>
+
+    <body>
+        <%- include('partials/navbar', {currentPage: 'Manage Tags' }) %>
+            <div class="container" style="max-width: 70%;">
+
+                <h1 class="text-center">כל התגיות</h1>
+
+                <button id="addTagBtn" onclick="window.location.href='/admin/create-tags'"> הוספת תגית</button>
+
+                <div class="input-group mb-3" style="direction: ltr;">
+                    <span class="input-group-text" id="search-addon">
+                        <i class="fas fa-search"></i> <!-- אייקון חיפוש -->
+                    </span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="חפש תגית..."
+                        aria-label="חפש תגית" aria-describedby="search-addon" style="direction: rtl;">
+                </div>
+
+
+                <div id="tagsContainer">
+                    <!-- כאן יתווספו התגיות -->
+                </div>
+
+            </div>
+
+            <script>
+                let tags = [];
+                $(document).ready(async function () {
+                    fetchTags();
+                });
+
+                $('#searchInput').on('input', function () {
+                    displayTags();
+                });
+
+                async function fetchTags() {
+                    try {
+                        const response = await fetch('/api/v1/tags');
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        tags = await response.json();
+
+                        displayTags();
+                    } catch (error) {
+                        console.error('Error fetching tags:', error);
+                    }
+                }
+
+                async function displayTags() {
+                    const searchQuery = $('#searchInput').val().toLowerCase();
+
+                    let filteredTags = searchQuery === ''
+                        ? tags
+                        : tags.filter(tag => tag.name.toLowerCase().startsWith(searchQuery));
+
+                    const categories = {
+                        Place: {},
+                        Route: {}
+                    };
+
+                    filteredTags.forEach(tag => {
+                        const categoryName = tag.category.name;
+                        const categoryFor = tag.category.for;
+
+                        if (categoryFor === 'Place') {
+                            if (!categories.Place[categoryName]) {
+                                categories.Place[categoryName] = [];
+                            }
+                            categories.Place[categoryName].push(tag);
+                        }
+
+                        if (categoryFor === 'Route') {
+                            if (!categories.Route[categoryName]) {
+                                categories.Route[categoryName] = [];
+                            }
+                            categories.Route[categoryName].push(tag);
+                        }
+                    });
+
+                    const container = $('#tagsContainer');
+                    container.empty();
+
+                    Object.keys(categories).forEach(categoryFor => {
+                        const categoryForContainer = $(`
+                            <div class="category-for-container">
+                                <h3 class="category-for-title">                
+                                    ${categoryFor === 'Place' ? 'תגיות תחנות' : 'תגיות מסלולים'}
+                                </h3> 
+                            </div>
+                        `);
+
+                        if (categories[categoryFor] && Object.keys(categories[categoryFor]).length > 0) {
+                            Object.keys(categories[categoryFor]).forEach(categoryName => {
+                                const categoryContainer = $(`
+                            <div class="category-container">
+                                <h4 class="category-title">${categoryName}</h4> <!-- כותרת קטגוריה -->
+                                <div class="tags-list"></div> <!-- קונטיינר שיתמלא בתגיות -->
+                            </div>
+                        `);
+
+                                const tagsList = categoryContainer.find('.tags-list');
+
+                                categories[categoryFor][categoryName].forEach(tag => {
+                                    const tagCard = $(`
+                                <div class="tag-card">
+                                    <h6>${tag.name}</h6>
+                                     <div class="tag-actions text-right d-flex justify-content-between align-items-center">
+                                        <button class=" btn btn-outline-dark" onclick="window.location.href= '/admin/edit-tags?id=${tag._id}'">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="deleteTag('${tag._id}')">
+                                       <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `);
+                                    tagsList.append(tagCard);
+                                });
+
+                                categoryForContainer.append(categoryContainer);
+                            });
+
+                            $('#tagsContainer').append(categoryForContainer);
+
+                        } else {
+                            const noResultsMessage = $('<p class="no-results">אין תוצאות התואמות את החיפוש</p>');
+                            categoryForContainer.append(noResultsMessage);
+                            $('#tagsContainer').append(categoryForContainer);
+                        }
+                    });
+                }
+
+                async function deleteTag(tagId) {
+                    try {
+                        $.ajax({
+                            url: `/api/v1/tags/${tagId}`,
+                            method: 'DELETE',
+                            contentType: 'application/json',
+                            success: function () {
+                                fetchTags();
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error delete tag:', error);
+                                alert(`Error delete tag: ${xhr.responseText || status}`);
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error delete tag:', error);
+                    }
+                }
+
+            </script>
+    </body>
+
+</html>

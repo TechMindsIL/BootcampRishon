@@ -48,8 +48,8 @@
       margin: 0 auto;
       background-color: rgba(255, 255, 255, 0.5);
       border-radius: 15px;
-      margin-top:-50px;
-      margin-bottom:50px;
+      margin-top: -50px;
+      margin-bottom: 100px;
     }
 
     /* Logos container */
@@ -71,6 +71,16 @@
       object-fit: contain;
     }
 
+    .logos-div {
+      margin-top: 30px;
+      direction: rtl;
+    }
+
+    .logos-row {
+      display: inline-block;
+      margin-top: 10px;
+    }
+
     /* Media Queries for responsiveness */
     @media screen and (max-width: 768px) {
       .footer-logo {
@@ -89,6 +99,11 @@
       }
     }
 
+    @media screen and (max-width: 350px) {
+      .construction-text {
+        display: block;
+      }
+    }
   </style>
 </head>
 
@@ -109,8 +124,27 @@
         <img src="/images/RishonLogos/לוגו מנהל קהילה.png" alt="לוגו מנהל קהילה" class="footer-logo">
         <img src="/images/RishonLogos/לוגו קרן ראשון.png" alt="לוגו קרן ראשון" class="footer-logo">
         <img src="/images/RishonLogos/לוגו תקשוב עירוני.png" alt="לוגו תקשוב עירוני" class="footer-logo">
-        <img src="/images/RishonLogos/עירייה.jpg" alt="עירייה" class="footer-logo">
+        <img src="/images/RishonLogos/עירייה.png" alt="עירייה" class="footer-logo">
         <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
+      </div>
+
+      <div class="logos-div">
+        <span class="construction-text">
+          האתר נבנה ע"י
+        </span>
+        <div class="logos-row">
+          <a href="http://www.rishonstartup.co.il/" target="_blank" style="text-decoration: none;">
+            <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
+          </a>
+
+          <span style="margin-left: 10px;">
+            ו-
+          </span>
+
+          <a href="https://www.alicecode.org/" target="_blank" style="text-decoration: none;">
+            <img src="images/RishonLogos/AliceCode.png" alt="alice code" class="footer-logo">
+          </a>
+        </div>
       </div>
     </footer>
 
