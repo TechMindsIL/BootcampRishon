@@ -38,7 +38,7 @@
 
     <body>
         <%- include('partials/navbar', {currentPage: 'admin' }) %>
-            <div class="container mt-5" style="max-width: 70%; margin: auto;">
+            <div class="container mt-5" style="max-width: 90%; margin: auto;">
                 <h1>ניהול אימונים</h1>
 
                 <button id="addNewRoute">הוספת אימון </button>
@@ -84,7 +84,7 @@
                         const backgroundColorClass = route.isRelevant ? 'bg-light' : 'bg-secondary';
 
                         const routeCard = `
-                            <div class="route-card card p-3 mb-3 mx-auto ${backgroundColorClass}" style="border: 1px solid #ddd; width: 60%;">
+                            <div class="route-card card p-3 mb-3 mx-auto col-12 col-md-8 ${backgroundColorClass}" style="border: 1px solid #ddd;">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center" style="flex-grow: 1;">
                                         <button class="btn btn-link toggle-btn p-0" data-route-id="${route._id}" style="font-size: 24px; text-decoration: none; color:black;">▼</button>
