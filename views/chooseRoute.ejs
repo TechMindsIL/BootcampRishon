@@ -82,7 +82,7 @@
                     left: 0;
                     right: 0;
                     bottom: 0;
-                    background-color: rgba(255, 255, 255, 0.5);
+                    background-color: rgba(255, 255, 255, 0);
                     z-index: 1;
                     border-radius: 20px;
                 }
@@ -511,7 +511,7 @@
                         div.innerHTML = `
                             <div class="card" style="position: relative; background-image: url('${bgImage}'); background-size: cover; background-position: center;">
                                 <div class="overlay"></div>
-                                <h5 class="card-title" style="position:absolute;text-shadow: 0 0 5px #f16624;">${route.name}</h5>
+                                <h5 class="card-title" style="position:absolute;text-shadow: 0 0 5px darkred; color:white">${route.name}</h5>
                             </div>
                         `;
                         container.appendChild(div); // Add the newly created div to the DOM
