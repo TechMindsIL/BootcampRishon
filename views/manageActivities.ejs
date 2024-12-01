@@ -53,12 +53,14 @@
             overflow-x: auto;
             padding: 10px;
             gap: 15px;
+
+            justify-content: center;
         }
 
-        .place-card {
-            width: 200px;
+        /* .place-card {
+            width: 80%; */
             /* height: 120px; */
-            height: auto;
+            /* height: auto;
             background-color: #f8f9fa;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -67,14 +69,14 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
+        } */
 
-        .place-card h6 {
+        /* .place-card h6 {
             font-size: 16px;
             margin: 0;
             padding: 0;
             text-align: center;
-        }
+        } */
 
         .places-container::-webkit-scrollbar {
             height: 8px;
@@ -104,15 +106,17 @@
         } */
 
         #placesContainer {
-            display: flex;
+            margin: 30px;
+        }
+            /* display: flex;
             justify-content: space-between;
             padding: 10px;
             gap: 15px;
-            flex-wrap: wrap;
+            flex-wrap: wrap; */
             /* max-height: 50vh; */
             /* overflow-y: scroll; */
-            margin-top: 10px;
-        }
+            /* margin-top: 10px;
+        } */
 
         #placesContainer::-webkit-scrollbar,
         #tagsContainer::-webkit-scrollbar {
@@ -139,7 +143,6 @@
         .bg-light .place-actions button:hover {
             color: white !important;
         }
-
     </style>
 
     <body>
@@ -281,20 +284,29 @@
                         const backgroundColorClass = place.isRelevant ? 'bg-light' : 'bg-secondary';
 
                         const placeCard = $(`
-                                <div class="place-card ${backgroundColorClass}">
-                                    <h6>${place.name}</h6>
-                                    <div class="place-actions text-right d-flex justify-content-between align-items-center">
-                                        <button class=" btn btn-outline-dark" onclick="window.location.href= '/admin/edit-activity?id=${place._id}'">
+                                <div class="place-card card p-3 mb-3 mx-auto col-12 col-md-8 ${backgroundColorClass}" style="border: 1px solid #ddd;">
+                                    <div class="d-flex align-items-center" style="flex-grow: 1;">
+                                         <div class="text-center w-100">
+                                            <h5 class="mb-1">${place.name}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="place-actions text-right d-flex flex-row align-items-center justify-content-between">
+                                         <button class="btn btn-outline-dark" onclick="window.location.href= '/admin/edit-activity?id=${place._id}'">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="btn btn-outline-danger" onclick="updatePlaceStatus('${place._id}')">
                                         ${place.isRelevant
-                                            ? `<i class="fas fa-trash"></i>`
-                                            : `<i class="fas fa-undo"></i>`
-                                            }
+                                ? `<i class="fas fa-trash"></i>`
+                                : `<i class="fas fa-undo"></i>`
+                            }
                                         </button>
                                     </div>
                                 </div>
+
+
+
+
+                              
                             `);
 
                         container.append(placeCard);
@@ -303,6 +315,21 @@
                     // container.append(placesContainer);
                     // })
                 }
+
+                // <div class="place-card ${backgroundColorClass}">
+                //                     <h6>${place.name}</h6>
+                //                     <div class="place-actions text-right d-flex justify-content-between align-items-center">
+                //                         <button class=" btn btn-outline-dark" onclick="window.location.href= '/admin/edit-activity?id=${place._id}'">
+                //                             <i class="fas fa-edit"></i>
+                //                         </button>
+                //                         <button class="btn btn-outline-danger" onclick="updatePlaceStatus('${place._id}')">
+                //                         ${place.isRelevant
+                //                 ? `<i class="fas fa-trash"></i>`
+                //                 : `<i class="fas fa-undo"></i>`
+                //             }
+                //                         </button>
+                //                     </div>
+                //                 </div>
 
                 async function getPlaceById(placeId) {
                     try {
