@@ -165,7 +165,7 @@
 
                 $('#stationSearchInput').on('input', function () {
                     const searchValue = $(this).val().toLowerCase();
-                    const filteredStations = allStations.filter(station => station.name.toLowerCase().startsWith(searchValue));
+                    const filteredStations = allStations.filter(station => station.name.toLowerCase().startsWith(searchValue) && station.isRelevant === true);
 
                     const stationResults = $('#stationResults');
                     stationResults.empty();
