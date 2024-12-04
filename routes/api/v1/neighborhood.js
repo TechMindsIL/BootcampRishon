@@ -4,11 +4,14 @@ const validateObjectId = require('../../../middleware/validateObjectId'); // Imp
 const SecurityMiddleware = require('../../../middleware/securityMiddleware'); // Import the security middleware
 const router = express.Router();
 
-// Get all neighborhoods
+// Route to get all neighborhoods
 router.get('/', neighborhoodController.getAllNeighborhood);
 
-// Get a single neighborhood by ID
+// Route to get a Neighborhood by ID
 router.get('/:id', SecurityMiddleware.secure(), validateObjectId('id'), neighborhoodController.getNeighborhoodById);
+
+// Route to update caloriesBurned of a Neighborhood by ID 
+router.put('/calories/:id', SecurityMiddleware.secure(), validateObjectId('id'), neighborhoodController.updateNeighborhoodCalories);
 
 // Handles any neighborhood errors
 router.use((err, req, res, next) => {

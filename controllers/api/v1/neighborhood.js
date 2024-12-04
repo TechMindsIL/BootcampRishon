@@ -14,3 +14,29 @@ exports.getNeighborhoodById = asyncHandler(async (req, res) => {
     const neighborhood = await Neighborhood.findById(req.params.id);
     res.json(neighborhood);
 });
+
+// Controller function to update caloriesBurned of a Neighborhood by ID
+exports.updateNeighborhoodCalories = asyncHandler(async (req, res) => {
+    // Extract the calories to add from the request body
+    const { caloriesToAdd } = req.body;
+
+    // Validate the input
+    if (typeof caloriesToAdd !== 'number') {
+        return res.status(400).json({ message: 'Invalid input: caloriesToAdd must be a number.' });
+    }
+
+    // Find the neighborhood by ID
+    const neighborhood = await Neighborhood.findById(req.params.id);
+    if (!neighborhood) {
+        return res.status(404).json({ message: 'Neighborhood not found.' });
+    }
+
+    // Update the caloriesBurned field by adding the new value to the existing one
+    neighborhood.caloriesBurned += caloriesToAdd;
+
+    // Save the updated neighborhood
+    const updatedNeighborhood = await neighborhood.save();
+
+    // Respond with the updated neighborhood
+    res.json(updatedNeighborhood);
+});
