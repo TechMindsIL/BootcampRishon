@@ -96,6 +96,12 @@ exports.updateUserCalories = asyncHandler(async (req, res) => {
     // Update the caloriesBurned field by adding the new value to the existing one
     user.caloriesBurned += caloriesToAdd;
 
+    // Initialize activitiesFinished to 0 if it doesn't exist, and increment it by 1
+    if (user.activitiesFinished == null) {
+        user.activitiesFinished = 0;
+    }
+    user.activitiesFinished += 1;
+
     // Save the updated user
     const updatedUser = await user.save();
 
