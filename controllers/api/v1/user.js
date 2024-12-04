@@ -30,7 +30,7 @@ exports.searchUsers = asyncHandler(async (req, res) => {
     if (role) {
         query.role = role;
     }
-    
+
     // Fetch all Users from the database that match the query
     const users = await User.find(query, '-password').sort({ _id: -1 });
 
@@ -75,4 +75,30 @@ exports.deleteUser = asyncHandler(async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
 
     res.json({ message: 'User deleted successfully' });
+});
+
+// Controller function to update caloriesBurned of a User by ID
+exports.updateUserCalories = asyncHandler(async (req, res) => {
+    // Extract the calories to add from the request body
+    const { caloriesToAdd } = req.body;
+
+    // Validate the input
+    if (typeof caloriesToAdd !== 'number') {
+        return res.status(400).json({ message: 'Invalid input: caloriesToAdd must be a number.' });
+    }
+
+    // Find the User by ID
+    const user = await User.findById(req.params.id);
+    if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Update the caloriesBurned field by adding the new value to the existing one
+    user.caloriesBurned += caloriesToAdd;
+
+    // Save the updated user
+    const updatedUser = await user.save();
+
+    // Respond with the updated user
+    res.json(updatedUser);
 });

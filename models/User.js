@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
         ref: 'Route',
         default: []
     }],
+    caloriesBurned: {
+        type: Number,
+        default: 0
+    },
 });
 
 // Hash the password before saving the user
