@@ -639,7 +639,7 @@
 
                 if (response.ok) {
                   const updatedPlace = await response.json();
-                  alert("הדירוג נשמר בהצלחה!");
+                  console.log("הדירוג נשמר בהצלחה!");
                   updateRatingDisplay(updatedPlace.averageRating.toFixed(1));
                   modalRating.style.display = "none";
 
@@ -650,7 +650,7 @@
               }
               catch (error) {
                 console.error("Error submitting rating:", error);
-                alert("שגיאה בשמירת הדירוג");
+                console.log("שגיאה בשמירת הדירוג");
               }
             });
 
@@ -676,7 +676,7 @@
             },
             error: function (xhr, status, error) {
               console.error('Error updating burned calories for neighborhood:', error);
-              alert(`Error updating burned calories for neighborhood: ${xhr.responseText || status}`);
+              console.log(`Error updating burned calories for neighborhood: ${xhr.responseText || status}`);
             }
           });
 
@@ -691,7 +691,7 @@
               },
               error: function (xhr, status, error) {
                 console.error('Error updating burned calories for user:', error);
-                alert(`Error updating burned calories for user: ${xhr.responseText || status}`);
+                console.log(`Error updating burned calories for user: ${xhr.responseText || status}`);
               }
             });
             window.location.href = "/MyWorkouts";

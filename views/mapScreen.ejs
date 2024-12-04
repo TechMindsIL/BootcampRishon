@@ -720,7 +720,7 @@
                             const updatedRoute = await response.json();
                             updateRatingDisplay(updatedRoute.averageRating.toFixed(1));
                             
-                            alert("הדירוג נשמר בהצלחה!");
+                            console.log("הדירוג נשמר בהצלחה!");
 
                             modalRating.style.display = "none";
                         } else {
@@ -728,7 +728,7 @@
                         }
                     } catch (error) {
                         console.error("Error submitting rating:", error);
-                        alert("שגיאה בשמירת הדירוג");
+                        console.log("שגיאה בשמירת הדירוג");
                     }
                 });
             </script>
