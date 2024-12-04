@@ -694,9 +694,12 @@
                 alert(`Error updating burned calories for user: ${xhr.responseText || status}`);
               }
             });
+            window.location.href = "/MyWorkouts";
+          }
+          else{
+            window.location.href = "/chooseRoute";
           }
 
-          window.location.href = "/MyWorkouts";
         });
 
         const checkAuthStatus = async () => {
