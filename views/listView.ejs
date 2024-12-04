@@ -142,11 +142,20 @@
           color: white;
         }
 
-        .button {
+        .buttons {
           margin-top: 50px;
+          margin-bottom: 100px;
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 15px;
+        }
+
+        .button {
+          /* margin-top: 50px; */
           width: 200px;
           background-color: var(--btnColor);
-          margin-bottom: 100px;
+          /* margin-bottom: 100px; */
         }
 
         @media screen and (max-width: 500px) {
@@ -378,9 +387,14 @@
               <h1 class="placeHeader">תחנות</h1>
               <div id="placeList"></div>
             </div>
-            <button id="backButton" class="card-p button">
-              <h1 class="textInside">חזרה למפה</h1>
-            </button>
+            <div class="buttons">
+              <button id="backButton" class="card-p button">
+                <h1 class="textInside">סגירת אימון</h1>
+              </button>
+              <button id="finishButton" class="card-p button">
+                <h1 class="textInside">סיום אימון</h1>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -397,9 +411,12 @@
       </div>
       <script>
         let userId = null;
+        let routeData = null;
+
         const nameText = document.getElementById("name");
         const placesDiv = document.getElementById("placeList");
         const back = document.getElementById("backButton");
+        const finish = document.getElementById("finishButton");
 
         const locationPin = () => {
           return `
@@ -624,8 +641,8 @@
                   const updatedPlace = await response.json();
                   alert("הדירוג נשמר בהצלחה!");
                   updateRatingDisplay(updatedPlace.averageRating.toFixed(1));
-                  modalRating.style.display = "none"; 
-                  
+                  modalRating.style.display = "none";
+
                   changeLineHeight();
                 } else {
                   throw new Error("Failed to save rating");
@@ -642,6 +659,44 @@
 
         back.addEventListener("click", () => {
           window.location.href = `/map?id=${ID}`;
+        });
+
+        finish.addEventListener("click", () => {
+
+          let calories = routeData.calories;
+          let neighborhoodId = routeData.neighborhood._id;
+
+          $.ajax({
+            url: `/api/v1/neighborhoods/calories/${neighborhoodId}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ caloriesToAdd: calories }),
+            success: function () {
+              console.log(`Successfully updated burned calories for neighborhood ID: ${neighborhoodId}`);
+            },
+            error: function (xhr, status, error) {
+              console.error('Error updating burned calories for neighborhood:', error);
+              alert(`Error updating burned calories for neighborhood: ${xhr.responseText || status}`);
+            }
+          });
+
+          if (userId) {
+            $.ajax({
+              url: `/api/v1/users/calories/${userId}`,
+              method: 'PUT',
+              contentType: 'application/json',
+              data: JSON.stringify({ caloriesToAdd: calories }),
+              success: function () {
+                console.log(`Successfully updated burned calories for user ID: ${userId}`);
+              },
+              error: function (xhr, status, error) {
+                console.error('Error updating burned calories for user:', error);
+                alert(`Error updating burned calories for user: ${xhr.responseText || status}`);
+              }
+            });
+          }
+
+          window.location.href = "/MyWorkouts";
         });
 
         const checkAuthStatus = async () => {
@@ -667,7 +722,7 @@
           try {
             await checkAuthStatus();
 
-            const routeData = await fetchRoute();
+            routeData = await fetchRoute();
             addToView(routeData);
             console.log(userId);
           } catch (error) {
