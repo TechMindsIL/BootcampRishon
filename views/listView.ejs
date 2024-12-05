@@ -282,14 +282,14 @@
         @media (max-width:550px) {
           .rating-section {
             gap: 5px !important;
-            justify-content: flex-end !important;
+            justify-content: center !important;
           }
         }
 
         .rating-section {
           display: flex;
           flex-direction: row-reverse;
-          justify-content: flex-end;
+          justify-content: center;
           gap: 15px;
           flex-wrap: wrap;
         }
@@ -470,7 +470,7 @@
                       <span id="average-rating-${index}">0</span>
                       <label for="average-rating"><strong>:דירוג משתמשים</strong></label>
                     </div>
-                    <div id="rating-container-${index}" class="rating-container">
+                    <div id="rating-container-${index}" class="rating-container" style="margin: 0 auto; margin-left: 15px;">
                       <button id="rate-button-${index}" class="rate-button">דירוג</button>
                     </div>
                   </div>
