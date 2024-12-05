@@ -17,12 +17,12 @@
                 direction: rtl;
             }
 
-            .container h5 {
+            .container-neighborhoods h5 {
                 text-align: center;
                 width: 100%;
             }
 
-            .container {
+            .container-neighborhoods {
                 display: flex;
                 justify-content: space-between;
                 flex-wrap: wrap;
@@ -50,7 +50,7 @@
             }
 
             @media (min-width: 771px) {
-                .container {
+                .container-neighborhoods {
                     flex-direction: row-reverse;
                 }
             }
@@ -67,7 +67,7 @@
             }
 
             @media (max-width: 530px) {
-                .container {
+                .container-neighborhoods {
                     flex-direction: column;
                     align-items: center;
                     text-align: center;
@@ -87,9 +87,9 @@
 </head>
 
 <body>
-    <%- include('partials/navbar', {currentPage: 'about' }) %>
+    <%- include('partials/insidenavbar', {currentPage: 'About' }) %>
 
-        <div style="text-align: center;">
+        <div style="text-align: center; margin-top: 100px;">
             <h1>אודותינו</h1>
         </div>
 
@@ -112,7 +112,7 @@
         </div>
 
 
-        <div class="container">
+        <div class="container-neighborhoods" style="margin-bottom: 100px;">
             <h5 style="direction: rtl;">
                 קלוריות שנשרפו בכל שכונה לפי נתוני משתמשים: </h5>
 
