@@ -409,6 +409,10 @@
         </div>
 
       </div>
+
+      <!-- Canvas Confetti library for confetti effect -->
+      <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
       <script>
         let userId = null;
         let routeData = null;
@@ -663,6 +667,18 @@
 
         finish.addEventListener("click", () => {
 
+          const interval = setInterval(() => {
+            confetti({
+              particleCount: 100,
+              spread: 180,
+              origin: { x: Math.random(), y: Math.random() },
+              size: Math.random() * 0.5 + 0.5,
+              decay: 0.9,
+              drift: Math.random() * 2 - 1,
+              gravity: 0.3,
+            });
+          }, 200);
+
           let calories = routeData.calories;
           let neighborhoodId = routeData.neighborhood._id;
 
@@ -694,10 +710,15 @@
                 console.log(`Error updating burned calories for user: ${xhr.responseText || status}`);
               }
             });
-            window.location.href = "/MyWorkouts";
+
+            setTimeout(() => {
+              window.location.href = "/MyWorkouts";
+            }, 7000);
           }
-          else{
-            window.location.href = "/chooseRoute";
+          else {
+            setTimeout(() => {
+              window.location.href = "/chooseRoute";
+            }, 7000);
           }
 
         });
