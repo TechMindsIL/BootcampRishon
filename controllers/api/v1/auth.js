@@ -103,23 +103,23 @@ exports.profile = (req, res) => {
 // Update name or password
 exports.update = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
+    console.log(req.body);
+
+    const user = await User.findById(req.user._id);
 
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
     if (email) {
         if (!emailPattern.test(email)) {
             return res.status(400).send('Invalid email format.');
         }
-
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).send('Email already registered.');
+        if (email !== user.email) {
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                return res.status(400).send('Email already registered.');
+            }
+            user.email = email;
         }
-    }
-
-    const user = await User.findById(req.user._id);
-
-    if (email) {
-        user.email = email;
     }
 
     if (name) {
@@ -127,7 +127,7 @@ exports.update = asyncHandler(async (req, res) => {
     }
 
     if (password) {
-        user.password = password;
+        await user.setPassword(password);
     }
 
     await user.save();
