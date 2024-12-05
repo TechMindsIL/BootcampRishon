@@ -5,20 +5,32 @@ router.get('/', async (req, res) => {
     return res.render('index', { title: 'Home' });
 });
 
-router.get('/chooseRoute', async (req, res) => {
-    return res.render('chooseRoute', { title: 'chooseRoute' });
+router.get('/register', async (req, res) => {
+    return res.render('register', { title: 'Register' });
 });
 
 router.get('/login', async (req, res) => {
-    return res.render('login', { title: 'login' });
+    return res.render('login', { title: 'Login' });
 });
 
 router.get('/welcome', async (req, res) => {
-    return res.render('welcome', { title: 'welcome' });
+    return res.render('welcome', { title: 'Welcome' });
 });
 
-router.get('/register', async (req, res) => {
-    return res.render('register', { title: 'register' });
+router.get('/chooseRoute', async (req, res) => {
+    return res.render('chooseRoute', { title: 'Choose Route' });
+});
+
+router.get('/about', async (req, res) => {
+    return res.render('about', { title: 'About' });
+});
+
+router.get('/myprofile', async (req, res) => {
+    return res.render('profile', { title: 'My Profile' });
+});
+
+router.get('/MyWorkouts', async (req, res) => {
+    return res.render('MyWorkouts', { title: 'My Workouts' });
 });
 
 // Feature 3
@@ -28,21 +40,10 @@ router.get('/map', async (req, res) => {
     return res.render('mapScreen', { title: 'Map', id: id });
 });
 
-
-router.get('/index1', async (req, res) => {
-    return res.render('index1', { title: 'index' });
-});
-
 router.get('/list', async (req, res) => {
     return res.render('listView', { title: 'List' });
 });
-router.get('/MyWorkouts', async (req, res) => {
-    return res.render('MyWorkouts', { title: 'MyWorkouts' });
-});
 
-router.get('/about', async (req, res) => {
-    return res.render('about', { title: 'About' });
-});
 
 // router.get('/customer', auth, checkRole('customer'), async (req, res) => {
 //     return res.render('customer', { title: 'Customer' });
