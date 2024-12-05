@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('partials/head') %>
+
+        <style>
+            .transparent-box {
+                background-color: rgba(255, 255, 255, 0.8);
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                width: 50%;
+                max-width: 400px;
+                margin: 20px auto;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                font-size: 18px;
+                direction: rtl;
+            }
+
+            .material-symbols-outlined {
+                vertical-align: sub;
+                font-size: 20px;
+            }
+
+            .progress-container {
+                max-width: 400px;
+                width: 50%;
+            }
+
+            canvas {
+                display: block;
+                margin: 0 auto;
+            }
+
+            .input-group-text {
+                width: 60px;
+                justify-content: center;
+            }
+
+            button {
+                width: 150px;
+                height: 50px;
+                background-color: #f16624;
+                border-radius: 20px;
+                padding: 5px 5px;
+                text-align: center;
+                border: none;
+            }
+
+            button:hover {
+                background-color: hsl(19, 88%, 45%);
+                color: white;
+            }
+
+            @media (max-width: 770px) {
+                .transparent-box {
+                    width: 90%;
+                }
+
+                .progress-container {
+                    width: 90%;
+                }
+            }
+        </style>
+
+</head>
+
+<body>
+    <%- include('partials/insidenavbar', {currentPage: 'My Profile' }) %>
+
+        <div style="text-align: center;  margin-top: 100px;">
+            <h1>פרופיל</h1>
+        </div>
+
+        <div class="transparent-box">
+            <p style="margin: 0 auto; justify-content: flex-start;">
+                <span id="activitiesFinished"> </span>
+                <br>
+                <span id="caloriesBurned"> </span>
+            </p>
+        </div>
+
+        <div class="progress-container transparent-box">
+            <span id="progress-title">הושלמו 0% כדי להשיג את התואר מאסטר בריאות</span>
+            <span id="status">המשיכו להתאמן </span> <span class="material-symbols-outlined">
+                sign_language
+            </span>
+
+            <canvas id="donutChart" width="200" height="200"></canvas>
+        </div>
+
+        <div class="transparent-box" style="margin-bottom: 100px;">
+
+            <h5 style="margin-bottom: 15px;">
+                <strong>
+                    עריכת פרופיל:
+                </strong>
+            </h5>
+
+            <form id="userForm">
+
+                <div class="mb-3 input-group" style="direction: ltr;">
+                    <input type="text" id="userName" class="form-control" placeholder="שם המשתמש" aria-label="שם המשתמש"
+                        style="direction: rtl;">
+                    <span class="input-group-text">שם</span>
+                </div>
+
+                <div class="mb-3 input-group" style="direction: ltr;">
+                    <input type="email" id="userEmail" class="form-control" placeholder="כתובת דוא''ל"
+                        aria-label="כתובת דוא''ל" style="direction: rtl;" disabled>
+                    <span class="input-group-text">דוא"ל</span>
+                </div>
+
+                <div class="mb-3 input-group" style="direction: ltr;">
+                    <input type="password" id="userPassword" class="form-control" placeholder="שינוי סיסמא"
+                        aria-label="שינוי סיסמא" style="direction: rtl;">
+                    <span class="input-group-text">סיסמא</span>
+                </div>
+
+                <button type="submit" id="submitButton">שמירת שינויים</button>
+
+            </form>
+        </div>
+
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            let userData = null;
+
+            document.addEventListener("DOMContentLoaded", async () => {
+                try {
+                    await fetchUser();
+                    updateView();
+                    updateGraph();
+
+                    const userForm = $('#userForm');
+
+                    userForm.on('submit', function (e) {
+                        e.preventDefault();
+                        updateUser();
+                    });
+
+                } catch (error) {
+                    console.error("Error during initialization:", error);
+                }
+            });
+
+            const fetchUser = async () => {
+                try {
+                    const response = await fetch("/api/v1/auth/");
+
+                    if (response.ok) {
+                        userData = await response.json();
+                        console.log("User authenticated:", userData);
+
+                        $('#userName').val(userData.name);
+                        $('#userEmail').val(userData.email);
+
+                    } else if (response.status === 401) {
+                        console.log("No user is logged in.");
+                    }
+                } catch (error) {
+                    console.log("Error fetching auth status:", error);
+                }
+            }
+
+            const updateView = () => {
+                const activitiesFinished = document.getElementById("activitiesFinished");
+                const caloriesBurned = document.getElementById("caloriesBurned");
+
+                activitiesFinished.innerHTML = `<span class="material-symbols-outlined"> fitness_center </span> ${userData.activitiesFinished || 0} אימונים הושלמו`;
+                caloriesBurned.innerHTML = `<span class="material-symbols-outlined"> verified </span> שרפת ${userData.caloriesBurned || 0} קלוריות`;
+            }
+
+            const updateGraph = () => {
+                var activitiesFinished = userData.activitiesFinished || 0;
+                const targetActivities = 50;
+
+                var progressPercentage = (activitiesFinished / targetActivities) * 100;
+
+                var progressTitle = document.getElementById('progress-title');
+
+                if (activitiesFinished >= targetActivities) {
+                    progressPercentage = 100;
+                    progressTitle.innerHTML = 'השגת את תואר מאסטר בריאות!' + `  <span class="material-symbols-outlined"> social_leaderboard </span>`;
+
+                    document.getElementById('status').style.display = "none";
+                } else {
+                    progressTitle.textContent = 'הושלמו ' + progressPercentage.toFixed(0) + '% כדי להשיג את התואר מאסטר בריאות';
+                }
+
+                const completedLabel = `${Math.round(progressPercentage)}% הושלם`;
+                const remainingLabel = `${Math.round(100 - progressPercentage)}% נותר`;
+
+                var ctx = document.getElementById('donutChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [completedLabel, remainingLabel],
+                        datasets: [{
+                            data: [progressPercentage, 100 - progressPercentage],
+                            backgroundColor: ['#f16624', '#D3D3D3'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    title: function () {
+                                        return '';
+                                    }, label: function (tooltipItem) {
+                                        return tooltipItem.label;
+                                    }
+                                },
+                                displayColors: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            const updateUser = () => {
+                const user = {
+                    name: $('#userName').val().trim() || userData.name,
+                    email: $('#userEmail').val().trim() || userData.email,
+                }
+
+                const password = $('#userPassword').val().trim();
+                if (password) {
+                    user.password = password;
+                }
+                console.log(user);
+                $.ajax({
+                    url: "/api/v1/auth/",
+                    method: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(user),
+                    success: function () {
+                        console.log("User updates successfully")
+                        $('#userName').val(user.name);
+                        $('#userEmail').val(user.email);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(`Error updating user: ${xhr.responseText || status}`);
+                        alert(`Failed to update user: ${xhr.responseText || error}`);
+                    }
+                });
+            }
+
+        </script>
+</body>
