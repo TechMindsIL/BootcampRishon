@@ -154,7 +154,7 @@
 
       const elementsToUpdate = [
         { id: "SavedRoutes", href: isLoggedIn ? "/MyWorkouts" : "/login" },
-        { id: "profile", href: isLoggedIn ? "/welcome" : "/login" },
+        { id: "profile", href: isLoggedIn ? "/myprofile" : "/login" },
       ];
 
       elementsToUpdate.forEach((element) => {
@@ -172,7 +172,7 @@
     <h2 class="username">Hello, Guest</h2>
     <img src="https://i.postimg.cc/cLx3kVnz/Rishon-Fit.png" class="logo" alt="logo" />
   </div>
-  <footer class="navbar navbar-expand fixed-bottom h-6">
+  <footer class="navbar navbar-expand fixed-bottom">
     <div class="container">
       <a id="chooseRoutes" href="/chooseRoute" class="nav__link text-white" aria-label="Search">
         <i class="fas fa-search"></i>
