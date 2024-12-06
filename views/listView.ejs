@@ -158,6 +158,17 @@
           /* margin-bottom: 100px; */
         }
 
+        #backButton {
+          background-color: var(--lineColor) !important;
+          font-size: 14px !important;
+          width: 150px !important;
+        }
+
+        #backButton:hover{
+          background-color: var(--grayColor) !important;
+          color: white !important;
+        }
+
         @media screen and (max-width: 500px) {
           :root {
             --placeListWidth: 270px;
@@ -713,12 +724,12 @@
 
             setTimeout(() => {
               window.location.href = "/MyWorkouts";
-            }, 7000);
+            }, 3000);
           }
           else {
             setTimeout(() => {
               window.location.href = "/chooseRoute";
-            }, 7000);
+            }, 3000);
           }
 
         });
