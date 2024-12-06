@@ -207,15 +207,20 @@
                                 const tagsList = categoryContainer.find('.tags-list');
 
                                 categories[categoryFor][categoryName].forEach(tag => {
+                                    const backgroundColorClass = tag.isRelevant ? 'bg-light' : 'bg-secondary';
+
                                     const tagCard = $(`
-                                <div class="tag-card">
+                                <div class="tag-card ${backgroundColorClass}">
                                     <h6>${tag.name}</h6>
                                      <div class="tag-actions text-right d-flex justify-content-between align-items-center">
                                         <button class=" btn btn-outline-dark" onclick="window.location.href= '/admin/edit-tags?id=${tag._id}'">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-outline-danger" onclick="deleteTag('${tag._id}')">
-                                       <i class="fas fa-trash"></i>
+                                        <button class="btn btn-outline-danger" onclick="updateTagStatus('${tag._id}')">
+                                            ${tag.isRelevant
+                                            ? `<i class="fas fa-trash"></i>`
+                                            : `<i class="fas fa-undo"></i>`
+                                        }
                                         </button>
                                     </div>
                                 </div>
@@ -234,6 +239,40 @@
                             $('#tagsContainer').append(categoryForContainer);
                         }
                     });
+                }
+
+                async function updateTagStatus(tagId) {
+                    try {
+                        let tag = tags.find(tag => tag._id === tagId);
+
+                        if (tag) {
+                            const updatedTag = {
+                                category: tag.category._id,
+                                name: tag.name,
+                                isRelevant: !tag.isRelevant
+                            };
+
+                            $.ajax({
+                                url: `/api/v1/tags/${tagId}`,
+                                method: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify(updatedTag),
+                                success: function () {
+                                    fetchTags();
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('Error updating tag:', error);
+                                    alert(`Error updating the status of the tag: ${xhr.responseText || status}`);
+                                }
+                            });
+                        } else {
+                            console.error('Tag not found or error fetching.');
+                            alert('Tag not found or error fetching.');
+                        }
+                    } catch (error) {
+                        console.error('An error occurred:', error);
+                        alert('An error occurred while fetching tag data.');
+                    }
                 }
 
                 async function deleteTag(tagId) {

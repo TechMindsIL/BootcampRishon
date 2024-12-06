@@ -69,7 +69,7 @@
             <script>
 
                 let type;
-                let url;
+                let url = "";
                 $(document).ready(async function () {
                     getRedirectPath();
                 })
@@ -93,7 +93,8 @@
                         $('#saveTagBtn').on('click', async function () {
                             const updateTag = {
                                 category: $("#tagCategory").val(),
-                                name: $("#tagName").val()
+                                name: $("#tagName").val(),
+                                isRelevant: true
                             };
 
                             await $.ajax({
@@ -118,7 +119,7 @@
 
                         if (!fromPath) {
                             console.warn('No "from" parameter found in the URL.');
-                            url = "";
+                            url = "/admin/manage-tags";
 
                             document.getElementById('tagType').style.display = 'none';
                             document.getElementById('tagTypeSelect').style.display = 'block';
@@ -154,7 +155,8 @@
                         $('#saveTagBtn').on('click', async function () {
                             const newTag = {
                                 category: $("#tagCategory").val(),
-                                name: $("#tagName").val()
+                                name: $("#tagName").val(),
+                                isRelevant: true
                             };
 
                             await $.ajax({

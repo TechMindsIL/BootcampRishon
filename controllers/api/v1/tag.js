@@ -14,10 +14,14 @@ exports.getAllTags = asyncHandler(async (req, res) => {
 // Controller function to search for Tags
 exports.searchTags = asyncHandler(async (req, res) => {
     // Fetch all Tags from the database that match the search query
-    const { name, categories } = req.query;
+    const { name, categories,isRelevant } = req.query;
     const query = {};
     if (name) query.name = { $regex: name, $options: 'i' };
     if (categories) query.category = { $in: categories.split(',') };
+    
+    if (isRelevant !== undefined) {
+        query.isRelevant = isRelevant === 'true'; // Convert string to boolean
+    }
     
     const tags = await Tag.find(query)
         .populate('category');
