@@ -42,8 +42,6 @@ exports.register = asyncHandler(async (req, res) => {
     });
 });
 
-
-
 // Login a user
 exports.login = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
@@ -95,14 +93,20 @@ exports.logout = (req, res) => {
 };
 
 // Get user profile
-exports.profile = (req, res) => {
-    const { savedRoutes, ...userWithoutSavedRoutes } = req.user.toObject();
+exports.profile = async (req, res) => {
+    const userWithNeighborhood = await req.user
+    .populate({
+        path: 'neighborhood',
+        model: 'Neighborhood'
+    });
+
+    const { savedRoutes, ...userWithoutSavedRoutes } = userWithNeighborhood.toObject();
     res.send(userWithoutSavedRoutes);
 };
 
 // Update name or password
 exports.update = asyncHandler(async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, goal, neighborhood } = req.body;
     console.log(req.body);
 
     const user = await User.findById(req.user._id);
@@ -124,6 +128,14 @@ exports.update = asyncHandler(async (req, res) => {
 
     if (name) {
         user.name = name;
+    }
+
+    if (goal) {
+        user.goal = goal;
+    }
+
+    if (neighborhood) {
+        user.neighborhood = neighborhood;
     }
 
     if (password) {
