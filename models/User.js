@@ -19,6 +19,14 @@ const userSchema = new mongoose.Schema({
         required: true,
         maxlength: 100
     },
+    neighborhood: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Neighborhood'
+    },
+    goal: {
+        type: String,
+        enum: ['בריאות', 'חיזוק', 'ירידה במשקל'],
+    },
     savedRoutes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Route',
