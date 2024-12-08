@@ -643,8 +643,8 @@
                 // Function to initialize the page and fetch data
                 const init = async () => {
                     await fetchRoutes(); // wait for data to be fetched
-
-                    populateDataDefault();
+                    filterRoutes();
+                    // populateDataDefault();
                 };
 
                 // Call init function when the page loads

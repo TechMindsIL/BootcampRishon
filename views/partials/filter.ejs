@@ -6,9 +6,11 @@
         justify-content: center;
         gap: 10px;
     }
+
     .filterCategory {
         width: 100%;
     }
+
     .filterCategoryCard {
         cursor: pointer;
         position: relative;
@@ -26,6 +28,7 @@
         align-items: center;
         justify-content: center;
     }
+
     .unselectable {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -34,6 +37,7 @@
         -ms-user-select: none;
         user-select: none;
     }
+
     .caret {
         position: absolute;
         left: 10px;
@@ -47,13 +51,14 @@
         line-height: 1;
         font-size: 1.5rem;
     }
+
     #caret-up {
         transform: rotate(180deg);
     }
 
     .scroll-container {
-        direction: ltr; 
-        overflow: hidden scroll; 
+        direction: ltr;
+        overflow: hidden scroll;
         height: 0;
         transition: height 0.2s ease;
 
@@ -66,32 +71,35 @@
     .advContent,
     .nonAdvContent {
         overflow: none;
-        
+
         padding: 5px;
         padding-top: 10px;
         height: 100%;
     }
-    .noPaddingHorizontal { 
+
+    .noPaddingHorizontal {
         padding-left: 0px;
         padding-right: 0px;
     }
-    .nonAdvContent{
+
+    .nonAdvContent {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        direction: rtl; 
+        direction: rtl;
         grid-auto-rows: 60px;
         box-sizing: border-box;
     }
 
-    .scroll-container.open{
+    .scroll-container.open {
         height: 250px;
     }
 
-    .tagCardPadding{
+    .tagCardPadding {
         height: 60px;
         padding: 0 5px;
         padding-bottom: 10px;
     }
+
     .tagCard {
         cursor: pointer;
         width: 100%;
@@ -111,8 +119,10 @@
     }
 
     .tagCard:hover {
-        transform: scale(1.05); /* Slight zoom on hover */
+        transform: scale(1.05);
+        /* Slight zoom on hover */
     }
+
     .tagText {
         direction: rtl;
         text-align: center;
@@ -126,20 +136,24 @@
         font-size: 1rem;
         font-weight: 500;
     }
+
     .activeFilters {
         justify-content: right;
         margin-bottom: 10px;
         overflow-x: scroll;
         gap: 0;
-        display:none;
+        display: none;
     }
-    #activeGoals{
+
+    #activeGoals {
         margin-bottom: 0;
         padding: 0;
     }
-    .activeFilters.showActiveFilters{
+
+    .activeFilters.showActiveFilters {
         display: flex;
     }
+
     .activeFilterCard {
         cursor: pointer;
         display: flex;
@@ -147,7 +161,7 @@
 
         align-content: center;
 
-        width:100%;
+        width: 100%;
         height: 100%;
 
         background: rgb(225, 225, 225);
@@ -159,20 +173,23 @@
         flex-shrink: 0;
     }
 
-    .goalsCardPadding{ /* If by any point we change the goal cards to a different width */
-        width: calc(100% / var(--filterCardsInRow)) !important; 
+    .goalsCardPadding {
+        /* If by any point we change the goal cards to a different width */
+        width: calc(100% / var(--filterCardsInRow)) !important;
         min-width: calc(100% / var(--filterCardsInRow)) !important;
     }
 
-    .activeFilterCardPadding{
+    .activeFilterCardPadding {
         height: 55px;
         padding: 6px calc(var(--filterCardsGap) / 2);
         width: calc(100% / var(--filterCardsInRow));
         min-width: calc(100% / var(--filterCardsInRow));
     }
+
     .activeFilterCard:hover {
         background: rgb(205, 205, 205);
     }
+
     .bi-x {
         cursor: pointer;
         height: 43;
@@ -183,12 +200,13 @@
     .bi-x:hover {
         transform: scale(1.1);
     }
+
     .currentFilterText {
         padding-left: 5px;
         color: #333333;
     }
 
-    .width-adjustable{
+    .width-adjustable {
         width: fit-content;
     }
 </style>
@@ -236,9 +254,9 @@
                 return tag.title;
             },
             equals: (tag1, tag2) => {
-                try{
+                try {
                     return tag1._id === tag2._id;
-                }catch{
+                } catch {
                     return false
                 }
             },
@@ -263,9 +281,9 @@
                 return tag;
             },
             equals: (tag1, tag2) => {
-                try{
+                try {
                     return tag1 === tag2;
-                }catch{
+                } catch {
                     return false
                 }
             },
@@ -293,9 +311,9 @@
                 return menus.advanced.values.find((tag) => tag._id === tagID);
             },
             equals: (tag1, tag2) => {
-                try{
+                try {
                     return tag1._id === tag2._id;
-                }catch{
+                } catch {
                     return false
                 }
             },
@@ -328,7 +346,7 @@
 
         const safeCategoryName = menus[category].getCategory(value).replace(/['"]/g, "_");
 
-        const safeName =  menus[category].getName(value).replace(/['"]/g, "_");
+        const safeName = menus[category].getName(value).replace(/['"]/g, "_");
 
         const card = document.getElementById(`${safeCategoryName}:${safeName}`);
 
@@ -337,7 +355,7 @@
         if (isPresent > -1) {
             currentFilters.splice(isPresent, 1);
         } else {
-            currentFilters.push({category: category, value: value});
+            currentFilters.push({ category: category, value: value });
         }
         card.classList.toggle("selected");
 
@@ -348,7 +366,7 @@
             if (categoryComparison !== 0) return categoryComparison;
 
             const cat = a.category
-            if(cat === "advanced"){
+            if (cat === "advanced") {
                 const tagCategoryComparison = a.value.category.name.localeCompare(b.value.category.name);
 
                 if (tagCategoryComparison !== 0) return categoryComparison;
@@ -359,7 +377,7 @@
 
         updateFilters();
     }
-    
+
     const makeFilterContainers = () => {
         for (const [menuId, menu] of Object.entries(menus)) {
             filterCategoryContainer.innerHTML += `
@@ -422,10 +440,10 @@
         activeFiltersContainer.classList.add("showActiveFilters");
         activeGoalsContainer.classList.add("showActiveFilters");
 
-        if(!currentSearchQuery.length && !allFilters.length){
+        if (!currentSearchQuery.length && !allFilters.length) {
             activeFiltersContainer.classList.remove("showActiveFilters");
         }
-        if(!goalFilters.length){
+        if (!goalFilters.length) {
             activeGoalsContainer.classList.remove("showActiveFilters");
         }
         activeGoalsContainer.innerHTML = "";
@@ -541,7 +559,7 @@
         const promises = Object.entries(menus).map(async ([id, menu]) => {
             menus[id].values = menu.sortFunc(await menu.getValues());
         });
-        
+
         await Promise.all(promises);
 
         makeFilterContainers();
@@ -552,4 +570,31 @@
         makeTagCards(menus.advanced.values);
     };
     initFilter();
+
+
+    const checkAuthStatus = async () => {
+        try {
+            const response = await fetch("/api/v1/auth/");
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("User authenticated:", data);
+
+                if (data.goal) {
+                    currentFilters.push({ category: "goal", value: data.goal })
+                }
+                if (data.neighborhood) {
+                    currentFilters.push({ category: "neighborhood", value: data.neighborhood })
+                }
+                updateFilters();
+            } else if (response.status === 401) {
+                console.log("No user is logged in.");
+            }
+        } catch (error) {
+            console.log("Error fetching auth status:", error);
+        }
+    }
+
+    checkAuthStatus();
+
 </script>
