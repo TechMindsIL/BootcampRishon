@@ -49,7 +49,6 @@
       background-color: rgba(255, 255, 255, 0.5);
       border-radius: 15px;
       margin-top: -50px;
-      margin-bottom: 100px;
     }
 
     /* Logos container */
@@ -69,16 +68,29 @@
       max-height: 60px;
       flex: 1 1 14%;
       object-fit: contain;
+      align-items: center;
+    }
+
+    .footer2-logo {
+      height: auto;
+      max-height: 40px;
+      margin: 0 8px;
     }
 
     .logos-div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      text-align: center;
       margin-top: 30px;
       direction: rtl;
+      margin-bottom: 100px;
     }
 
     .logos-row {
-      display: inline-block;
-      margin-top: 10px;
+      display: flex;
+      align-items: center;
     }
 
     /* Media Queries for responsiveness */
@@ -96,12 +108,6 @@
     @media screen and (max-width: 480px) {
       .footer-logo {
         max-height: 40px;
-      }
-    }
-
-    @media screen and (max-width: 350px) {
-      .construction-text {
-        display: block;
       }
     }
   </style>
@@ -128,25 +134,27 @@
         <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
       </div>
 
-      <div class="logos-div">
-        <span class="construction-text">
-          האתר נבנה ע"י
-        </span>
-        <div class="logos-row">
-          <a href="http://www.rishonstartup.co.il/" target="_blank" style="text-decoration: none;">
-            <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
-          </a>
-
-          <span style="margin-left: 10px;">
-            ו-
-          </span>
-
-          <a href="https://www.alicecode.org/" target="_blank" style="text-decoration: none;">
-            <img src="images/RishonLogos/AliceCode.png" alt="alice code" class="footer-logo">
-          </a>
-        </div>
-      </div>
     </footer>
+
+    <div class="logos-div">
+      <span>
+        האתר נבנה ע"י
+      </span>
+      <div class="logos-row">
+        <a href="https://techminds.app/" target="_blank" style="text-decoration: none;" class="logo-link">
+          <img src="/images/RishonLogos/Logo-TechMinds.png" alt="rishon bootcamp" class="footer2-logo">
+        </a>
+
+        <span>
+          ו-
+        </span>
+
+        <a href="https://www.alicecode.org/" target="_blank" style="text-decoration: none;" class="logo-link">
+          <img src="images/RishonLogos/AliceCode.png" alt="alice code" class="footer2-logo">
+        </a>
+      </div>
+    </div>
+
 
     <script>
       function nextPage() {

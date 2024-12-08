@@ -230,13 +230,27 @@
                     object-fit: contain;
                 }
 
+                .footer2-logo {
+                    height: auto;
+                    max-height: 40px;
+                    margin: 0 8px;
+                }
+
                 .logos-div {
                     margin-top: 30px;
                 }
-            
+
+                .logos-div {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                    text-align: center;
+                }
+
                 .logos-row {
-                    display: inline-block;
-                    margin-top: 10px;
+                    display: flex;
+                    align-items: center;
                 }
 
                 /* Media Queries for responsiveness */
@@ -255,15 +269,7 @@
                     .footer-logo {
                         max-height: 40px;
                     }
-
                 }
-
-                @media screen and (max-width: 350px) {
-                    .construction-text {
-                        display: block;
-                    }
-                }
-
             </style>
     </head>
 
@@ -309,32 +315,32 @@
                     <img src="/images/RishonLogos/לוגו קרן ראשון.png" alt="לוגו קרן ראשון" class="footer-logo">
                     <img src="/images/RishonLogos/לוגו תקשוב עירוני.png" alt="לוגו תקשוב עירוני" class="footer-logo">
                     <img src="/images/RishonLogos/עירייה.png" alt="עירייה" class="footer-logo">
-                    <!-- <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo"> -->
+                    <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
                 </div>
 
-                <div class="logos-div">
-                    <span class="construction-text">
-                        האתר נבנה ע"י
-                    </span>
-                    <div class="logos-row">
-                        <a href="http://www.rishonstartup.co.il/" target="_blank" style="text-decoration: none;"
-                            class="logo-link">
-                            <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
-                        </a>
 
-                        <span style="margin-left: 10px;" class="and-text">
-                            ו-
-                        </span>
-
-                        <a href="https://www.alicecode.org/" target="_blank" style="text-decoration: none;"
-                            class="logo-link">
-                            <img src="images/RishonLogos/AliceCode.png" alt="alice code" class="footer-logo">
-                        </a>
-                    </div>
-                </div>
 
             </footer>
 
+            <div class="logos-div">
+                <span>
+                    האתר נבנה ע"י
+                </span>
+                <div class="logos-row">
+                    <a href="https://techminds.app/" target="_blank" style="text-decoration: none;" class="logo-link">
+                        <img src="/images/RishonLogos/Logo-TechMinds.png" alt="rishon bootcamp" class="footer2-logo">
+                    </a>
+
+                    <span>
+                        ו-
+                    </span>
+
+                    <a href="https://www.alicecode.org/" target="_blank" style="text-decoration: none;"
+                        class="logo-link">
+                        <img src="images/RishonLogos/AliceCode.png" alt="alice code" class="footer2-logo">
+                    </a>
+                </div>
+            </div>
 
         </body>
 
