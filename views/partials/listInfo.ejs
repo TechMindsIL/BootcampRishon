@@ -5,6 +5,7 @@
         width: 100%;
         margin: 10px auto;
         direction: rtl;
+        flex-wrap: wrap;
     }
     
     .description {
@@ -114,6 +115,8 @@
         <span id="duration" class="info-item"></span>
         <span id="area" class="info-item"></span>
         <span id="type" class="info-item"></span>
+        <span id="goal" class="info-item"></span>
+        <span id="calories" class="info-item"></span>
     </div>
     <div class="description-container">
         <p id="description" class="description" style="direction: rtl;"></p>
@@ -127,6 +130,8 @@
     const description = document.getElementById("description");
     const area = document.getElementById("area");
     const type = document.getElementById("type");
+    const goal = document.getElementById("goal");
+    const calories = document.getElementById("calories");
     
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -151,7 +156,9 @@
     
     const setRouteDescription = async () => {
     const route = await fetchRoute();
-    if (!route || !route.places || route.places.length === 0) {
+    if (!route 
+    // || !route.places || route.places.length === 0
+) {
         console.error("Invalid route data");
         return;
     }
@@ -169,19 +176,19 @@
         infoHTML += `<span><strong>מרחק:</strong> ${route.distance} קילומטרים</span>`;
     }
 
-    if (route.tags) {
-        let areaFound = false;
-        for (const tag of route.tags) {
-            if (tag.category.name === "אזור") {
-                if (infoHTML) {
-                    infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
-                }
-                infoHTML += `<span><strong>אזור:</strong> ${tag.name}</span>`;
-                areaFound = true;
-                break;
-            }
-        }
-    }
+    // if (route.tags) {
+    //     let areaFound = false;
+    //     for (const tag of route.tags) {
+    //         if (tag.category.name === "אזור") {
+    //             if (infoHTML) {
+    //                 infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
+    //             }
+    //             infoHTML += `<span><strong>אזור:</strong> ${tag.name}</span>`;
+    //             areaFound = true;
+    //             break;
+    //         }
+    //     }
+    // }
 
     if (route.tags) {
         let typeFound = false;
@@ -195,6 +202,20 @@
                 break;
             }
         }
+    }
+
+    if (route.goal) {
+        if (infoHTML) {
+            infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
+        }
+        infoHTML += `<span><strong>מטרה:</strong> ${route.goal}</span>`;
+    }
+
+    if (route.calories) {
+        if (infoHTML) {
+            infoHTML += `<p style="font-weight: bold; margin: 0 12px">|</p>`; 
+        }
+        infoHTML += `<span><strong>קלוריות:</strong> ${route.calories}</span>`;
     }
 
     if (infoHTML) {
