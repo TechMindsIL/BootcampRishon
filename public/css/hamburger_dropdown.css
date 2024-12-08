@@ -1,0 +1,128 @@
+/* Hamburger */
+.hamburger1 {
+    height: 45px;
+    margin: 0;
+    display: -ms-grid;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    justify-items: center;
+    z-index: 120;
+}
+
+.hamburger1 div {
+    background-color: rgb(61, 61, 61);
+    position: relative;
+    width: 40px;
+    height: 5px;
+    margin-top: 7px;
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+#toggle1 {
+    display: none;
+}
+  
+#toggle1:checked + .hamburger1 .top {
+    -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+    margin-top: 22.5px;
+}
+  
+#toggle1:checked + .hamburger1 .meat {
+    -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+    margin-top: -5px;
+}
+  
+#toggle1:checked + .hamburger1 .bottom {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+}
+
+.hamburger-dropdown {
+    background-color: transparent;
+    position: relative;
+    width: auto;
+    height: auto;
+}
+
+#toggle1:checked ~ .hamburger-dropdown-menu {
+    top: calc(100% + 20px);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hamburger-dropdown-menu {
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 10%;
+    right: 0;
+    border-radius: 5px;
+    padding: 0;
+    margin: 0;
+    background-color: rgb(255, 255, 255);
+    opacity: 0;
+    pointer-events: none;
+    transition: top 0.3s ease, opacity 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+}
+
+.hamburger-dropdown-menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: auto;
+}
+
+.hamburger-dropdown-menu li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+}
+
+.hamburger-dropdown-menu a {
+    display: block;
+    padding: 10px 40px;
+    text-decoration: none;
+    color: rgb(61, 61, 61);
+    font-size: 1.2em;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+    width: 100%;
+    direction: rtl;
+    text-align: right;
+    border-bottom: 1px solid #ddd;
+}
+
+.hamburger-dropdown-menu ul li:last-child a {
+    border-bottom: none;
+}
+
+.hamburger-dropdown-menu a:hover {
+    background-color: rgb(225, 225, 225);
+    color: rgb(61, 61, 61);
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .hamburger-dropdown-menu {
+        display: block;
+    }
+
+    .hamburger-dropdown-menu li {
+        width: auto;
+    }
+}

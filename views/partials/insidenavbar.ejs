@@ -6,6 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- <title>Responsive Navigation Bar</title> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- jquery -->
+  <script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity=""
+  crossorigin=""
+></script>
+  <!-- hamburger dropdown -->
+  <link rel="stylesheet" href="/css/hamburger_dropdown.css"/>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
@@ -54,15 +62,22 @@
       color: white;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: top;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .username-container {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
     }
 
     .username {
       color: #2d2d3a;
-      font-size: 1.7em;
-      padding-top: 6px;
-      font-weight: 700;
+      font-size: 2em;
+      font-weight: 600;
+      padding-right: 2rem;
+      white-space: nowrap;
       font-family: Poppins;
     }
 
@@ -115,6 +130,10 @@
         font-size: 2.5em;
       }
 
+      .username-container {
+        width: 150px;
+      }
+
       .username {
         font-size: 1.5em;
       }
@@ -139,16 +158,48 @@
     }
   </style>
   <script>
+    function initDropDownMenu(isLoggedIn, isAdmin) {
+      const ul = document.querySelector(".hamburger-dropdown-menu ul");
+      menus = [];
+
+      if (isLoggedIn) {
+        if (isAdmin) {
+          menus.push({ text: "ניהול", href: "/admin" });
+        }
+        menus.push({ text: "הפרופיל שלי", href: "/myprofile" });
+        menus.push({ text: "האימונים שלי", href: "/MyWorkouts" });
+        menus.push({ text: "על מקום ראשון", href: "/about" });
+        menus.push({ text: "התנתקות", href: "/logout" });
+      } else {
+        menus.push({ text: "התחברות", href: "/login" });
+        menus.push({ text: "הרשמה", href: "/register" });
+        menus.push({ text: "על מקום ראשון", href: "/about" });
+      }
+
+      for (const menu of menus) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = menu.href;
+        a.textContent = menu.text;
+        li.appendChild(a);
+        ul.appendChild(li);
+      }
+    }
+
     document.addEventListener("DOMContentLoaded", async function () {
       const response = await fetch("/api/v1/auth/");
       const isLoggedIn = response.ok;
+      const response2 = await fetch("/admin/is-admin");
+      const isAdmin = await response2.ok;
+
+      initDropDownMenu(isLoggedIn, isAdmin);
 
       const usernameElement = document.getElementsByClassName("username")[0];
 
       if (isLoggedIn) {
         const userData = await response.json();
         if (userData.name) {
-          usernameElement.innerHTML = `Hello, ${userData.name}`;
+          usernameElement.innerHTML = `${userData.name} ,היי`;
         }
       }
 
@@ -169,8 +220,21 @@
 
 <body>
   <div class="topmenu">
-    <h2 class="username">Hello, Guest</h2>
     <img src="https://i.postimg.cc/cLx3kVnz/Rishon-Fit.png" class="logo" alt="logo" />
+    <div class="username-container">
+      <h2 style="direction: ltr;" class="username"></h2>
+      <div class="hamburger-dropdown">
+        <input id="toggle1" type="checkbox" />
+        <label class="hamburger1" for="toggle1">
+          <div class="top"></div>
+          <div class="meat"></div>
+          <div class="bottom"></div>
+        </label>
+        <div class="hamburger-dropdown-menu">
+          <ul></ul>
+        </div>
+      </div>
+    </div>
   </div>
   <footer class="navbar navbar-expand fixed-bottom">
     <div class="container">

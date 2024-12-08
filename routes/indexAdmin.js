@@ -6,6 +6,10 @@ const router = express.Router();
 router.use(auth, checkRole('admin'));
 
 // Protected routes
+
+router.get('/is-admin', async (req, res) => {
+    return res.status(200).send('Admin route');
+});
 // Feature 6
 router.get('/', async (req, res) => {
     return res.render('admin', { title: 'Admin' });
