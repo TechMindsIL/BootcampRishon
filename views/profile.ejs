@@ -118,6 +118,27 @@
                     <span class="input-group-text">סיסמא</span>
                 </div>
 
+                <div>
+                    <div class="mb-3 input-group" style="direction: ltr;">
+                        <select id="userGoal" class="form-select half-width" aria-label="בחר את מטרת האימונים"
+                            style="direction: rtl;">
+                            <option value="" disabled selected>בחר את מטרת האימונים</option>
+                            <option value="בריאות">בריאות</option>
+                            <option value="חיזוק">חיזוק</option>
+                            <option value="ירידה במשקל">ירידה במשקל</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="mb-3 input-group" style="direction: ltr;">
+                        <select id="userNeighborhood" class="form-select half-width" aria-label="שכונה"
+                            style="direction: rtl;">
+                            <!-- All Neighborhood -->
+                        </select>
+                    </div>
+                </div>
+
                 <button type="submit" id="submitButton">שמירת שינויים</button>
 
             </form>
@@ -132,6 +153,7 @@
             document.addEventListener("DOMContentLoaded", async () => {
                 try {
                     await fetchUser();
+                    await fetchNeighborhood();
                     updateView();
                     updateGraph();
 
@@ -157,6 +179,7 @@
 
                         $('#userName').val(userData.name);
                         $('#userEmail').val(userData.email);
+                        $('#userGoal').val(userData.goal);
 
                     } else if (response.status === 401) {
                         console.log("No user is logged in.");
@@ -231,6 +254,8 @@
                 const user = {
                     name: $('#userName').val().trim() || userData.name,
                     email: $('#userEmail').val().trim() || userData.email,
+                    goal: $('#userGoal').val() || userData.goal,
+                    neighborhood: $('#userNeighborhood').val() || userData.neighborhood._id,
                 }
 
                 const password = $('#userPassword').val().trim();
@@ -253,6 +278,36 @@
                         alert(`Failed to update user: ${xhr.responseText || error}`);
                     }
                 });
+            }
+
+            async function fetchNeighborhood() {
+                try {
+                    const response = await fetch('/api/v1/neighborhoods');
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
+                    const neighborhoods = await response.json();
+
+                    // Select the dropdown element
+                    const neighborhoodSelect = document.getElementById('userNeighborhood');
+
+                    // Clear any existing options (optional)
+                    neighborhoodSelect.innerHTML = '<option value="" disabled selected>שכונה</option>';
+
+                    // Create options for each neighborhood
+                    neighborhoods.forEach(neighborhood => {
+                        const option = document.createElement('option');
+                        option.value = neighborhood._id; // Use the ID as the value
+                        console.log("val", neighborhood._id);
+                        option.textContent = neighborhood.title; // Display the name as the label
+                        neighborhoodSelect.appendChild(option);
+                    });
+
+                    $('#userNeighborhood').val(userData.neighborhood._id);
+
+                } catch (error) {
+                    console.error('Error fetching neighborhoods:', error);
+                }
             }
 
         </script>
