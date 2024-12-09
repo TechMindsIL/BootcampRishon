@@ -157,18 +157,14 @@
 
 
     <script>
-      function nextPage() {
-        location.href = "/chooseRoute";
-      }
-      function displayName() {
-        const username = localStorage.getItem("username");
-        document.getElementById("userDisplay").innerText =
-          "ברוך הבא , " + username;
-      }
-      function getUserName() {
-        const user = document.getElementsByClassName("UserName");
-        localStorage.setItem("username", user);
-        displayName();
+      async function nextPage() {
+        const response = await fetch("/api/v1/auth/");
+        const isLoggedIn = response.ok;
+        if (isLoggedIn) {
+          window.location.href = "/MyWorkouts";
+        } else {
+          window.location.href = "/chooseRoute";
+        }
       }
     </script>
 </body>
