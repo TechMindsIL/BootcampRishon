@@ -160,7 +160,7 @@
   <script>
     function initDropDownMenu(isLoggedIn, isAdmin) {
       const ul = document.querySelector(".hamburger-dropdown-menu ul");
-      menus = [];
+      let menus = [];
 
       if (isLoggedIn) {
         if (isAdmin) {
@@ -175,7 +175,6 @@
         menus.push({ text: "הרשמה", href: "/register" });
         menus.push({ text: "על מקום ראשון", href: "/about" });
       }
-
       for (const menu of menus) {
         const li = document.createElement("li");
         const a = document.createElement("a");
