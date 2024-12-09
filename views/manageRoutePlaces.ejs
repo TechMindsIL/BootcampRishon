@@ -43,6 +43,10 @@
             cursor: pointer;
         }
 
+        .underline{
+            text-decoration: underline;
+        }
+        
         #saveRouteBtn {
             margin: 15px auto;
             display: block;
@@ -62,7 +66,6 @@
             background-color: black;
             opacity: 80%;
         }
-
     </style>
 
     <body>
@@ -71,17 +74,25 @@
             <div class="container mt-5" style="max-width: 50%; margin: auto;">
                 <h1 class="text-center"> עדכון תחנות</h1>
 
-                <div class="form-group d-flex align-items-center mt-4">
-                    <label for="routeName" class="mb-0 ms-2">שם המסלול:</label>
-                    <div>
-                        <input type="text" id="routeName" class="form-control flex-grow-1" disabled>
+                <div class="form-group d-flex align-items-center mt-4 justify-content-between flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <label for="routeName" class="mb-0 ms-2" style="width: 90px;">שם המסלול:</label>
+                        <div>
+                            <input type="text" id="routeName" class="form-control flex-grow-1" disabled>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <label for="routeGoal" class="mb-0 ms-2" style="width: 90px;">מטרה:</label>
+                        <div>
+                            <input type="text" id="routeGoal" class="form-control flex-grow-1" disabled>
+                        </div>
                     </div>
                 </div>
 
 
-                <div class="form-group">
-                    <label>תחנות:</label>
-                    <div id="stationList" class="list-group">
+                <div class="form-group mt-2">
+                    <label style="font-weight: bold;">תחנות:</label>
+                    <div id="stationList" class="list-group mt-2">
                         <!-- All Places -->
                     </div>
 
@@ -93,8 +104,26 @@
                     </div>
                 </div>
 
-                <div class="form-group" id="stationSelect" style="display: none;">
+                <div class="form-group" id="stationSelect" style="display: none; border: 1px solid #333; padding: 10px;">
                     <input type="text" id="stationSearchInput" class="form-control mt-2" placeholder="הזן שם תחנה...">
+
+                    <div class="d-flex flex-wrap justify-content-between mt-2">
+
+                        <!-- Select for body part -->
+                        <select id="bodyPartSelect" class="form-control" style="flex: 0 0 45%;">
+                            <option value="">בחר פלג גוף</option>
+                            <option value="ליבה">ליבה</option>
+                            <option value="פלג גוף תחתון">פלג גוף תחתון</option>
+                            <option value="פלג גוף עליון">פלג גוף עליון</option>
+                        </select>
+
+                        <!-- Select for muscle type -->
+                        <select id="muscleTypeSelect" class="form-control" style="flex: 0 0 45%;">
+                            <option value="">בחר סוג שריר</option>
+                            <option value="שריר גדול">שריר גדול</option>
+                            <option value="שריר קטן">שריר קטן</option>
+                        </select>
+                    </div>
 
                     <div id="stationResults" class="list-group mt-2" style="display: none;">
                         <!-- Filtered stations will be dynamically added here -->
@@ -122,21 +151,36 @@
                         $('#routeName').val(routeData.name);
                         console.log(routeData.name)
 
+                        $('#routeGoal').val(routeData.goal);
+                        console.log(routeData.goal)
+
                         const places = routeData.places || [];
                         const placesList = $('#stationList');
 
+                        console.log(places);
+
                         if (places.length > 0) {
                             places.forEach(place => {
+                                const bodyPartTags = place.tags.filter(tag => tag.category.name === "פלג גוף");
+                                const muscleTags = place.tags.filter(tag => tag.category.name === "אימון שריר");
+
+                                let bodyParts = bodyPartTags.map(tag => tag.name).join(', ');
+                                let muscles = muscleTags.map(tag => tag.name).join(', ');
+
                                 const listItem = `
                                     <div class="list-group-item d-flex  align-items-center" data-station-id="${place._id}">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        <span class="d-flex align-items-center me-4">
-                                            <span class="station-name d-flex align-items-center bg-light p-2 rounded">
+                                        <span class="d-flex align-items-center w-100 justify-content-between ">
+                                            <span class="station-name d-flex align-items-center bg-light p-2 rounded me-2">
                                                 ${place.name}
                                                 <button type="button" class="btn btn-outline-dark delete-btn me-4" aria-label="Remove station">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </span>
+                                            <div class="tags-info" style="margin-right:10px;">
+                                                ${bodyParts ? `<p><span class="underline">פלג גוף:</span> ${bodyParts}</p>` : ''}
+                                                ${muscles ? `<p><span class="underline">שריר:</span> ${muscles}</p>` : ''}
+                                            </div>
                                         </span>
                                     </div>                        
                                 `;
@@ -163,27 +207,49 @@
                         .catch(error => console.error('Error fetching stations:', error));
                 }
 
-                $('#stationSearchInput').on('input', function () {
-                    const searchValue = $(this).val().toLowerCase();
-                    const filteredStations = allStations.filter(station => station.name.toLowerCase().startsWith(searchValue) && station.isRelevant === true);
+                $('#stationSearchInput ,#bodyPartSelect, #muscleTypeSelect').on('input change', filter);
+
+                function filter() {
+                    const searchValue = $('#stationSearchInput').val().toLowerCase();
+                    const selectedBodyPart = $('#bodyPartSelect').val();
+                    const selectedMuscleType = $('#muscleTypeSelect').val();
+
+                    const filteredStations = allStations.filter(station => {
+                        const matchesSearch = searchValue.trim() !== ""
+                            ? station.name.toLowerCase().startsWith(searchValue)
+                            : true;
+
+                        const matchesBodyPart = selectedBodyPart
+                            ? station.tags.some(tag => tag.category.name === "פלג גוף" && tag.name === selectedBodyPart)
+                            : true;
+
+                        const matchesMuscleType = selectedMuscleType
+                            ? station.tags.some(tag => tag.category.name === "אימון שריר" && tag.name === selectedMuscleType)
+                            : true;
+
+                        return matchesSearch && matchesBodyPart && matchesMuscleType && station.isRelevant === true;
+                    });
 
                     const stationResults = $('#stationResults');
                     stationResults.empty();
+                    stationResults.show();
 
                     if (filteredStations.length > 0) {
-                        stationResults.show();
-
                         filteredStations.forEach(station => {
                             stationResults.append(`
-                <li class="list-group-item station-result" data-station-id="${station._id}">
-                    ${station.name}
-                </li>
-            `);
+                                <li class="list-group-item station-result" data-station-id="${station._id}">
+                                    ${station.name}
+                                </li>
+                            `);
                         });
                     } else {
-                        stationResults.hide();
+                        stationResults.append(`
+                            <li class="list-group-item">
+                                אין תוצאות התואמות את החיפוש
+                            </li>
+                        `);
                     }
-                });
+                }
 
 
                 $(document).on('click', '.station-result', function () {
