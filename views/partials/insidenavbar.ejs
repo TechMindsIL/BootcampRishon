@@ -162,11 +162,13 @@
         if (isAdmin) {
           menus.push({ text: "ניהול", href: "/admin" });
         }
+        menus.push({ text: "כל האימונים", href: "/chooseRoute" });
         menus.push({ text: "הפרופיל שלי", href: "/myprofile" });
         menus.push({ text: "האימונים שלי", href: "/MyWorkouts" });
         menus.push({ text: "על מקום ראשון", href: "/about" });
         menus.push({ text: "התנתקות", href: "/logout", id: "logout-link" });
       } else {
+        menus.push({ text: "כל האימונים", href: "/chooseRoute" });
         menus.push({ text: "התחברות", href: "/login" });
         menus.push({ text: "הרשמה", href: "/register" });
         menus.push({ text: "על מקום ראשון", href: "/about" });
