@@ -243,12 +243,13 @@
                             }
 
                             const tags = await responseTags.json();
+                            const relevantTags = tags.filter(tag => tag.isRelevant === true);
 
                             const categoryHtml = `
                             <div class="category-section">
                                 <h5>${category.name}</h5>
                                 <div class="tags-list">
-                                    ${tags.map(tag => `
+                                    ${relevantTags.map(tag => `
                                         <button type="button" class="tag-button btn btn-outline-dark mx-1" data-tag-id="${tag._id}">
                                             ${tag.name}
                                         </button>`).join('')}
