@@ -260,19 +260,28 @@
       </div>
     </div>
   </div>
-  <footer class="navbar navbar-expand fixed-bottom">
-    <div class="container">
-      <a id="chooseRoutes" href="/chooseRoute" class="nav__link text-white" aria-label="Search">
-        <i class="fas fa-search"></i>
-      </a>
-      <a id="SavedRoutes" href="/login" class="nav__link text-white" aria-label="Saved Routes">
-        <i class="fas fa-thin fa-person-running"></i>
-      </a>
-      <a id="profile" href="/" class="nav__link text-white" aria-label="Account">
-        <i class="fas fa-user-circle"></i>
-      </a>
-    </div>
-  </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.location.pathname !== "/welcome") {
+        const footer = document.createElement("footer");
+        footer.className = "navbar navbar-expand fixed-bottom";
+        footer.innerHTML = `
+          <div class="container">
+            <a id="chooseRoutes" href="/chooseRoute" class="nav__link text-white" aria-label="Search">
+              <i class="fas fa-search"></i>
+            </a>
+            <a id="SavedRoutes" href="/login" class="nav__link text-white" aria-label="Saved Routes">
+              <i class="fas fa-thin fa-person-running"></i>
+            </a>
+            <a id="profile" href="/" class="nav__link text-white" aria-label="Account">
+              <i class="fas fa-user-circle"></i>
+            </a>
+          </div>
+        `;
+        document.body.appendChild(footer);
+      }
+    });
+  </script>
 </body>
 
 </html>
