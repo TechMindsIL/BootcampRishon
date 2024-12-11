@@ -95,18 +95,18 @@ exports.logout = (req, res) => {
 // Get user profile
 exports.profile = async (req, res) => {
     const userWithNeighborhood = await req.user
-    .populate({
-        path: 'neighborhood',
-        model: 'Neighborhood'
-    });
+        .populate({
+            path: 'neighborhood',
+            model: 'Neighborhood'
+        });
 
     const { savedRoutes, ...userWithoutSavedRoutes } = userWithNeighborhood.toObject();
     res.send(userWithoutSavedRoutes);
 };
 
-// Update name or password
+// Update user profile
 exports.update = asyncHandler(async (req, res) => {
-    const { name, email, password, goal, neighborhood } = req.body;
+    const { name, email, password, goal, neighborhood, caloriesToAdd } = req.body;
     console.log(req.body);
 
     const user = await User.findById(req.user._id);
@@ -142,6 +142,19 @@ exports.update = asyncHandler(async (req, res) => {
         await user.setPassword(password);
     }
 
+    if (caloriesToAdd) {
+        user.caloriesBurned += caloriesToAdd;
+        if (user.activitiesFinished == null) {
+            user.activitiesFinished = 0;
+        }
+        user.activitiesFinished += 1;
+    }
+
     await user.save();
     res.send('User updated successfully.');
+});
+
+exports.getCountOfUsers = asyncHandler(async (req, res) => {
+    const numberOfUsers = await User.countDocuments({ role: 'user' });
+    res.send({ numberOfUsers });
 });

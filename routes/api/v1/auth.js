@@ -12,7 +12,9 @@ router.post('/logout', SecurityMiddleware.secure(), authController.logout);
 // Get user profile
 router.get('/', auth, authController.profile);
 
-// Update name, password, and email
+router.get('/count', authController.getCountOfUsers);
+
+// Update user profile
 router.put('/', SecurityMiddleware.secure(), auth, authController.update);
 
 // Handles any auth errors
