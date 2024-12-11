@@ -9,12 +9,79 @@
                 background-color: rgba(255, 255, 255, 0.8);
                 border-radius: 15px;
                 padding: 20px;
-                text-align: center;
                 width: 80%;
                 margin: 20px auto;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 font-size: 18px;
                 direction: rtl;
+            }
+
+            .center {
+                text-align: center;
+            }
+
+            .images {
+                margin: 0 auto;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                width: 80%;
+            }
+
+            .images img {
+                border-radius: 15px;
+                height: 300px;
+                width: 48%;
+            }
+
+            .imgs-bootcamp img {
+                height: 300px;
+            }
+
+            @media (max-width:850px) {
+                .images img {
+                    height: 250px;
+                }
+
+                .imgs-bootcamp img {
+                    height: 220px;
+                }
+            }
+
+            @media (max-width:700px) {
+                .images img {
+                    height: 200px;
+                }
+
+                .imgs-bootcamp img {
+                    height: 230px;
+                }
+            }
+
+            @media (max-width:550px) {
+                .images {
+                    gap: 15px;
+                }
+
+                .images img {
+                    width: 100%;
+                    margin: 0 auto;
+                }
+            }
+
+            .stats-list {
+                list-style-type: disc;
+                padding-left: 20px;
+                margin: 0;
+            }
+
+            .stats-title {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+
+            .stats-list a {
+                color: #F16624;
             }
 
             .container-neighborhoods h5 {
@@ -27,11 +94,16 @@
                 justify-content: space-between;
                 flex-wrap: wrap;
                 align-items: center;
-                margin-top: 50px;
+                margin: 0 auto;
+                background-color: rgba(255, 255, 255, 0.8);
+                width: 80%;
+                border-radius: 15px;
+                padding: 20px;
+                font-size: 18px;
             }
 
             .neighborhoods-list {
-                width: 65%;
+                width: 60%;
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
@@ -43,21 +115,27 @@
             }
 
             .graph-container {
-                width: 35%;
+                width: 40%;
                 justify-content: center;
                 align-items: center;
                 display: flex;
             }
 
-            @media (min-width: 771px) {
+            #neighborhoodGraph {
+                height: auto !important;
+
+            }
+
+            @media (min-width: 770px) {
                 .container-neighborhoods {
                     flex-direction: row-reverse;
                 }
             }
 
-            @media (max-width: 770px) {
+            @media (max-width: 900px) {
                 .neighborhoods-list {
                     width: 100%;
+                    margin-right: 10%;
                 }
 
                 .graph-container {
@@ -70,7 +148,8 @@
                 .container-neighborhoods {
                     flex-direction: column;
                     align-items: center;
-                    text-align: center;
+                    margin: 0 auto;
+                    margin-top: 50px;
                 }
 
                 .neighborhoods-list {
@@ -80,6 +159,78 @@
 
                 .graph-container {
                     width: 100%;
+                }
+            }
+
+            /* Footer Container */
+            .footer {
+                width: 80%;
+                padding: 20px 0;
+                text-align: center;
+                box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+                margin: 0 auto;
+                background-color: rgba(255, 255, 255, 0.5);
+                border-radius: 15px;
+                margin-top: 30px;
+            }
+
+            /* Logos container */
+            .logos-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            /* Style for each logo */
+            .footer-logo {
+                height: auto;
+                max-height: 60px;
+                flex: 1 1 14%;
+                object-fit: contain;
+                align-items: center;
+            }
+
+            .footer2-logo {
+                height: auto;
+                max-height: 40px;
+                margin: 0 8px;
+            }
+
+            .logos-div {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                text-align: center;
+                margin-top: 30px;
+                direction: rtl;
+                margin-bottom: 100px;
+            }
+
+            .logos-row {
+                display: flex;
+                align-items: center;
+            }
+
+            /* Media Queries for responsiveness */
+            @media screen and (max-width: 768px) {
+                .footer-logo {
+                    flex: 1 1 30%;
+                    max-height: 50px;
+                }
+
+                .logos-container .footer-logo:nth-child(-n+3) {
+                    margin-bottom: 20px;
+                }
+            }
+
+            @media screen and (max-width: 480px) {
+                .footer-logo {
+                    max-height: 40px;
                 }
             }
         </style>
@@ -93,28 +244,55 @@
             <h1>אודותינו</h1>
         </div>
 
-        <div class="transparent-box">
+        <div class="transparent-box center">
             <p>
-                פסקה ראשונה
+            <h4>
+                <strong>
+                    חדר כושר לכל תושב
+                </strong>
+            </h4>
+
+            חלמת אי פעם על חדר כושר זמין 24/7 ללא עלות הפתוח לכל גיל? מקום ראשון - יוזמה של בני נוער של העיר מאפשרת
+            לך, תושב יקר לקבל הכל בהישג יד.
+            אנחנו יודעים כמה קשה לפעמים למצוא זמן לאימונים, לשמור על שגרה בריאה ולהרגיש חלק מקהילה תומכת. בדיוק
+            בשביל זה הקמנו את הפלטפורמה שלנו – שתהיה הפתרון המושלם עבורך, ללא עלות וללא דאגות.
+
+            אם תמיד רצית להתחיל להתאמן אבל לא ידעת איך, או אם חיפשת משהו שיתאים לקצב החיים העמוס שלך – אנחנו כאן
+            עבורך! כאן תמצא תוכניות מותאמות אישית, אימונים קלילים שתוכל לבצע במתקנים הנגישים בקרבת מקום מגורים,
+            בפארק השכונתי , וכל זה בליווי המלצות מקצועיות וטכנולוגיה חדשנית שתתמוך בך בכל שלב.
+
+            לא משנה אם המטרה שלך היא לשפר את הבריאות הכללית, להתחזק, או פשוט להכניס קצת יותר אנרגיה לשגרה – מקום
+            ראשון הוא המקום הראשון להתחיל. עם תרגילים קלים ליישום, מעקב אישי ואפילו אפשרות להצטרף לקבוצות חברתיות
+            מקומיות – תוכל ליהנות מאורח חיים בריא יותר, יחד עם אנשים כמוך או אפילו במעגל משפחתי.
             </p>
+        </div>
+
+        <div class="images">
+            <img src="/images/AboutImages/unnamed.jpg" alt="">
+            <img src="/images/AboutImages/group-training-at-the-park.jpg" alt="">
         </div>
 
         <div class="transparent-box">
             <p>
-                פסקה שניה
+            <h4>
+                <strong>
+                    סטטיסטיקה
+                </strong>
+            </h4>
+
+            <span id="countOfUsers" style="display: flex;"></span>
+            <span id="mostActiveNeighborhoods" style="display: flex;"></span>
+            <span id="mostPopularRoutes" style="display: flex;"></span>
+
             </p>
         </div>
 
-        <div class="transparent-box">
-            <p>
-                פסקה שלישית
-            </p>
-        </div>
-
-
-        <div class="container-neighborhoods" style="margin-bottom: 100px;">
+        <div class="container-neighborhoods">
             <h5 style="direction: rtl;">
-                קלוריות שנשרפו בכל שכונה לפי נתוני משתמשים: </h5>
+                <strong>
+                    תחרות שכונתית
+                </strong>
+            </h5>
 
             <ul class="neighborhoods-list" id="neighborhoods-list" style="direction: rtl;"></ul>
 
@@ -123,10 +301,71 @@
             </div>
         </div>
 
+        <div class="transparent-box center">
+            <p>
+            <h4>
+                <strong>
+                    מי עומד מאחורי הפלטפורמה?
+                </strong>
+            </h4>
+
+            האתר הזה נוצר מתוך מחשבה עליך ועל כל התושבים בעיר. היוזמה היא פרי שיתוף פעולה בין החטיבה הבוגרת של אליסקוד
+            לבין עיריית ראשון לציון, ששמה לה למטרה לשפר את איכות החיים של כולנו.
+
+            אנחנו מאמינים שלא צריך להיות מכון כושר יוקרתי או ציוד מיוחד כדי להתחיל לדאוג לבריאות שלך. לכן יצרנו עבורך
+            פלטפורמה קלה, נגישה ומלאה בתוכן איכותי שמכוון בדיוק לצרכים שלך כתושב.
+
+            כי הבריאות שלך היא המפתח לעיר חזקה ובריאה יותר, ואתה חלק מרכזי במשימה הזו. אז למה לחכות? הצטרף עכשיו והתחל
+            בדרך לחיים בריאים ושמחים יותר!
+            </p>
+        </div>
+
+        <div class="images imgs-bootcamp">
+            <img src="images/AboutImages/Blue Summer Photo Collage.png" alt="">
+            <img src="images/AboutImages/6R1A3909.jpg" alt="">
+        </div>
+
+        <!-- שמות משתתפים -->
+
+        <!-- Logos -->
+        <footer class="footer">
+            <div class="logos-container">
+                <img src="/images/RishonLogos/אגף הנוער והצעירים.png" alt="אגף הנוער והצעירים" class="footer-logo">
+                <img src="/images/RishonLogos/לוגו מנהל קהילה.png" alt="לוגו מנהל קהילה" class="footer-logo">
+                <img src="/images/RishonLogos/לוגו קרן ראשון.png" alt="לוגו קרן ראשון" class="footer-logo">
+                <img src="/images/RishonLogos/לוגו תקשוב עירוני.png" alt="לוגו תקשוב עירוני" class="footer-logo">
+                <img src="/images/RishonLogos/עירייה.png" alt="עירייה" class="footer-logo">
+                <img src="/images/RishonLogos/rishon startup.png" alt="rishon startup" class="footer-logo">
+            </div>
+
+        </footer>
+
+        <div class="logos-div">
+            <span>
+                האתר נבנה ע"י
+            </span>
+            <div class="logos-row">
+                <a href="https://techminds.app/" target="_blank" style="text-decoration: none;" class="logo-link">
+                    <img src="/images/RishonLogos/Logo-TechMinds.png" alt="rishon bootcamp" class="footer2-logo">
+                </a>
+
+                <span>
+                    ו-
+                </span>
+
+                <a href="https://www.alicecode.org/" target="_blank" style="text-decoration: none;" class="logo-link">
+                    <img src="images/RishonLogos/AliceCode.png" alt="alice code" class="footer2-logo">
+                </a>
+            </div>
+        </div>
+
 
         <!-- Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
+            let mostPopularRoutes = [];
+            let mostActiveNeighborhoods = [];
+            let countOfUsers = 0;
             async function fetchNeighborhood() {
                 try {
                     const response = await fetch('/api/v1/neighborhoods');
@@ -135,6 +374,12 @@
                     }
                     const neighborhoods = await response.json();
                     console.log(neighborhoods);
+
+                    const maxActivities = Math.max(...neighborhoods.map(neighborhood => neighborhood.activitiesFinished));
+
+                    mostActiveNeighborhoods = neighborhoods.filter(neighborhood => neighborhood.activitiesFinished === maxActivities);
+
+                    console.log(mostActiveNeighborhoods);
 
                     // Sort neighborhoods by caloriesBurned in descending order
                     const sortedNeighborhoods = neighborhoods.sort((a, b) => b.caloriesBurned - a.caloriesBurned);
@@ -203,6 +448,86 @@
                 }
             }
 
-            fetchNeighborhood();
+            async function fetchRoutes() {
+                try {
+                    const response = await fetch('/api/v1/routes');
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
+                    const routes = await response.json();
+                    console.log(routes);
+
+                    const maxCompletions = Math.max(...routes.map(route => route.numberOfCompletions));
+
+                    mostPopularRoutes = routes.filter(route => route.numberOfCompletions === maxCompletions);
+
+                    console.log(mostPopularRoutes);
+                } catch (error) {
+                    console.error('Error fetching routes:', error);
+                }
+            }
+
+            async function fetchCountOfUsers() {
+                try {
+                    const response = await fetch('/api/v1/auth/count');
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
+
+                    countOfUsers = (await response.json()).numberOfUsers;
+                    console.log(countOfUsers);
+
+                } catch (error) {
+                    console.error('Error fetching routes:', error);
+                }
+            }
+
+            function updateStatistics(countOfUsers, mostPopularRoutes, mostActiveNeighborhoods) {
+                const countOfUsersSpan = document.getElementById("countOfUsers");
+                countOfUsersSpan.innerHTML = `<strong>מספר המתאמנים: </strong> <span style="margin-right:10px;">${countOfUsers}</span>`;
+
+                const mostPopularRoutesSpan = document.getElementById("mostPopularRoutes");
+                if (mostPopularRoutes.length === 1) {
+                    mostPopularRoutesSpan.innerHTML = `<div class="stats-title">האימון הכי פופולרי:</div>
+                        <a href="/map?id=${mostPopularRoutes[0]._id}" style="margin-right:10px;">${mostPopularRoutes[0].name}</a>
+                    `;
+                } else if (mostPopularRoutes.length > 1) {
+                    mostPopularRoutesSpan.innerHTML = `
+                        <div class="stats-title">האימונים הפופולריים:</div>
+                        <ul class="stats-list">
+                            ${mostPopularRoutes.map(route => `<li><a href="/map?id=${route._id}">${route.name}</a></li>`).join('')}
+                        </ul>
+                    `;
+                }
+
+                const mostActiveNeighborhoodsSpan = document.getElementById("mostActiveNeighborhoods");
+                if (mostActiveNeighborhoods.length === 1) {
+                    mostActiveNeighborhoodsSpan.innerHTML = ` <div class="stats-title" >השכונה בה התאמנו הכי הרבה: </div>
+                        <span style="margin-right:10px;">${mostActiveNeighborhoods[0].title} </span>
+                    `;
+                } else if (mostActiveNeighborhoods.length > 1) {
+                    mostActiveNeighborhoodsSpan.innerHTML = `
+                        <div class="stats-title">השכונות בהן התאמנו הכי הרבה:</div>
+                        <ul class="stats-list">
+                            ${mostActiveNeighborhoods.map(neighborhood => `<li>${neighborhood.title}</li>`).join('')}
+                        </ul>
+                    `;
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    await Promise.all([
+                        fetchNeighborhood(),
+                        fetchRoutes(),
+                        fetchCountOfUsers()
+                    ]);
+
+                    updateStatistics(countOfUsers, mostPopularRoutes, mostActiveNeighborhoods);
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                }
+            });
+
         </script>
 </body>
