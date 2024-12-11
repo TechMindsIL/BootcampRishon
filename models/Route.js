@@ -43,6 +43,10 @@ const routeSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    numberOfCompletions: {
+        type: Number,
+        default: 0
+    },
     neighborhood: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Neighborhood'
