@@ -11,7 +11,8 @@
       border-radius: 15px;
       box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
       max-width: 400px;
-      margin: 100px auto;
+      margin: auto auto;
+      margin-top: 125px;
       text-align: center;
       padding: 20px;
     }
@@ -124,7 +125,7 @@
     </div>
 
     <!-- Logos -->
-    <footer class="footer">
+    <footer class="footer" style="margin-top: auto;">
       <div class="logos-container">
         <img src="/images/RishonLogos/אגף הנוער והצעירים.png" alt="אגף הנוער והצעירים" class="footer-logo">
         <img src="/images/RishonLogos/לוגו מנהל קהילה.png" alt="לוגו מנהל קהילה" class="footer-logo">
@@ -157,18 +158,14 @@
 
 
     <script>
-      function nextPage() {
-        location.href = "/chooseRoute";
-      }
-      function displayName() {
-        const username = localStorage.getItem("username");
-        document.getElementById("userDisplay").innerText =
-          "ברוך הבא , " + username;
-      }
-      function getUserName() {
-        const user = document.getElementsByClassName("UserName");
-        localStorage.setItem("username", user);
-        displayName();
+      async function nextPage() {
+        const response = await fetch("/api/v1/auth/");
+        const isLoggedIn = response.ok;
+        if (isLoggedIn) {
+          window.location.href = "/MyWorkouts";
+        } else {
+          window.location.href = "/chooseRoute";
+        }
       }
     </script>
 </body>

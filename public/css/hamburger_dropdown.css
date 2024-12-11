@@ -48,7 +48,7 @@
 }
 
 #toggle1:checked ~ .hamburger-dropdown-menu {
-    top: calc(100% + 20px);
+    top: calc(100% + 25px);
     opacity: 1;
     pointer-events: auto;
 }
@@ -96,7 +96,7 @@
     display: block;
     padding: 10px 40px;
     text-decoration: none;
-    color: rgb(61, 61, 61);
+    color: black;
     font-size: 1.2em;
     font-weight: 500;
     transition: background-color 0.3s ease;

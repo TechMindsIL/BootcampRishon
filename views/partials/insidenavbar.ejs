@@ -62,14 +62,14 @@
       color: white;
       display: flex;
       justify-content: space-between;
-      align-items: top;
+      align-items: center;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
 
     .username-container {
       display: flex;
       flex-direction: row;
-      align-items: flex-end;
+      align-items: center;
     }
 
     .username {
@@ -79,11 +79,11 @@
       padding-right: 2rem;
       white-space: nowrap;
       font-family: Poppins;
+      margin: 0;
     }
 
     .logo {
       height: 50px;
-      margin-right: 20px;
     }
 
     .navbar {
@@ -126,16 +126,12 @@
         padding: 0 10px;
       }
 
+      .username {
+        font-size: 1.7em;
+      }
+
       .nav__link {
         font-size: 2.5em;
-      }
-
-      .username-container {
-        width: 150px;
-      }
-
-      .username {
-        font-size: 1.5em;
       }
     }
 
@@ -149,7 +145,7 @@
       }
 
       .username {
-        font-size: 1.4em;
+        font-size: 1.5em;
       }
 
       .nav__link {
@@ -160,29 +156,57 @@
   <script>
     function initDropDownMenu(isLoggedIn, isAdmin) {
       const ul = document.querySelector(".hamburger-dropdown-menu ul");
-      menus = [];
+      let menus = [];
 
       if (isLoggedIn) {
         if (isAdmin) {
           menus.push({ text: "ניהול", href: "/admin" });
         }
+        menus.push({ text: "כל האימונים", href: "/chooseRoute" });
         menus.push({ text: "הפרופיל שלי", href: "/myprofile" });
         menus.push({ text: "האימונים שלי", href: "/MyWorkouts" });
         menus.push({ text: "על מקום ראשון", href: "/about" });
-        menus.push({ text: "התנתקות", href: "/logout" });
+        menus.push({ text: "התנתקות", href: "/logout", id: "logout-link" });
       } else {
+        menus.push({ text: "כל האימונים", href: "/chooseRoute" });
         menus.push({ text: "התחברות", href: "/login" });
         menus.push({ text: "הרשמה", href: "/register" });
         menus.push({ text: "על מקום ראשון", href: "/about" });
       }
-
       for (const menu of menus) {
         const li = document.createElement("li");
         const a = document.createElement("a");
         a.href = menu.href;
         a.textContent = menu.text;
+        if (menu.id) {
+          a.id = menu.id;
+        }
         li.appendChild(a);
         ul.appendChild(li);
+      }
+
+      const logoutLink = document.getElementById("logout-link");
+      console.log(logoutLink);
+      if (logoutLink) {
+        logoutLink.addEventListener("click", async function (event) {
+          event.preventDefault(); // Prevent the default action
+          event.stopPropagation(); // Stop the event from bubbling up
+          try {
+            const response = await fetch("/api/v1/auth/logout", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            if (response.ok) {
+              window.location.href = "/";
+            } else {
+              console.error("Logout failed");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
       }
     }
 
@@ -220,7 +244,7 @@
 
 <body>
   <div class="topmenu">
-    <img src="https://i.postimg.cc/cLx3kVnz/Rishon-Fit.png" class="logo" alt="logo" />
+    <a href="/" alt="Home" style="padding: 5px;"><img src="https://i.postimg.cc/cLx3kVnz/Rishon-Fit.png" class="logo" alt="logo" /></a>
     <div class="username-container">
       <h2 style="direction: ltr;" class="username"></h2>
       <div class="hamburger-dropdown">
@@ -236,19 +260,28 @@
       </div>
     </div>
   </div>
-  <footer class="navbar navbar-expand fixed-bottom">
-    <div class="container">
-      <a id="chooseRoutes" href="/chooseRoute" class="nav__link text-white" aria-label="Search">
-        <i class="fas fa-search"></i>
-      </a>
-      <a id="SavedRoutes" href="/login" class="nav__link text-white" aria-label="Saved Routes">
-        <i class="fas fa-thin fa-person-running"></i>
-      </a>
-      <a id="profile" href="/" class="nav__link text-white" aria-label="Account">
-        <i class="fas fa-user-circle"></i>
-      </a>
-    </div>
-  </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.location.pathname !== "/welcome") {
+        const footer = document.createElement("footer");
+        footer.className = "navbar navbar-expand fixed-bottom";
+        footer.innerHTML = `
+          <div class="container">
+            <a id="chooseRoutes" href="/chooseRoute" class="nav__link text-white" aria-label="Search">
+              <i class="fas fa-search"></i>
+            </a>
+            <a id="SavedRoutes" href="/login" class="nav__link text-white" aria-label="Saved Routes">
+              <i class="fas fa-thin fa-person-running"></i>
+            </a>
+            <a id="profile" href="/" class="nav__link text-white" aria-label="Account">
+              <i class="fas fa-user-circle"></i>
+            </a>
+          </div>
+        `;
+        document.body.appendChild(footer);
+      }
+    });
+  </script>
 </body>
 
 </html>
