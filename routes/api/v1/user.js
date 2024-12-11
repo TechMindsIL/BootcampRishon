@@ -21,9 +21,6 @@ router.post('/', SecurityMiddleware.secure(), auth, checkRole('admin'), userCont
 // Route to update a user by ID
 router.put('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), userController.updateUser);
 
-// Route to update caloriesBurned of a user by ID 
-router.put('/calories/:id', SecurityMiddleware.secure(),auth, validateObjectId('id'), userController.updateUserCalories);
-
 // Route to delete a user by ID
 router.delete('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), userController.deleteUser);
 
