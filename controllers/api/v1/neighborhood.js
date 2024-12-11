@@ -34,6 +34,11 @@ exports.updateNeighborhoodCalories = asyncHandler(async (req, res) => {
     // Update the caloriesBurned field by adding the new value to the existing one
     neighborhood.caloriesBurned += caloriesToAdd;
 
+    if (neighborhood.activitiesFinished == null) {
+        neighborhood.activitiesFinished = 0;
+    }
+    neighborhood.activitiesFinished += 1;
+
     // Save the updated neighborhood
     const updatedNeighborhood = await neighborhood.save();
 
