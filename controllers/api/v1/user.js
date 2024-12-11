@@ -76,35 +76,3 @@ exports.deleteUser = asyncHandler(async (req, res) => {
 
     res.json({ message: 'User deleted successfully' });
 });
-
-// Controller function to update caloriesBurned of a User by ID
-exports.updateUserCalories = asyncHandler(async (req, res) => {
-    // Extract the calories to add from the request body
-    const { caloriesToAdd } = req.body;
-
-    // Validate the input
-    if (typeof caloriesToAdd !== 'number') {
-        return res.status(400).json({ message: 'Invalid input: caloriesToAdd must be a number.' });
-    }
-
-    // Find the User by ID
-    const user = await User.findById(req.params.id);
-    if (!user) {
-        return res.status(404).json({ message: 'User not found.' });
-    }
-
-    // Update the caloriesBurned field by adding the new value to the existing one
-    user.caloriesBurned += caloriesToAdd;
-
-    // Initialize activitiesFinished to 0 if it doesn't exist, and increment it by 1
-    if (user.activitiesFinished == null) {
-        user.activitiesFinished = 0;
-    }
-    user.activitiesFinished += 1;
-
-    // Save the updated user
-    const updatedUser = await user.save();
-
-    // Respond with the updated user
-    res.json(updatedUser);
-});
