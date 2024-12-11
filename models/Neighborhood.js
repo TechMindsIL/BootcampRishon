@@ -8,6 +8,10 @@ const neighborhoodSchema = new mongoose.Schema({
     caloriesBurned: {
         type: Number,
         required: true
+    },
+    activitiesFinished: {
+        type: Number,
+        default: 0
     }
 });
 
