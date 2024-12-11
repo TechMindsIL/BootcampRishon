@@ -15,72 +15,110 @@
                 padding: 0;
                 font-family: Arial, sans-serif;
             }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+            to right bottom,
+            #75a9e1,
+            #82b9e7,
+            #f2c37b,
+            #f7a15d,
+            #f9d2a0
+            );
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+        .topmenu {
+      background-color: transparent;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background-image: linear-gradient(120deg,
+          rgba(255, 255, 255, 0.486),
+          rgba(240, 120, 8, 0.3));
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
         </style>
 </head>
 
 <body>
-    <%- include('partials/navbar', {currentPage: 'register' }) %>
+    <div class="topmenu">
+        <a href="/" alt="Home" style="padding: 5px;"><img style="width: 50px; height: 50px;" src="https://i.postimg.cc/cLx3kVnz/Rishon-Fit.png"alt="logo"/></a>
+    </div>
+    <div class="cardplace mx-3" style="margin-top: 90px;">
+        <form class="card">
+            <h1 class="nicetomeetyou">!נעים להכיר</h1>
+            <label>שם</label>
+            <input type="text" class="UserName" required><br>
+            <label>דוא"ל</label>
+            <input type="email" class="Email" required><br>
+            <label>סיסמה</label>
+            <input type="password" class="password" required><br>
 
-        <div class="cardplace">
-            <form class="card">
-                <h1 class="nicetomeetyou">!נעים להכיר</h1>
-                <label>שם</label>
-                <input type="text" class="UserName" required><br>
-                <label>דוא"ל</label>
-                <input type="email" class="Email" required><br>
-                <label>סיסמה</label>
-                <input type="password" class="password" required><br>
+            <button onclick="SendData()" type="submit" class="SubmitButton" required>הרשמה</button>
+            
+            <p style="margin-top: 15px;">כבר נרשמת?<a href="/login"> התחברות</a></p>
+        </form>
+    </div>
+    <script>
+        async function SendData() {
+            event.preventDefault();
+            const userName = document.querySelector('.UserName').value;
+            const email = document.querySelector('.Email').value;
+            const password = document.querySelector('.password').value;
 
-                <button onclick="SendData()" type="submit" class="SubmitButton" required>הרשמה</button>
-                
-                <p style="margin-top: 15px;">כבר נרשמת?<a href="/login"> התחברות</a></p>
-            </form>
-        </div>
-        <script>
-            async function SendData() {
-                event.preventDefault();
-                const userName = document.querySelector('.UserName').value;
-                const email = document.querySelector('.Email').value;
-                const password = document.querySelector('.password').value;
+            const PROTOCOL = window.location.protocol;
+            const URL = `/api/v1/auth/register`;
 
-                const PROTOCOL = window.location.protocol;
-                const URL = `/api/v1/auth/register`;
+            try {
+                const response = await fetch(URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: userName,
+                        email: email,
+                        role: 'user',
+                        password: password,
+                        savedRoutes: [],
+                    }),
+                });
 
-                try {
-                    const response = await fetch(URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Accept: 'application/json',
-                        },
-                        body: JSON.stringify({
-                            name: userName,
-                            email: email,
-                            role: 'user',
-                            password: password,
-                            savedRoutes: [],
-                        }),
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        if (response.status === 400) {
-                            throw new Error('Email already exists');
-                            window.location.reload();
-                        } else {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (response.status === 400) {
+                        throw new Error('Email already exists');
+                        window.location.reload();
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    else {
-                        window.location.href = '/login';
-                    }
-
-                    const data = await response.json();
-                    console.log(data);
-                } catch (error) {
-                    console.error('Error:', error.message);
-                    alert(error.message);
                 }
+                else {
+                    window.location.href = '/login';
+                }
+
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.error('Error:', error.message);
+                alert(error.message);
             }
-        </script>
+        }
+    </script>
 </body>

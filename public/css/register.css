@@ -61,7 +61,7 @@ body {
 }
 
 label {
-    font-size: 1em;
+    font-size: 1.2em;
     color: #333;
     text-align: right;
     display: block;
@@ -142,11 +142,11 @@ label {
     }
 
     .UserName, .password, .Email {
-        font-size: 0.9em;
+        font-size: 1em;
         width: 100%;
     }
 
     label {
-        font-size: 0.9em;
+        font-size: 1em;
     }
 }
