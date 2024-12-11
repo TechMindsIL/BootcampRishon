@@ -21,6 +21,9 @@ router.post('/', SecurityMiddleware.secure(), auth, checkRole('admin'), routeCon
 // Route to update a Route by ID
 router.put('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), routeController.updateRoute);
 
+// Route to increment the number of users who completed a Route by ID
+router.put('/increment-users/:id', SecurityMiddleware.secure(), validateObjectId('id'), routeController.incrementRouteUsers);
+
 // Route to delete a Route by ID
 router.delete('/:id', SecurityMiddleware.secure(), auth, checkRole('admin'), validateObjectId('id'), routeController.deleteRoute);
 

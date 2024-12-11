@@ -177,6 +177,23 @@ exports.updateRoute = asyncHandler(async (req, res) => {
     res.json(updatedRoute);
 });
 
+// Controller function to increment the number of users who completed a Route by ID
+exports.incrementRouteUsers = asyncHandler(async (req, res) => {
+    // Find the Route by ID and increment the 'numberOfCompletions' field by 1
+    const updatedRoute = await Route.findByIdAndUpdate(
+        req.params.id,
+        { $inc: { numberOfCompletions: 1 } }, // Increment the numberOfCompletions field by 1
+        { new: true } // Return the updated document
+    );
+
+    if (!updatedRoute) {
+        res.status(404).json({ message: 'Route not found' });
+        return;
+    }
+
+    res.json(updatedRoute);
+});
+
 // Controller function to delete a Route by ID
 exports.deleteRoute = asyncHandler(async (req, res) => {
     // Delete the Route by ID
