@@ -164,7 +164,7 @@
           width: 150px !important;
         }
 
-        #backButton:hover{
+        #backButton:hover {
           background-color: var(--grayColor) !important;
           color: white !important;
         }
@@ -707,9 +707,24 @@
             }
           });
 
+          $.ajax({
+            url: `/api/v1/routes/increment-users/${routeData._id}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({}),
+            success: function () {
+              console.log(`Successfully incremented the count of users who completed the route. Route ID: ${routeData._id}`);
+            },
+            error: function (xhr, status, error) {
+              console.error('Error incrementing the count of users who completed the route:', error);
+              console.log(`Error details: ${xhr.responseText || status}`);
+            }
+          });
+
           if (userId) {
+            console.log(userId);
             $.ajax({
-              url: `/api/v1/users/calories/${userId}`,
+              url: "/api/v1/auth/",
               method: 'PUT',
               contentType: 'application/json',
               data: JSON.stringify({ caloriesToAdd: calories }),
