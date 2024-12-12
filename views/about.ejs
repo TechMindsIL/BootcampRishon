@@ -80,7 +80,8 @@
                 margin-bottom: 5px;
             }
 
-            .stats-list a {
+            .stats-list a,
+            a {
                 color: #F16624;
             }
 
@@ -98,8 +99,9 @@
                 background-color: rgba(255, 255, 255, 0.8);
                 width: 80%;
                 border-radius: 15px;
-                padding: 20px;
+                padding-top: 20px;
                 font-size: 18px;
+                height: auto !important;
             }
 
             .neighborhoods-list {
@@ -119,11 +121,13 @@
                 justify-content: center;
                 align-items: center;
                 display: flex;
+                flex-wrap: wrap;
+                overflow: visible;
             }
 
-            #neighborhoodGraph {
+            #neighborhoodGraph{
                 height: auto !important;
-
+                width: 100% !important;
             }
 
             @media (min-width: 770px) {
@@ -140,7 +144,6 @@
 
                 .graph-container {
                     width: 100%;
-                    max-height: 300px;
                 }
             }
 
@@ -153,12 +156,13 @@
                 }
 
                 .neighborhoods-list {
-                    width: 100%;
+                    max-width: 90%;
                     grid-template-columns: 1fr;
                 }
 
                 .graph-container {
-                    width: 100%;
+                    max-width: 100%;
+                    height: auto !important;
                 }
             }
 
@@ -280,9 +284,9 @@
                 </strong>
             </h4>
 
-            <span id="countOfUsers" style="display: flex;"></span>
-            <span id="mostActiveNeighborhoods" style="display: flex;"></span>
-            <span id="mostPopularRoutes" style="display: flex;"></span>
+            <span id="countOfUsers" style="display: flex; flex-wrap: wrap;"></span>
+            <span id="mostActiveNeighborhoods" style="display: flex; flex-wrap: wrap;"></span>
+            <span id="mostPopularRoutes" style="display: flex; flex-wrap: wrap;"></span>
 
             </p>
         </div>
@@ -296,7 +300,7 @@
 
             <ul class="neighborhoods-list" id="neighborhoods-list" style="direction: rtl;"></ul>
 
-            <div class="graph-container">
+            <div class="graph-container" style="overflow: visible;">
                 <canvas id="neighborhoodGraph"></canvas>
             </div>
         </div>
@@ -403,45 +407,50 @@
                     // Create the chart
                     const ctx = document.getElementById('neighborhoodGraph').getContext('2d');
 
-                    new Chart(ctx, {
-                        type: 'pie',
-                        data: {
-                            labels: neighborhoodNames,
-                            datasets: [{
-                                data: caloriesData,
-                                backgroundColor: [
-                                    '#f7f0ae', '#f9dc5c', '#f0e24e', '#dbb42c', '#f3c56a', '#f3b559', '#f39d47', '#f28a36', '#f16624', '#ff8c1a', '#ff4e00',  // גוונים כתומים וצהובים
-                                    '#bde0fe', '#75a9e1', '#4599d9', '#3578c4',  // גווני תכלת
-                                    '#cccccc', '#b3b3b3', '#808080', '#666666'  // גווני אפור 
-                                ],
-                                borderColor: '#fff',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        boxWidth: 15,
-                                        padding: 10,
-                                    }
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (tooltipItem) {
-                                            return tooltipItem.raw + ' קלוריות';
-                                        }
-                                    }
+                    const chartData = {
+                        labels: neighborhoodNames,
+                        datasets: [{
+                            data: caloriesData,
+                            backgroundColor: [
+                                '#f7f0ae', '#f9dc5c', '#f0e24e', '#dbb42c', '#f3c56a', '#f3b559', '#f39d47', '#f28a36', '#f16624', '#ff8c1a', '#ff4e00',
+                                '#bde0fe', '#75a9e1', '#4599d9', '#3578c4',
+                                '#cccccc', '#b3b3b3', '#808080', '#666666'
+                            ],
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        }]
+                    };
+
+                    const chartOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 15,
+                                    padding: 10,
                                 }
                             },
-                            cutout: 50,
-                            animation: {
-                                animateRotate: true,
-                                animateScale: true
+                            tooltip: {
+                                callbacks: {
+                                    label: function (tooltipItem) {
+                                        return tooltipItem.raw + ' קלוריות';
+                                    }
+                                }
                             }
+                        },
+                        cutout: 50,
+                        animation: {
+                            animateRotate: true,
+                            animateScale: true
                         }
+                    };
+
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: chartData,
+                        options: chartOptions
                     });
                 } catch (error) {
                     console.error('Error fetching neighborhoods:', error);
@@ -488,8 +497,8 @@
 
                 const mostPopularRoutesSpan = document.getElementById("mostPopularRoutes");
                 if (mostPopularRoutes.length === 1) {
-                    mostPopularRoutesSpan.innerHTML = `<div class="stats-title">האימון הכי פופולרי:</div>
-                        <a href="/map?id=${mostPopularRoutes[0]._id}" style="margin-right:10px;">${mostPopularRoutes[0].name}</a>
+                    mostPopularRoutesSpan.innerHTML = `<div><strong>האימון הכי פופולרי:</strong>
+                        <a href="/map?id=${mostPopularRoutes[0]._id}" style="margin-right:10px;">${mostPopularRoutes[0].name}</a></div>
                     `;
                 } else if (mostPopularRoutes.length > 1) {
                     mostPopularRoutesSpan.innerHTML = `
@@ -502,8 +511,8 @@
 
                 const mostActiveNeighborhoodsSpan = document.getElementById("mostActiveNeighborhoods");
                 if (mostActiveNeighborhoods.length === 1) {
-                    mostActiveNeighborhoodsSpan.innerHTML = ` <div class="stats-title" >השכונה בה התאמנו הכי הרבה: </div>
-                        <span style="margin-right:10px;">${mostActiveNeighborhoods[0].title} </span>
+                    mostActiveNeighborhoodsSpan.innerHTML = ` <div><strong>השכונה בה התאמנו הכי הרבה: 
+                        </strong>${mostActiveNeighborhoods[0].title} </div>
                     `;
                 } else if (mostActiveNeighborhoods.length > 1) {
                     mostActiveNeighborhoodsSpan.innerHTML = `
