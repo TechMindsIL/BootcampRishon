@@ -218,11 +218,12 @@
                 }
 
                 #rate-button {
-                    font-size: 20px;
+                    font-size: 18px;
                     cursor: pointer;
                     background-color: #f16624;
+                    color: white;
                     border-radius: 14px;
-                    padding: 0px 5px;
+                    padding: 0px 7px;
                     text-align: center;
                     border: none;
                 }
@@ -265,6 +266,8 @@
                     border-radius: 20px;
                     background-color: #f16624;
                     padding: 10px 20px;
+                    border: none;
+                    color: white;
                 }
 
                 .modal-buttons button:hover {
@@ -567,7 +570,7 @@
                             console.log("User authenticated:", data);
 
                             userId = data._id;
-                            
+
                             const userRatingObj = route.ratings.find(rating => rating.userId === data._id);
                             if (userRatingObj) {
                                 userRating = userRatingObj.stars;
@@ -719,7 +722,7 @@
                         if (response.ok) {
                             const updatedRoute = await response.json();
                             updateRatingDisplay(updatedRoute.averageRating.toFixed(1));
-                            
+
                             console.log("הדירוג נשמר בהצלחה!");
 
                             modalRating.style.display = "none";

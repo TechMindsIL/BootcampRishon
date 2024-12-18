@@ -294,7 +294,7 @@
         <div class="container-neighborhoods">
             <h5 style="direction: rtl;">
                 <strong>
-                    תחרות שכונתית
+                    תחרות שכונות
                 </strong>
             </h5>
 
@@ -511,12 +511,12 @@
 
                 const mostActiveNeighborhoodsSpan = document.getElementById("mostActiveNeighborhoods");
                 if (mostActiveNeighborhoods.length === 1) {
-                    mostActiveNeighborhoodsSpan.innerHTML = ` <div><strong>השכונה בה התאמנו הכי הרבה: 
+                    mostActiveNeighborhoodsSpan.innerHTML = ` <div><strong>שכונה עם הכי הרבה מתאמנים: 
                         </strong>${mostActiveNeighborhoods[0].title} </div>
                     `;
                 } else if (mostActiveNeighborhoods.length > 1) {
                     mostActiveNeighborhoodsSpan.innerHTML = `
-                        <div class="stats-title">השכונות בהן התאמנו הכי הרבה:</div>
+                        <div class="stats-title"> שכונות עם הכי הרבה מאתמנים:</div>
                         <ul class="stats-list">
                             ${mostActiveNeighborhoods.map(neighborhood => `<li>${neighborhood.title}</li>`).join('')}
                         </ul>
